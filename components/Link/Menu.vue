@@ -43,7 +43,7 @@ a {
             padding: 0;
             overflow: hidden;
             font-size: 3em;
-            -webkit-text-stroke: 1px $white;
+            -webkit-text-stroke: 1px $orange;
             -webkit-text-fill-color: $black;
         }
 
