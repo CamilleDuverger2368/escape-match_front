@@ -13,11 +13,19 @@
 </template>
 
 <script setup>
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "~/store/auth";
 
+const { authenticateUser } = useAuthStore();
+const { authenticated } = storeToRefs(useAuthStore());
 const router = useRouter()
 
+let user = ref({
+    username: '',
+    password: '',
+})
+
 // Email's section
-let email = ref('')
 let errorEmail = ref('')
 const checkEmail = (data) => {
 
@@ -25,7 +33,7 @@ const checkEmail = (data) => {
 
     if (data.match(validRegex)) {
 
-        email.value = data
+        user.value.username = data
         errorEmail.value = ""
     } else {
 
@@ -34,33 +42,33 @@ const checkEmail = (data) => {
 }
 
 // Password's section
-let password = ref('')
 let errorPwd = ref('')
 const checkPwd = (data) => {
 
-if (data.length > 1) {
+    if (data.length > 1) {
 
-    errorPwd.value = ""
-} else {
+        user.value.password = data
+        errorPwd.value = ""
+    } else {
 
-    password.value = data
-    errorPwd.value = "Give us a password please."
-}
+        errorPwd.value = "Give us a password please."
+    }
 }
 
 // login's section
 let error = ref('')
-async function login() {
+const login = async () => {
 
     if (errorPwd.value || errorEmail.value) {
 
         error.value = "Give us a valid email and a password please."
     } else {
 
+        await authenticateUser(user.value)
         error.value =""
-        // TEST
-        // console.log("COUCOU")
-        // TEST
+        if (authenticated) {
+            router.push('/')
+        }
     }
 }
 </script>

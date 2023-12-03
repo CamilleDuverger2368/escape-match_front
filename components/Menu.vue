@@ -1,24 +1,40 @@
 <template>
     <div id="menu-items" :class="open ? 'active' : 'inactive'">
         <button @click="closeMenu()">X</button>
-        <!-- TO-DO : Ajouter une condition qui checke si l'utilisateur est logged ou non pour les differents liens -->
-        <LinkMenu link="test" name="S'inscrire"/>
-        <LinkMenu link="test" name="Se Connecter"/>
+        <LinkMenu v-if="!logged" @click="closeMenu()" link="/" name="S'inscrire" />
+        <LinkMenu v-if="!logged" @click="closeMenu()" link="/login" name="Se Connecter" />
+        <!-- TO-DO : Ajouter les differents liens manquants -->
+        <LinkMenu v-else @click="logout()" link="/" name="Se Déconnecter" />
     </div>
 </template>
 
 <script setup>
+import { useAuthStore } from '~/store/auth';
 
 const props = defineProps({
     open: {
         type: Boolean,
         require: true
+    },
+    logged: {
+        type: Boolean,
+        require: true
     }
 })
-const emit = defineEmits(["close"])
 
+const emit = defineEmits(["close"])
 const closeMenu = () => {
 
+    emit('close')
+}
+
+// logout's section
+const router = useRouter();
+const { logUserOut } = useAuthStore();
+const logout = () => {
+
+    logUserOut();
+    router.push('/login');
     emit('close')
 }
 </script>

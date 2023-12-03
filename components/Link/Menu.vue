@@ -1,6 +1,5 @@
 <template>
-    <!-- TO-DO : Remplacer par la navigation nuxt -->
-    <a :href="link">
+    <nuxt-link :to="link">
         <div class="Title">
             <h3>{{ name }}
                 <div class="Title__highlight"></div>
@@ -8,7 +7,7 @@
             <div class="Title__underline"></div>
             <div aria-hidden class="Title__filled">{{ name }}</div>
         </div>
-    </a>
+    </nuxt-link>
 </template>
 
 <script setup>

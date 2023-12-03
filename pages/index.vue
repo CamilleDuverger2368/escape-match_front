@@ -5,3 +5,6 @@
         <a>TEST</a>
     </div>
 </template>
+
+<script lang="ts" setup>
+</script>

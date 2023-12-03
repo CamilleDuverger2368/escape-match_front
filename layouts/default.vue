@@ -5,12 +5,17 @@
             <slot />
         </div>
         <Footer />
-        <Menu :open="menu" @close="closeNav()"/>
+        <Menu :open="menu" :logged="authenticated" @close="closeNav()"/>
     </div>
 </template>
 
 <script setup>
+import { storeToRefs } from "pinia"
+import { useAuthStore } from "~/store/auth"
 
+const { authenticated } = storeToRefs(useAuthStore())
+
+// Open Close menu
 let menu = ref(false)
 const openNav = () => {
     menu.value = true
