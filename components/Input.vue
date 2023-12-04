@@ -1,14 +1,12 @@
 <template>
     <div class="input">      
         <div class="error">{{ error }}</div>
-        <input :id="'input_' + id" @change="checkValue()" :type="type" required>
+        <input v-model="model" :id="'input_' + id" :type="type" required>
         <label>{{ name }}</label>
     </div>
 </template>
 
 <script setup>
-
-const datum = ref('')
 
 const props = defineProps({
     name: {
@@ -26,15 +24,27 @@ const props = defineProps({
     error: {
         type: String,
         require: true
+    },
+    data: {
+        type: String,
+        require: true
     }
 })
 
 const emit = defineEmits(["check"])
 
-const checkValue = () => {
-    datum.value = document.querySelector('#input_' + props.id).value
-    emit('check', datum.value)
-}
+let model = computed({
+    
+    get() {
+
+        return props.data
+    },
+
+    set(value) {
+
+        emit("check", value)
+    }
+})
 </script>
 
 <style lang="scss" scoped>

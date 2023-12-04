@@ -21,18 +21,24 @@ export const useAuthStore = defineStore('auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: {
-                username,
-                password,
+                    username,
+                    password,
                 },
             })
             this.loading = pending
+            console.log("authenticate 1")
+            if (data.value) {
 
-            if (data.value.token) {
-
+                console.log("authenticate 2")
                 const token = useCookie('token')
                 token.value = data.value.token
                 this.authenticated = true
+            } else {
+
+                console.log("authenticate 3")
+                this.authenticated = false
             }
+            console.log("authenticate 4")
         },
 
         logUserOut() {

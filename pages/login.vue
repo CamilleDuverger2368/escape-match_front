@@ -1,8 +1,9 @@
 <template>
     <div id="login">
+        <div id="error">{{ error }}</div>
         <form id="form" @submit.prevent="login()">
-            <Input name="Email" type="email" id="connexion_email" :error="errorEmail" @check="checkEmail" />
-            <Input name="Password" type="password" id="connexion_password" :error="errorPwd" @check="checkPwd" />
+            <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="errorEmail" @check="checkEmail" />
+            <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="errorPwd" @check="checkPwd" />
             <div class="links">
                 <a class="footer-link">Mot de passe oublié ?</a>
                 <a class="footer-link">Inscription</a>
@@ -59,6 +60,7 @@ const checkPwd = (data) => {
 let error = ref('')
 const login = async () => {
 
+    error.value = ""
     if (errorPwd.value || errorEmail.value) {
 
         error.value = "Give us a valid email and a password please."
@@ -66,8 +68,12 @@ const login = async () => {
 
         await authenticateUser(user.value)
         error.value =""
-        if (authenticated) {
+        if (authenticated.value) {
+
             router.push('/')
+        } else {
+
+            error.value = "Give us a valid email and a password please."
         }
     }
 }
@@ -79,7 +85,29 @@ const login = async () => {
 #login {
 
     width: 100%;
-    @include flex();
+    @include flex($direction:column);
+
+    #error {
+        
+        width: 80%;
+        min-height: 40px;
+        margin-bottom: 20px;
+        color: $red;
+        opacity: 0;
+        @include flex();
+        transition: 0.2s ease all;
+        -moz-transition: 0.2s ease all;
+        -webkit-transition: 0.2s ease all;
+
+        &:not(:empty) {
+
+            box-shadow: 0 0 5px $red;
+            background-color: $black;
+            padding: 0 15px;
+            border-radius: 5px;
+            opacity: 1;
+        }
+    }
 
     form {
 

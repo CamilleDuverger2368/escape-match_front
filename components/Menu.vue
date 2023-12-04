@@ -33,9 +33,9 @@ const router = useRouter();
 const { logUserOut } = useAuthStore();
 const logout = () => {
 
+    emit('close')
     logUserOut();
     router.push('/login');
-    emit('close')
 }
 </script>
 
