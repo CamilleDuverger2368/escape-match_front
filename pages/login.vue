@@ -23,7 +23,7 @@ const router = useRouter()
 
 let user = ref({
     username: '',
-    password: '',
+    password: ''
 })
 
 // Email's section

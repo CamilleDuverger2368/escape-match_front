@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', {
 
     state: () => ({
         authenticated: false,
-        loading: false,
+        loading: false
     }),
 
     actions: {
@@ -22,30 +22,27 @@ export const useAuthStore = defineStore('auth', {
                 headers: { 'Content-Type': 'application/json' },
                 body: {
                     username,
-                    password,
-                },
+                    password
+                }
             })
             this.loading = pending
-            console.log("authenticate 1")
+
             if (data.value) {
 
-                console.log("authenticate 2")
                 const token = useCookie('token')
                 token.value = data.value.token
                 this.authenticated = true
             } else {
 
-                console.log("authenticate 3")
                 this.authenticated = false
             }
-            console.log("authenticate 4")
         },
 
         logUserOut() {
 
-            const token = useCookie('token');
-            this.authenticated = false;
-            token.value = null;
+            const token = useCookie('token')
+            this.authenticated = false
+            token.value = null
         },
     },
 });
