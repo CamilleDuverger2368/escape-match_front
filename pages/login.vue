@@ -5,8 +5,8 @@
             <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="errorEmail" @check="checkEmail" />
             <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="errorPwd" @check="checkPwd" />
             <div class="links">
-                <a class="footer-link">Mot de passe oublié ?</a>
-                <a class="footer-link">Inscription</a>
+                <nuxt-link to="/forgot-pwd" class="footer-link">Mot de passe oublié ?</nuxt-link>
+                <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
             </div>
             <button class="login-button" type="submit">Connexion</button>
         </form>

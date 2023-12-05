@@ -4,8 +4,8 @@
         <form id="form" @submit.prevent="resetPwd()">
             <Input name="Email" type="email" id="forgot_password" :data="email" :error="errorEmail" @check="checkEmail" />
             <div class="links">
-                <a class="footer-link">Connexion</a>
-                <a class="footer-link">Inscription</a>
+                <nuxt-link to="/login" class="footer-link">Connexion</nuxt-link>
+                <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
             </div>
             <button class="login-button" type="submit">Réinitialiser mon mot de passe</button>
         </form>
@@ -67,7 +67,7 @@ const resetPwd = async () => {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' }
         })
-        
+
         if (data.value[0] === 200) {
 
             error.value = data.value.message

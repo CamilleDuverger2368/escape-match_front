@@ -2,12 +2,12 @@
     <footer>
         <div class="links">
             <div class="informations">
+                <!-- TO-DO : Remplacer par le systeme de navigation de nuxt -->
                 <a class="footer-link">CGU</a>
             </div>
             <div class="usefull">
-                <!-- TO-DO : Remplacer par le systeme de navigation de nuxt -->
-                <a class="footer-link">Connexion</a>
-                <a class="footer-link">Inscription</a>
+                <nuxt-link to="/login" class="footer-link">Connexion</nuxt-link>
+                <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
             </div>
         </div>
         <div class="creator">Made with love by Grandma</div>
