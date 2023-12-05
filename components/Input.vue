@@ -92,6 +92,15 @@ let model = computed({
             font-size: .8rem;
             color: $orange;
         }
+
+        &[type=number] {
+            appearance: textfield;
+
+            &::-webkit-inner-spin-button {
+                opacity: 1;
+                background: $orange;
+            }
+        }
     }
 
     label {
