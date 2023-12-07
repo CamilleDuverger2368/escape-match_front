@@ -7,8 +7,13 @@
             <Input name="Email (Mandatory)" type="email" id="register_email" :data="user.email" :error="error.email" @check="checkEmail" />
             <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" @check="checkPseudo" />
             <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" @check="checkAge" />
+            <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
+            <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" @check="checkPassword" />
+            <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="''" :error="error.confPwd" @check="checkConfPwd" />
+            <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
+            <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
             <!-- TEST -->
-            <Input name="Test" type="radio" id="test" :data="user.test" :error="error.test" @check="test" />
+            <Avatar :color="color"/>
             <!-- TEST -->
             <button class="login-button" type="submit">Inscription</button>
         </form>
@@ -23,10 +28,18 @@ let user = ref({
     email: '',
     pseudo: '',
     age: '',
-    // TEST
-    test: '',
-    // TEST
+    city: '',
+    password: '',
+    pronouns: '',
+    profil: ''
 })
+
+let color = ref("#FF7A00")
+
+let cities = ref([])
+
+const pronouns = ref(["She", "He", "They"])
+const profil = ref(["Solver", "Leader", "Searcher"])
 
 let error = ref({
     general: '',
@@ -35,9 +48,25 @@ let error = ref({
     email: '',
     pseudo: '',
     age: '',
-    // TEST
-    test: '',
-    // TEST
+    password: '',
+    confPwd: ''
+})
+
+onMounted(async () => {
+
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/cities', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    })
+
+    if (data.value) {
+
+        for(let i = 0; i < data.value.length; i++) {
+
+            cities.value.push(data.value[i].name)
+        }
+    }
 })
 
 // Check's section
@@ -112,17 +141,56 @@ const checkAge = (data) => {
         error.value.age = "Your age must be a number."
     }
 }
-// TEST
-const test = (data) => {
-    console.log("data")
-    console.log(data)
+const checkCity = (data) => {
+
+    user.value.city = data
 }
-// TEST
+const checkPassword = (data) => {
+
+    const validRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+
+    if (data.match(validRegex)) {
+
+        user.value.password = data
+        error.value.password = ""
+    } else {
+
+        error.value.password = "Your password must contain at least one UPPERCASE letter, one lowercase letter, one digit, one special character [#?!@$%^&*-], and a minimum of 8 characters."
+    }
+}
+const checkConfPwd = (data) => {
+
+    if (user.value.pwd !== data) {
+
+        error.value.confPwd = "Your passwords don't match"
+    } else {
+
+        error.value.confPwd = ''
+    }
+}
+const checkPronouns = (data) => {
+
+    user.value.pronouns = data
+}
+const checkProfil = (data) => {
+
+    user.value.profil = data
+    if (data === "Solver") {
+
+        color.value = "#45C4A2"
+    } else if (data === "Leader") {
+
+        color.value = "#E03616"
+    } else {
+        
+        color.value = "#FF7A00"
+    }
+}
 
 // Register's section
 const register = async () => {
 
-    if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo) {
+    if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.age || error.value.password || error.value.confPwd) {
 
         error.value.general = "Check your errors please."
     } else {

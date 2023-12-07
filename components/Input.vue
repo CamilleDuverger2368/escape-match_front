@@ -32,7 +32,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["check"])
-
 let model = computed({
     
     get() {

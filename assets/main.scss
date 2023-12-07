@@ -33,6 +33,13 @@ html {
             font-family: 'Geomanist', sans-serif;
         }
     
+        select {
+            appearance: none;
+            border: 0;
+            outline: 0;
+            font: inherit;
+        }
+
         figure {
             margin: 0;
         }

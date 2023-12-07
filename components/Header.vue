@@ -27,7 +27,7 @@ const openMenu = () => {
 @import "~/assets/variables";
 
 #header {
-    position: sticky;
+    position: static;
     top: 0;
     width: 100%;
     @include flex($direction:column);
