@@ -14,9 +14,16 @@ const props = defineProps({
     }
 })
 
+let avatar
+
 onMounted(() => {
     
-    let avatar = new Avatar(document.querySelector("canvas.webgl"))
+    avatar = new Avatar(document.querySelector("canvas.webgl"), props.color)
+})
+
+onUpdated(() => {
+
+    avatar.changeColor(props.color)
 })
 </script>
 

@@ -4,7 +4,7 @@ let instance = null
 
 export default class Avatar {
 
-    constructor(canvas) {
+    constructor(canvas, color) {
 
         if (instance) {
 
@@ -46,7 +46,7 @@ export default class Avatar {
         this.scene.add(this.camera)
 
         const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshBasicMaterial({ color: "#FF7A00" })
+        const material = new THREE.MeshBasicMaterial({ color: color })
         this.mesh = new THREE.Mesh(geometry, material)
         this.scene.add(this.mesh)
 
@@ -78,11 +78,25 @@ export default class Avatar {
         this.time.elapsed = this.time.clock.getElapsedTime()
 
         // Update world
-        // this.mesh.position.x += 0.1
+        this.mesh.rotation.y += 0.01
+
+        // Render
+        this.renderer.render(this.scene, this.camera)
 
         window.requestAnimationFrame(() => {
 
             this.tick()
         })
+    }
+
+    changeColor(color) {
+
+        this.scene.remove(this.mesh)
+        const geometry = new THREE.BoxGeometry(1, 1, 1)
+        const material = new THREE.MeshBasicMaterial({ color: color })
+        this.mesh = new THREE.Mesh(geometry, material)
+        this.scene.add(this.mesh)
+
+        this.renderer.render(this.scene, this.camera)
     }
 }
