@@ -1,9 +1,9 @@
 <template>
     <div id="login">
-        <div id="error">{{ error }}</div>
+        <div id="error">{{ error.general }}</div>
         <form id="form" @submit.prevent="login()">
-            <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="errorEmail" @check="checkEmail" />
-            <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="errorPwd" @check="checkPwd" />
+            <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="error.email" @check="checkEmail" />
+            <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="error.password" @check="checkPwd" />
             <div class="links">
                 <nuxt-link to="/forgot-pwd" class="footer-link">Mot de passe oublié ?</nuxt-link>
                 <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
@@ -26,8 +26,13 @@ let user = ref({
     password: ''
 })
 
+let error = ref({
+    email: '',
+    password: '',
+    general: ''
+})
+
 // Email's section
-let errorEmail = ref('')
 const checkEmail = (data) => {
 
     const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -35,45 +40,43 @@ const checkEmail = (data) => {
     if (data.match(validRegex)) {
 
         user.value.username = data
-        errorEmail.value = ""
+        error.value.email = ""
     } else {
 
-        errorEmail.value = "Give us a valid email please."
+        error.value.email = "Give us a valid email please."
     }
 }
 
 // Password's section
-let errorPwd = ref('')
 const checkPwd = (data) => {
 
     if (data.length > 1) {
 
         user.value.password = data
-        errorPwd.value = ""
+        error.value.password = ""
     } else {
 
-        errorPwd.value = "Give us a password please."
+        error.value.password = "Give us a password please."
     }
 }
 
 // login's section
-let error = ref('')
 const login = async () => {
 
-    error.value = ""
-    if (errorPwd.value || errorEmail.value) {
+    error.value.general = ""
+    if (error.value.password || error.value.email) {
 
-        error.value = "Give us a valid email and a password please."
+        error.value.general = "Give us a valid email and a password please."
     } else {
 
         await authenticateUser(user.value)
-        error.value =""
+        error.value.general =""
         if (authenticated.value) {
 
             router.push('/')
         } else {
 
-            error.value = "Give us a valid email and a password please."
+            error.value.general = "Give us a valid email and a password please."
         }
     }
 }

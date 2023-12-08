@@ -9,12 +9,10 @@
             <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" @check="checkAge" />
             <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
             <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" @check="checkPassword" />
-            <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="''" :error="error.confPwd" @check="checkConfPwd" />
+            <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" @check="checkConfPwd" />
             <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
             <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
-            <!-- TEST -->
             <Avatar :color="color"/>
-            <!-- TEST -->
             <button class="login-button" type="submit">Inscription</button>
         </form>
     </div>
@@ -49,7 +47,8 @@ let error = ref({
     pseudo: '',
     age: '',
     password: '',
-    confPwd: ''
+    confPwd: '',
+    dataConfPwd: ''
 })
 
 onMounted(async () => {
@@ -72,7 +71,7 @@ onMounted(async () => {
 // Check's section
 const checkName = (data) => {
 
-    const validRegex = /^(([A-Za-z]+[\-\']?)*([A-Za-z]+)?\s)+([A-Za-z]+[\-\']?)*([A-Za-z]+)?$/
+    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
 
     if (data.match(validRegex)) {
 
@@ -85,7 +84,7 @@ const checkName = (data) => {
 }
 const checkFirstname = (data) => {
 
-    const validRegex = /^(([A-Za-z]+[\-\']?)*([A-Za-z]+)?\s)+([A-Za-z]+[\-\']?)*([A-Za-z]+)?$/
+    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
 
     if (data.match(validRegex)) {
 
@@ -124,9 +123,7 @@ const checkPseudo = (data) => {
 }
 const checkAge = (data) => {
 
-    const validRegex = /^\d+$/
-
-    if (data.match(validRegex)) {
+    if (parseInt(data)) {
 
         if (data > 0 && data < 150) {
 
@@ -138,7 +135,7 @@ const checkAge = (data) => {
         }
     } else {
 
-        error.value.age = "Your age must be a number."
+        error.value.age = "Your age must be between 1 and 150 years old."
     }
 }
 const checkCity = (data) => {
@@ -155,16 +152,17 @@ const checkPassword = (data) => {
         error.value.password = ""
     } else {
 
-        error.value.password = "Your password must contain at least one UPPERCASE letter, one lowercase letter, one digit, one special character [#?!@$%^&*-], and a minimum of 8 characters."
+        error.value.password = "UPPERCASE, lowercase, digit, [#?!@$%^&*-], minimum of 8 characters"
     }
 }
 const checkConfPwd = (data) => {
 
-    if (user.value.pwd !== data) {
+    if (user.value.password !== data) {
 
         error.value.confPwd = "Your passwords don't match"
     } else {
 
+        error.value.dataConfPwd = data
         error.value.confPwd = ''
     }
 }
@@ -188,6 +186,7 @@ const checkProfil = (data) => {
 }
 
 // Register's section
+const router = useRouter()
 const register = async () => {
 
     if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.age || error.value.password || error.value.confPwd) {
@@ -195,9 +194,22 @@ const register = async () => {
         error.value.general = "Check your errors please."
     } else {
 
-        // TEST
-        console.log("register's page")
-        // TEST
+        const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: user.value
+        })
+
+        if (data.value[0] === 201) {
+
+            error.value.general = ""
+            document.getElementById("informations").classList.remove("error")
+            router.push('/login3')
+        } else {
+
+            error.value.general = data.value.message
+            document.getElementById("informations").classList.add("error")
+        }
     }
 }
 </script>
@@ -222,23 +234,9 @@ const register = async () => {
         -moz-transition: 0.2s ease all;
         -webkit-transition: 0.2s ease all;
 
-        &.success {
-            
-            color: $green;
-        }
-
         &.error:not(:empty) {
 
             box-shadow: 0 0 5px $red;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
-
-        &.success:not(:empty) {
-
-            box-shadow: 0 0 5px $green;
             background-color: $black;
             padding: 0 15px;
             border-radius: 5px;

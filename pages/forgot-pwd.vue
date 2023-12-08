@@ -1,8 +1,8 @@
 <template>
     <div id="forgot-pwd">
-        <div id="informations">{{ error }}</div>
+        <div id="informations">{{ error.general }}</div>
         <form id="form" @submit.prevent="resetPwd()">
-            <Input name="Email" type="email" id="forgot_password" :data="email" :error="errorEmail" @check="checkEmail" />
+            <Input name="Email" type="email" id="forgot_password" :data="email" :error="error.email" @check="checkEmail" />
             <div class="links">
                 <nuxt-link to="/login" class="footer-link">Connexion</nuxt-link>
                 <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
@@ -15,9 +15,12 @@
 <script setup>
 
 let email = ref('')
+let error = ref({
+    email: '',
+    general: ''
+})
 
 // Email's section
-let errorEmail = ref('')
 const checkEmail = async (datum) => {
 
     const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -25,7 +28,7 @@ const checkEmail = async (datum) => {
     if (datum.match(validRegex)) {
 
         email.value = datum
-        errorEmail.value = ""
+        error.value.email = ""
         // TO-DO : passer les adresses par variable et non en dur
         const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/email-exist/' + email.value, {
             method: 'GET',
@@ -36,30 +39,29 @@ const checkEmail = async (datum) => {
 
             if (data.value[0] !== 200) {
 
-                error.value = data.value.message
+                error.value.general = data.value.message
                 document.getElementById("informations").classList.add("error")
                 document.getElementById("informations").classList.remove("success")
             } else {
 
-                error.value = ""
+                error.value.general = ""
                 document.getElementById("informations").classList.remove("error")
                 document.getElementById("informations").classList.remove("success")
             }
         }
     } else {
 
-        errorEmail.value = "Give us a valid email please."
+        error.value.email = "Give us a valid email please."
     }
 }
 
 // Reset's section
-let error = ref('')
 const resetPwd = async () => {
 
-    error.value = ""
-    if (errorEmail.value) {
+    error.value.general = ""
+    if (error.value.email) {
 
-        error.value = "Give us a valid email please."
+        error.value.general = "Give us a valid email please."
     } else {
 
         // TO-DO : passer les adresses par variable et non en dur
@@ -70,12 +72,12 @@ const resetPwd = async () => {
 
         if (data.value[0] === 200) {
 
-            error.value = data.value.message
+            error.value.general = data.value.message
             document.getElementById("informations").classList.add("success")
             document.getElementById("informations").classList.remove("error")
         } else {
 
-            error.value = data.value.message
+            error.value.general = data.value.message
             document.getElementById("informations").classList.add("error")
             document.getElementById("informations").classList.remove("success")
         }

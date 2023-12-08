@@ -26,7 +26,7 @@ const props = defineProps({
         require: true
     },
     data: {
-        type: String,
+        type: [String, Number],
         require: true
     }
 })

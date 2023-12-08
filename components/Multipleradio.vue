@@ -1,5 +1,5 @@
 <template>
-    <div class="radio-buttons">
+    <form class="radio-buttons">
         <div class="title">{{ title }}</div>
         <div class="buttons">
             <div class="button" :key="option" v-for="option in options" :value="option">
@@ -17,7 +17,7 @@
                 </label>
             </div>
         </div>
-    </div>
+    </form>
 </template>
 
 <script setup>
