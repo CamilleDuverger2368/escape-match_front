@@ -76,7 +76,7 @@ const login = async () => {
             router.push('/')
         } else {
 
-            error.value.general = "Give us a valid email and a password please."
+            error.value.general = "Give us a valid email and a password please OR validate your email."
         }
     }
 }
