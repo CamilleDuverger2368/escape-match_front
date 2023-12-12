@@ -33,8 +33,14 @@
                 <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
                 <div v-else class="no-profil">No Profil</div>
                 <div class="classic">{{ user.city }}</div>
-                <div v-if="user.level">level {{ user.level }}</div>
-                <div v-else >Start your adventure to level up !</div>
+                <!-- TEST -->
+                <ul v-if="user.level">
+                    <li class="sk-cms"><span>level {{ user.level }}</span></li>
+                </ul>
+                <ul v-else>
+                    <li class="sk-cms"><span>Start your adventure to level up !</span></li>
+                </ul>
+                <!-- TEST -->
             </div>
             <button class="login-button" type="submit">Modifier</button>
         </div>
@@ -99,6 +105,15 @@ onMounted(async () => {
 
 <style lang="scss" scoped>
 @import "~/assets/variables";
+
+// TEST
+
+@keyframes start {
+	100% {
+		width: calc(calc(var(--per) * 1%) - 2px);
+	}
+}
+// TEST
 
 .inactive-left {
     transform: translate(-100vw);
@@ -211,6 +226,7 @@ onMounted(async () => {
                 padding: 15px 35px;
                 color: $black;
                 font-size: 1.25rem ;
+                margin: 10px auto;
             }
 
             .Leader {
@@ -220,6 +236,7 @@ onMounted(async () => {
                 padding: 15px 35px;
                 color: $black;
                 font-size: 1.25rem ;
+                margin: 10px auto;
             }
 
             .Searcher {
@@ -229,6 +246,7 @@ onMounted(async () => {
                 padding: 15px 35px;
                 color: $black;
                 font-size: 1.25rem ;
+                margin: 10px auto;
             }
 
             .no-profil {
@@ -238,6 +256,116 @@ onMounted(async () => {
                 padding: 15px 35px;
                 color: $black;
                 font-size: 1.25rem ;
+                margin: 10px auto;
+            }
+
+            ul {
+                width: 100%;
+                position: relative;
+                padding: 25px 35px;
+
+                li {
+                    --per: 50;
+                    --dur: calc(calc(var(--per) / 100) * 1.5s);
+                    list-style: none;
+                    padding: 20px 0;
+                    position: relative;
+                    font-size: 1.5rem;
+                    color: $white;
+                    width: 100%;
+
+                    &:before {
+                        content: "";
+                        position: absolute;
+                        background: $black;
+                        height: 1rem;
+                        width: 100%;
+                        left: 0;
+                        bottom: 0;
+                        border-radius: 5px;
+                        border: 1px solid #111;
+                        border-color: #111 #323232 #323232 #111;
+                        --track: #2292dd40;
+                        background: linear-gradient(
+                            90deg,
+                            var(--track) calc(calc(var(--per) * 1%) + 4px),
+                            #1c1c1c calc(calc(var(--per) * 1%) + 4px)
+                        );
+                    }
+
+                    &:after {
+                        content: "";
+                        height: 11px;
+                        margin: 0 0 2px 0;
+                        background: $green;
+                        position: absolute;
+                        box-shadow: 0px 0px 10px 1px #00c6ff66;
+                        left: 3px;
+                        width: 0%;
+                        bottom: 0;
+                        transition: all var(--dur) ease 0s;
+                        animation: start 1s ease 0s 2 alternate;
+                    }
+
+                    // Analyse en est la
+                    &:hover, &:active {
+                        filter: brightness(1.5);
+	                    transition: all 0.5s ease 0s;
+                    }
+
+                    &:hover span:before,
+                    ul li span:before {
+                        transition: all 0.5s ease 0s;
+                        right: calc(calc(calc(100 - var(--per)) * 1%) - 12px);
+                        opacity: 1;
+                        border-right-color: #2187e7;
+                    }
+
+                    span {
+                        font-weight: 500;
+
+                        &:before {
+                            position: absolute;
+                            right: -25px;
+                            top: 43px;
+                            transition: all 0.5s ease 0s;
+                            content: "";
+                            opacity: 1;
+                            border: 7px solid #fff0;
+                        }
+
+                        &:after {
+                            position: absolute;
+                            right: -40px;
+                            top: 38px;
+                            transition: all 0.5s ease 0s;
+                            counter-reset: percent var(--per);
+                            /*content: counter(percent) "%";*/
+                            content: counter(percent);
+                            color: #222;
+                            opacity: 1 !important;
+                            padding: 4px 6px;
+                            border-radius: 1px;
+                            font-weight: bold;
+                            pointer-events: none;
+                        }
+                    }
+                }
+
+                &:hover li:after,
+                label:hover + ul li:after,
+                input:checked + label + ul li:after {
+                    width: calc(calc(var(--per) * 1%) - 2px);
+                }
+
+                &:hover span:after,
+                .profile-skills input:checked + label + ul li span:after {
+                    transition: all 0.5s ease 0s;
+                    right: calc(calc(85 - var(--per)) * 1%);
+                    right: calc(calc(calc(100 - var(--per)) * 1%) - 40px);
+                    opacity: 1;
+                    background: #2187e7;
+                }
             }
         }
     }
