@@ -11,6 +11,10 @@ const props = defineProps({
     color: {
         type: String,
         require: true
+    },
+    page: {
+        type: String,
+        require: true
     }
 })
 
@@ -18,7 +22,7 @@ let avatar
 
 onMounted(() => {
     
-    avatar = new Avatar(document.querySelector("canvas.webgl"), props.color)
+    avatar = new Avatar(document.querySelector("canvas.webgl"), props.color, props.page)
 })
 
 onUpdated(() => {

@@ -12,7 +12,7 @@
             <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" @check="checkConfPwd" />
             <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
             <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
-            <Avatar :color="color"/>
+            <Avatar :color="color" page="register"/>
             <button class="login-button" type="submit">Inscription</button>
         </form>
     </div>

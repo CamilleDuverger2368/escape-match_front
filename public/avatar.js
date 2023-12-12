@@ -4,7 +4,7 @@ let instance = null
 
 export default class Avatar {
 
-    constructor(canvas, color) {
+    constructor(canvas, color, page) {
 
         if (instance) {
 
@@ -16,10 +16,18 @@ export default class Avatar {
 
         // Setup canvas / size
         this.canvas = canvas
-        this.sizes = {
-            width: window.innerWidth * 0.8,
-            height: 400,
-            pixelRatio: Math.min(window.devicePixelRatio, 2)
+        if (page === "register") {
+            this.sizes = {
+                width: window.innerWidth * 0.8,
+                height: 400,
+                pixelRatio: Math.min(window.devicePixelRatio, 2)
+            }
+        } else {
+            this.sizes = {
+                width: window.innerWidth,
+                height: 400,
+                pixelRatio: Math.min(window.devicePixelRatio, 2)
+            }
         }
 
         // Setup time

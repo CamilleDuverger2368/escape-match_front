@@ -10,15 +10,15 @@ export default defineNuxtRouteMiddleware((to) => {
         authenticated.value = true
     }
 
-    if (token.value && to.name === "login") {
+    // if (token.value && to.name === "login") {
 
-        // TO-DO : faire naviguer vers le profil de l'utilisateur courant
-        return navigateTo('/')
-    }
+    //     // TO-DO : faire naviguer vers le profil de l'utilisateur courant
+    //     return navigateTo('/logged/profil')
+    // }
 
-    if (!token.value && to.name !== "login" && to.name !== "/" && to.name !== "forgot-pwd" && to.name !== "register") {
+    // if (!token.value && to.name !== "login" && to.name !== "/" && to.name !== "forgot-pwd" && to.name !== "register") {
 
-        abortNavigation()
-        return navigateTo("/login")
-    }
+    //     abortNavigation()
+    //     return navigateTo("/login")
+    // }
 })
