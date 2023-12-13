@@ -129,11 +129,21 @@ onMounted(async () => {
 
 const token = useCookie("token")
 
-const update = () => {
+const update = async () => {
 
-    // TEST
-    console.log("update profil function")
-    // TEST
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/user/" + user.value.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        getProfil()
+    }
 }
 
 const getProfil = async () => {
@@ -318,34 +328,32 @@ const checkProfil = (data) => {
             }
         }
 
-        .informations, .success {
-            border-top-right-radius: 50px;
-            border-bottom-right-radius: 50px;
-        }
-
-        .lists, .conversations {
-            border-top-left-radius: 50px;
-            border-bottom-left-radius: 50px;
-        }
-
         .informations {
             top: 0;
             left: 0;
+            border-top-right-radius: 50px;
+            border-bottom-right-radius: 50px;
         }
 
         .lists {
             top: 0;
             right: 0;
+            border-top-left-radius: 50px;
+            border-bottom-left-radius: 50px;
         }
 
         .success {
             bottom: 0;
             left: 0;
+            border-top-right-radius: 50px;
+            border-bottom-right-radius: 50px;
         }
 
         .conversations {
             bottom: 0;
             right: 0;
+            border-top-left-radius: 50px;
+            border-bottom-left-radius: 50px;
         }
     }
 
