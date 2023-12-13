@@ -3,24 +3,16 @@
         <Avatar :color="color" page="profil"/>
         <div id="slider-menu">
             <div class="slider informations" @click="openInfo = true">
-                <!-- TEST -->
-                boubou
-                <!-- TEST -->
+                <img src="~/public/icones/user.svg" alt="profil's informations">
             </div>
             <div class="slider lists" @click="openList = true">
-                <!-- TEST -->
-                bebeow
-                <!-- TEST -->
+                <img src="~/public/icones/list.svg" alt="profil's lists">
             </div>
             <div class="slider success" @click="openSuccess = true">
-                <!-- TEST -->
-                bibou
-                <!-- TEST -->
+                <img class="little" src="~/public/icones/cup.svg" alt="profil's success">
             </div>
             <div class="slider conversations"  @click="openConv = true">
-                <!-- TEST -->
-                babou
-                <!-- TEST -->
+                <img src="~/public/icones/message.svg" alt="profil's conversations">
             </div>
         </div>
         <div id="menu-informations" :class="openInfo ? 'active' : 'inactive-left'">
@@ -32,7 +24,7 @@
                 <div v-if="user.age" class="classic">{{ user.age }} years old</div>
                 <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
                 <div v-else class="no-profil">No Profil</div>
-                <div class="classic">{{ user.city }}</div>
+                <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
                 <ul v-if="user.level">
                     <li><span>level {{ user.level }}</span></li>
                 </ul>
@@ -158,7 +150,7 @@ const getProfil = async () => {
     if (data.value) {
 
         user.value = data.value
-        user.value.city = data.value.city[0].name
+        user.value.city = data.value.city.name
     }
 }
 
@@ -307,16 +299,22 @@ const checkProfil = (data) => {
 
         .slider {
             position: absolute;
-            // TEST
-            background-color: rgba($green, .5);
-            // TEST
             @include flex();
             width: 50px;
             height: 50px;
+            box-shadow: 0 0 10px $orange;
             transition: 0.3s ease-in-out;
 
             &:hover, &:active {
                 width: 75px;
+            }
+
+            img {
+                width: 65%;
+
+                &.little {
+                    width: 50%;
+                }
             }
         }
 
@@ -355,7 +353,7 @@ const checkProfil = (data) => {
         width: 100vw;
         position: fixed;
         background-color: $black;
-        height: 70vh;
+        height: 73vh;
         overflow-y: scroll;
         overflow-x: hidden;
         @include flex($direction:column);
@@ -388,6 +386,15 @@ const checkProfil = (data) => {
             .classic {
                 font-size: 1.5rem;
                 margin: 10px auto;
+            }
+
+            .city {
+                @include flex();
+
+                img {
+                    width: 25px;
+                    margin-right: 15px;
+                }
             }
 
             .Solver {
