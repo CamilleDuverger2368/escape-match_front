@@ -39,7 +39,10 @@
                 <ul v-else>
                     <li><span>Start your adventure to level up !</span></li>
                 </ul>
-                <button class="login-button" type="submit" @click="updateProfil = true">Modifier</button>
+                <div class="buttons">
+                    <button class="login-button" type="submit" @click="updateProfil = true">Modifier</button>
+                    <button class="login-button" type="submit" @click="updatePwd = true">Change password</button>
+                </div>
             </div>
             <div v-else class="update-profil">
                 <div class="informations">{{ error.general }}</div>
@@ -50,12 +53,12 @@
                     <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" @check="checkPseudo" />
                     <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" @check="checkAge" />
                     <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
-                    <Input name="Password" type="password" id="register_pwd" :data="user.password" :error="error.password" @check="checkPassword" />
-                    <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" @check="checkConfPwd" />
                     <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
                     <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
-                    <Avatar :color="color" page="register"/>
-                    <button class="login-button" type="submit">Update</button>
+                    <div class="buttons">
+                        <button class="login-button" type="submit">Update</button>
+                        <button class="login-button" @click="updateProfil = false">Retour</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -82,26 +85,25 @@ let openSuccess = ref(false)
 let openConv = ref(false)
 
 let updateProfil = ref(false)
+let updatePwd = ref(false)
 
 let cities = ref([])
 const pronouns = ref(["She", "He", "They"])
 const profil = ref(["Solver", "Leader", "Searcher"])
 
-// TEST
 let user = ref({
-    id: 1,
-    email: "test@mail.com",
-    name: "Testouille",
-    firstname: "Test",
-    pseudo: "Boubou",
-    age: 25,
-    level: 1,
-    grade: 5,
-    pronouns: "They",
+    id: null,
+    email: "",
+    name: "",
+    firstname: "",
+    pseudo: "",
+    age: null,
+    level: null,
+    grade: null,
+    pronouns: "",
     profil: "",
-    city: "Paris"
+    city: ""
 })
-// TEST
 
 let error = ref({
     general: '',
@@ -117,10 +119,11 @@ let error = ref({
 
 onMounted(async () => {
 
+    getProfil()
     // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/cities', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+    const { data } = await useFetch("http://127.0.0.1:8000/api/unlog/cities", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
     })
 
     if (data.value) {
@@ -132,11 +135,31 @@ onMounted(async () => {
     }
 })
 
+const token = useCookie("token")
+
 const update = () => {
 
     // TEST
     console.log("update profil function")
     // TEST
+}
+
+const getProfil = async () => {
+
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/user", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        user.value = data.value
+        user.value.city = data.value.city[0].name
+    }
 }
 
 // Check's section
@@ -287,6 +310,7 @@ const checkProfil = (data) => {
             // TEST
             background-color: rgba($green, .5);
             // TEST
+            @include flex();
             width: 50px;
             height: 50px;
             transition: 0.3s ease-in-out;
@@ -332,6 +356,8 @@ const checkProfil = (data) => {
         position: fixed;
         background-color: $black;
         height: 70vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
         @include flex($direction:column);
         transition: transform 0.5s ease-in-out;
 
@@ -481,6 +507,51 @@ const checkProfil = (data) => {
                             transition: all 0.5s ease 0s;
                         }
                     }
+                }
+            }
+
+            .buttons {
+                width: 100%;
+                margin: 20px auto;
+                @include flex($justify:space-around);
+            }
+        }
+
+        .update-profil {
+            width: 100%;
+            position: inherit;
+            top: 4vh;
+            left: 0;
+            padding: 50px 0;
+            @include flex($direction:column);
+
+            #informations {
+                width: 80%;
+                min-height: 40px;
+                margin-bottom: 20px;
+                color: $red;
+                opacity: 0;
+                @include flex();
+                transition: 0.2s ease all;
+                -moz-transition: 0.2s ease all;
+                -webkit-transition: 0.2s ease all;
+
+                &.error:not(:empty) {
+                    box-shadow: 0 0 5px $red;
+                    background-color: $black;
+                    padding: 0 15px;
+                    border-radius: 5px;
+                    opacity: 1;
+                }
+            }
+
+            form {
+                width: 80%;
+                @include flex($direction:column);
+
+                .buttons {
+                    width: 100%;
+                    @include flex($justify:space-around);
                 }
             }
         }
