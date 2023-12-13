@@ -25,7 +25,7 @@
         </div>
         <div id="menu-informations" :class="openInfo ? 'active' : 'inactive-left'">
             <button class="close" @click="openInfo = false">X</button>
-            <div class="info">
+            <div v-if="!updateProfil" class="info">
                 <div class="name">{{ user.firstname }} {{ user.name }}</div>
                 <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
                 <div class="classic">{{ user.email }}</div>
@@ -33,16 +33,31 @@
                 <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
                 <div v-else class="no-profil">No Profil</div>
                 <div class="classic">{{ user.city }}</div>
-                <!-- TEST -->
                 <ul v-if="user.level">
-                    <li class="sk-cms"><span>level {{ user.level }}</span></li>
+                    <li><span>level {{ user.level }}</span></li>
                 </ul>
                 <ul v-else>
-                    <li class="sk-cms"><span>Start your adventure to level up !</span></li>
+                    <li><span>Start your adventure to level up !</span></li>
                 </ul>
-                <!-- TEST -->
+                <button class="login-button" type="submit" @click="updateProfil = true">Modifier</button>
             </div>
-            <button class="login-button" type="submit">Modifier</button>
+            <div v-else class="update-profil">
+                <div class="informations">{{ error.general }}</div>
+                <form id="form-update" @submit.prevent="update()">
+                    <Input name="Name" type="text" id="register_name" :data="user.name" :error="error.name" @check="checkName" />
+                    <Input name="Firstname" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" @check="checkFirstname" />
+                    <Input name="Email" type="email" id="register_email" :data="user.email" :error="error.email" @check="checkEmail" />
+                    <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" @check="checkPseudo" />
+                    <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" @check="checkAge" />
+                    <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
+                    <Input name="Password" type="password" id="register_pwd" :data="user.password" :error="error.password" @check="checkPassword" />
+                    <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" @check="checkConfPwd" />
+                    <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
+                    <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
+                    <Avatar :color="color" page="register"/>
+                    <button class="login-button" type="submit">Update</button>
+                </form>
+            </div>
         </div>
         <div id="menu-lists" :class="openList ? 'active' : 'inactive-right'">
             <button @click="openList = false">X</button>
@@ -66,7 +81,11 @@ let openList = ref(false)
 let openSuccess = ref(false)
 let openConv = ref(false)
 
+let updateProfil = ref(false)
+
 let cities = ref([])
+const pronouns = ref(["She", "He", "They"])
+const profil = ref(["Solver", "Leader", "Searcher"])
 
 // TEST
 let user = ref({
@@ -83,6 +102,18 @@ let user = ref({
     city: "Paris"
 })
 // TEST
+
+let error = ref({
+    general: '',
+    name: '',
+    firstname: '',
+    email: '',
+    pseudo: '',
+    age: '',
+    password: '',
+    confPwd: '',
+    dataConfPwd: ''
+})
 
 onMounted(async () => {
 
@@ -101,19 +132,133 @@ onMounted(async () => {
     }
 })
 
+const update = () => {
+
+    // TEST
+    console.log("update profil function")
+    // TEST
+}
+
+// Check's section
+const checkName = (data) => {
+
+    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
+
+    if (data.match(validRegex)) {
+
+        user.value.name = data
+        error.value.name = ""
+    } else {
+
+        error.value.name = "Give us a valid name please."
+    }
+}
+const checkFirstname = (data) => {
+
+    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
+
+    if (data.match(validRegex)) {
+
+        user.value.firstname = data
+        error.value.firstname = ""
+    } else {
+
+        error.value.firstname = "Give us a valid firstname please."
+    }
+}
+const checkEmail = (data) => {
+
+    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+
+    if (data.match(validRegex)) {
+
+        user.value.email = data
+        error.value.email = ""
+    } else {
+
+        error.value.email = "Give us a valid email please."
+    }
+}
+const checkPseudo = (data) => {
+
+    const validRegex = /^([A-Za-z0-9\-\_]+)$/
+
+    if (data.match(validRegex)) {
+
+        user.value.pseudo = data
+        error.value.pseudo = ""
+    } else {
+
+        error.value.pseudo = "Your pseudo can only have letters, numbers or '-' '_'."
+    }
+}
+const checkAge = (data) => {
+
+    if (parseInt(data)) {
+
+        if (data > 0 && data < 150) {
+
+            user.value.age = data
+            error.value.age = ""
+        } else {
+
+            error.value.age = "Your age must be between 1 and 150 years old."
+        }
+    } else {
+
+        error.value.age = "Your age must be between 1 and 150 years old."
+    }
+}
+const checkCity = (data) => {
+
+user.value.city = data
+}
+const checkPassword = (data) => {
+
+    const validRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
+
+    if (data.match(validRegex)) {
+
+        user.value.password = data
+        error.value.password = ""
+    } else {
+
+        error.value.password = "UPPERCASE, lowercase, digit, [#?!@$%^&*-], minimum of 8 characters"
+    }
+}
+const checkConfPwd = (data) => {
+
+    if (user.value.password !== data) {
+
+        error.value.confPwd = "Your passwords don't match"
+    } else {
+
+        error.value.dataConfPwd = data
+        error.value.confPwd = ''
+    }
+}
+const checkPronouns = (data) => {
+
+    user.value.pronouns = data
+}
+const checkProfil = (data) => {
+
+    user.value.profil = data
+    if (data === "Solver") {
+
+        color.value = "#45C4A2"
+    } else if (data === "Leader") {
+
+        color.value = "#E03616"
+    } else {
+        
+        color.value = "#FF7A00"
+    }
+}
 </script>
 
 <style lang="scss" scoped>
 @import "~/assets/variables";
-
-// TEST
-
-@keyframes start {
-	100% {
-		width: calc(calc(var(--per) * 1%) - 2px);
-	}
-}
-// TEST
 
 .inactive-left {
     transform: translate(-100vw);
@@ -262,7 +407,7 @@ onMounted(async () => {
             ul {
                 width: 100%;
                 position: relative;
-                padding: 25px 35px;
+                padding: 0 35px;
 
                 li {
                     --per: 50;
@@ -273,22 +418,23 @@ onMounted(async () => {
                     font-size: 1.5rem;
                     color: $white;
                     width: 100%;
+                    filter: brightness(1.2);
+                    transition: all 0.5s ease 0s;
 
                     &:before {
                         content: "";
                         position: absolute;
                         background: $black;
-                        height: 1rem;
+                        height: 0.8rem;
                         width: 100%;
                         left: 0;
                         bottom: 0;
                         border-radius: 5px;
                         border: 1px solid #111;
                         border-color: #111 #323232 #323232 #111;
-                        --track: #2292dd40;
                         background: linear-gradient(
                             90deg,
-                            var(--track) calc(calc(var(--per) * 1%) + 4px),
+                            #2292dd40 calc(calc(var(--per) * 1%) + 4px),
                             #1c1c1c calc(calc(var(--per) * 1%) + 4px)
                         );
                     }
@@ -297,74 +443,44 @@ onMounted(async () => {
                         content: "";
                         height: 11px;
                         margin: 0 0 2px 0;
-                        background: $green;
+                        background: $orange;
+                        border-radius: 5px;
                         position: absolute;
-                        box-shadow: 0px 0px 10px 1px #00c6ff66;
+                        box-shadow: 0 0 5px 1px $orange;
                         left: 3px;
                         width: 0%;
                         bottom: 0;
-                        transition: all var(--dur) ease 0s;
-                        animation: start 1s ease 0s 2 alternate;
+                        width: calc(calc(var(--per) * 1%) - 2px);
                     }
 
-                    // Analyse en est la
                     &:hover, &:active {
                         filter: brightness(1.5);
-	                    transition: all 0.5s ease 0s;
                     }
 
-                    &:hover span:before,
-                    ul li span:before {
-                        transition: all 0.5s ease 0s;
-                        right: calc(calc(calc(100 - var(--per)) * 1%) - 12px);
+                    &:hover span:after, &:active span:after {
+                        right: calc(calc(calc(100 - var(--per)) * 1%) - 40px);
                         opacity: 1;
-                        border-right-color: #2187e7;
+                        background: $orange;
+                        filter: brightness(.7);
                     }
 
                     span {
                         font-weight: 500;
 
-                        &:before {
-                            position: absolute;
-                            right: -25px;
-                            top: 43px;
-                            transition: all 0.5s ease 0s;
-                            content: "";
-                            opacity: 1;
-                            border: 7px solid #fff0;
-                        }
-
                         &:after {
                             position: absolute;
                             right: -40px;
-                            top: 38px;
-                            transition: all 0.5s ease 0s;
+                            top: 40px;
                             counter-reset: percent var(--per);
-                            /*content: counter(percent) "%";*/
                             content: counter(percent);
-                            color: #222;
-                            opacity: 1 !important;
+                            color: $black;
                             padding: 4px 6px;
-                            border-radius: 1px;
+                            border-radius: 5px;
                             font-weight: bold;
                             pointer-events: none;
+                            transition: all 0.5s ease 0s;
                         }
                     }
-                }
-
-                &:hover li:after,
-                label:hover + ul li:after,
-                input:checked + label + ul li:after {
-                    width: calc(calc(var(--per) * 1%) - 2px);
-                }
-
-                &:hover span:after,
-                .profile-skills input:checked + label + ul li span:after {
-                    transition: all 0.5s ease 0s;
-                    right: calc(calc(85 - var(--per)) * 1%);
-                    right: calc(calc(calc(100 - var(--per)) * 1%) - 40px);
-                    opacity: 1;
-                    background: #2187e7;
                 }
             }
         }
