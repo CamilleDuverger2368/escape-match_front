@@ -2,7 +2,7 @@
     <div id="forgot-pwd">
         <div id="informations">{{ error.general }}</div>
         <form id="form" @submit.prevent="resetPwd()">
-            <Input name="Email" type="email" id="forgot_password" :data="email" :error="error.email" @check="checkEmail" />
+            <Input name="Email" type="email" id="forgot_password" :data="email" :error="error.email" :require="true" @check="checkEmail" />
             <div class="links">
                 <nuxt-link to="/login" class="footer-link">Connexion</nuxt-link>
                 <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>

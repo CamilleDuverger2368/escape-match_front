@@ -2,14 +2,14 @@
     <div id="register">
         <div id="informations">{{ error.general }}</div>
         <form id="form" @submit.prevent="register()">
-            <Input name="Name (Mandatory)" type="text" id="register_name" :data="user.name" :error="error.name" @check="checkName" />
-            <Input name="Firstname (Mandatory)" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" @check="checkFirstname" />
-            <Input name="Email (Mandatory)" type="email" id="register_email" :data="user.email" :error="error.email" @check="checkEmail" />
-            <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" @check="checkPseudo" />
-            <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" @check="checkAge" />
+            <Input name="Name (Mandatory)" type="text" id="register_name" :data="user.name" :error="error.name" :require="true" @check="checkName" />
+            <Input name="Firstname (Mandatory)" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" :require="true" @check="checkFirstname" />
+            <Input name="Email (Mandatory)" type="email" id="register_email" :data="user.email" :error="error.email" :require="true" @check="checkEmail" />
+            <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" :require="false" @check="checkPseudo" />
+            <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" :require="false" @check="checkAge" />
             <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
-            <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" @check="checkPassword" />
-            <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" @check="checkConfPwd" />
+            <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" :require="true" @check="checkPassword" />
+            <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />
             <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
             <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
             <Avatar :color="color" page="register"/>

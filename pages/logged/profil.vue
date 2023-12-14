@@ -17,7 +17,7 @@
         </div>
         <div id="menu-informations" :class="openInfo ? 'active' : 'inactive-left'">
             <button class="close" @click="openInfo = false">X</button>
-            <div v-if="!updateProfil" class="info">
+            <div v-if="!updateProfil && !updatePwd" class="info">
                 <div class="name">{{ user.firstname }} {{ user.name }}</div>
                 <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
                 <div class="classic">{{ user.email }}</div>
@@ -36,20 +36,31 @@
                     <button class="login-button" type="submit" @click="updatePwd = true">Change password</button>
                 </div>
             </div>
-            <div v-else class="update-profil">
+            <div v-else-if="updateProfil" class="update-profil">
                 <div class="informations">{{ error.general }}</div>
                 <form id="form-update" @submit.prevent="update()">
-                    <Input name="Name" type="text" id="register_name" :data="user.name" :error="error.name" @check="checkName" />
-                    <Input name="Firstname" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" @check="checkFirstname" />
-                    <Input name="Email" type="email" id="register_email" :data="user.email" :error="error.email" @check="checkEmail" />
-                    <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" @check="checkPseudo" />
-                    <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" @check="checkAge" />
+                    <Input name="Name" type="text" id="register_name" :data="user.name" :error="error.name" :require="true" @check="checkName" />
+                    <Input name="Firstname" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" :require="true" @check="checkFirstname" />
+                    <Input name="Email" type="email" id="register_email" :data="user.email" :error="error.email" :require="true" @check="checkEmail" />
+                    <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" :require="false" @check="checkPseudo" />
+                    <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" :require="false" @check="checkAge" />
                     <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
                     <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
                     <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
                     <div class="buttons">
                         <button class="login-button" type="submit">Update</button>
                         <button class="login-button" @click="updateProfil = false">Retour</button>
+                    </div>
+                </form>
+            </div>
+            <div v-else-if="updatePwd" class="update-password">
+                <div class="informations">{{ error.general }}</div>
+                <form id="form-update-password" @submit.prevent="updatePassword()">
+                    <Input name="New password" type="password" id="register_pwd" :data="password.password" :error="error.password" :require="true" @check="checkPassword" />
+                    <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />
+                    <div class="buttons">
+                        <button class="login-button" type="submit">Update</button>
+                        <button class="login-button" @click="updatePwd = false">Retour</button>
                     </div>
                 </form>
             </div>
@@ -96,7 +107,9 @@ let user = ref({
     profil: "",
     city: ""
 })
-
+let password = ref({
+    password:''
+})
 let error = ref({
     general: '',
     name: '',
@@ -109,6 +122,7 @@ let error = ref({
     dataConfPwd: ''
 })
 
+// Section using back
 onMounted(async () => {
 
     getProfil()
@@ -126,26 +140,55 @@ onMounted(async () => {
         }
     }
 })
-
 const token = useCookie("token")
-
 const update = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/user/" + user.value.id, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
+    if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.age) {
+
+        error.value.general = "Check your errors please."
+    } else {
+
+        // TO-DO : passer les adresses par variable et non en dur
+        const { data } = await useFetch("http://127.0.0.1:8000/api/user/" + user.value.id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token.value
+            },
+            body: user.value
+        })
+
+        if (data.value) {
+
+            getProfil()
+            updateProfil.value = false
         }
-    })
-
-    if (data.value) {
-
-        getProfil()
     }
 }
+const updatePassword = async () => {
 
+    if (error.value.password || error.value.confPwd) {
+
+        error.value.general = "Check your errors please."
+    } else {
+
+        // TO-DO : passer les adresses par variable et non en dur
+        const { data } = await useFetch("http://127.0.0.1:8000/api/user/password/" + user.value.id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token.value
+            },
+            body: password.value
+        })
+
+        if (data.value) {
+
+            getProfil()
+            updatePwd.value = false
+        }
+    }
+}
 const getProfil = async () => {
 
     // TO-DO : passer les adresses par variable et non en dur
@@ -244,7 +287,7 @@ const checkPassword = (data) => {
 
     if (data.match(validRegex)) {
 
-        user.value.password = data
+        password.value.password = data
         error.value.password = ""
     } else {
 
@@ -253,7 +296,7 @@ const checkPassword = (data) => {
 }
 const checkConfPwd = (data) => {
 
-    if (user.value.password !== data) {
+    if (password.value.password !== data) {
 
         error.value.confPwd = "Your passwords don't match"
     } else {
@@ -533,6 +576,44 @@ const checkProfil = (data) => {
         }
 
         .update-profil {
+            width: 100%;
+            position: inherit;
+            top: 4vh;
+            left: 0;
+            padding: 50px 0;
+            @include flex($direction:column);
+
+            #informations {
+                width: 80%;
+                min-height: 40px;
+                margin-bottom: 20px;
+                color: $red;
+                opacity: 0;
+                @include flex();
+                transition: 0.2s ease all;
+                -moz-transition: 0.2s ease all;
+                -webkit-transition: 0.2s ease all;
+
+                &.error:not(:empty) {
+                    box-shadow: 0 0 5px $red;
+                    background-color: $black;
+                    padding: 0 15px;
+                    border-radius: 5px;
+                    opacity: 1;
+                }
+            }
+
+            form {
+                width: 80%;
+                @include flex($direction:column);
+
+                .buttons {
+                    width: 100%;
+                    @include flex($justify:space-around);
+                }
+            }
+        }
+        .update-password {
             width: 100%;
             position: inherit;
             top: 4vh;

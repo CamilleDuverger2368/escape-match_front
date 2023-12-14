@@ -1,7 +1,8 @@
 <template>
     <div class="input">      
         <div class="error">{{ error }}</div>
-        <input v-model="model" :id="'input_' + id" :type="type" required>
+            <input v-if="require" v-model="model" :id="'input_' + id" class="require" :type="type" required>
+            <input v-else v-model="model" :id="'input_' + id" :type="type">
         <label>{{ name }}</label>
     </div>
 </template>
@@ -27,6 +28,10 @@ const props = defineProps({
     },
     data: {
         type: [String, Number],
+        require: true
+    },
+    require: {
+        type: Boolean,
         require: true
     }
 })
@@ -86,7 +91,7 @@ let model = computed({
         -moz-transition: 0.2s ease all;
         -webkit-transition: 0.2s ease all;
 
-        &:focus ~ label, &:valid ~ label {
+        &:focus ~ label, &:valid.require ~ label, &:not([value=""]):not(.require) ~ label {
             top: -20px;
             font-size: .8rem;
             color: $orange;

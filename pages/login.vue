@@ -2,8 +2,8 @@
     <div id="login">
         <div id="error">{{ error.general }}</div>
         <form id="form" @submit.prevent="login()">
-            <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="error.email" @check="checkEmail" />
-            <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="error.password" @check="checkPwd" />
+            <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="error.email" :require="true" @check="checkEmail" />
+            <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="error.password" :require="true" @check="checkPwd" />
             <div class="links">
                 <nuxt-link to="/forgot-pwd" class="footer-link">Mot de passe oublié ?</nuxt-link>
                 <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
