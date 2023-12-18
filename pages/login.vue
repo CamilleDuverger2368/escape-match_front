@@ -1,6 +1,6 @@
 <template>
     <div id="login">
-        <div id="error">{{ error.general }}</div>
+        <section id="error">{{ error.general }}</section>
         <form id="form" @submit.prevent="login()">
             <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="error.email" :require="true" @check="checkEmail" />
             <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="error.password" :require="true" @check="checkPwd" />

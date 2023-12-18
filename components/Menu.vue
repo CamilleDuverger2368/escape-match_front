@@ -4,7 +4,8 @@
         <LinkMenu v-if="!logged" @click="closeMenu()" link="/" name="S'inscrire" />
         <LinkMenu v-if="!logged" @click="closeMenu()" link="/login" name="Se Connecter" />
         <!-- TO-DO : Ajouter les differents liens manquants -->
-        <LinkMenu v-else @click="logout()" link="/" name="Se Déconnecter" />
+        <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/profil" name="Profil" />
+        <LinkMenu v-if="logged" @click="logout()" link="/" name="Se Déconnecter" />
     </div>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
     <div id="profil">
         <Avatar :color="color" page="profil"/>
-        <div id="slider-menu">
+        <section id="slider-menu">
             <div class="slider informations" @click="openInfo = true">
                 <img src="~/public/icones/user.svg" alt="profil's informations">
             </div>
@@ -14,8 +14,8 @@
             <div class="slider conversations"  @click="openConv = true">
                 <img src="~/public/icones/message.svg" alt="profil's conversations">
             </div>
-        </div>
-        <div id="menu-informations" :class="openInfo ? 'active' : 'inactive-left'">
+        </section>
+        <section id="menu-informations" :class="openInfo ? 'active' : 'inactive-left'">
             <button class="close" @click="openInfo = false">X</button>
             <div v-if="!updateProfil && !updatePwd" class="info">
                 <div class="name">{{ user.firstname }} {{ user.name }}</div>
@@ -64,16 +64,16 @@
                     </div>
                 </form>
             </div>
-        </div>
-        <div id="menu-lists" :class="openList ? 'active' : 'inactive-right'">
+        </section>
+        <section id="menu-lists" :class="openList ? 'active' : 'inactive-right'">
             <button @click="openList = false">X</button>
-        </div>
-        <div id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
+        </section>
+        <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
             <button @click="openSuccess = false">X</button>
-        </div>
-        <div id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
+        </section>
+        <section id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
             <button @click="openConv = false">X</button>
-        </div>
+        </section>
     </div>
 </template>
 

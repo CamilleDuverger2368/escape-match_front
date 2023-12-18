@@ -1,6 +1,6 @@
 <template>
     <div id="register">
-        <div id="informations">{{ error.general }}</div>
+        <section id="informations">{{ error.general }}</section>
         <form id="form" @submit.prevent="register()">
             <Input name="Name (Mandatory)" type="text" id="register_name" :data="user.name" :error="error.name" :require="true" @check="checkName" />
             <Input name="Firstname (Mandatory)" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" :require="true" @check="checkFirstname" />

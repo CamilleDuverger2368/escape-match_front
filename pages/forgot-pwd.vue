@@ -1,6 +1,6 @@
 <template>
     <div id="forgot-pwd">
-        <div id="informations">{{ error.general }}</div>
+        <section id="informations">{{ error.general }}</section>
         <form id="form" @submit.prevent="resetPwd()">
             <Input name="Email" type="email" id="forgot_password" :data="email" :error="error.email" :require="true" @check="checkEmail" />
             <div class="links">
