@@ -18,10 +18,7 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
-    "fs": "^0.0.1-security",
-    "ordered-uuid-v4": "^0.2.1",
     "pinia": "^2.1.7",
-    "three": "^0.159.0",
-    "xhr2": "^0.2.1"
+    "three": "^0.159.0"
   }
 }

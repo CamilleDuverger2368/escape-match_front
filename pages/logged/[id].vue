@@ -2,10 +2,15 @@
     <div id="escape">
         <section id="title">
             <div class="composition">
-                <img :alt="'escape ' + escape.name" :src="file_exists('/public/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '.webp') ? '/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '.webp' : '/escapes/no-image-found.webp'" />
+                <img v-if="image" alt="escape" :src="'/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '.webp'" />
+                <img v-else alt="escape" src="/escapes/no-image-found.webp" />
                 <h1 class="name">{{ escape.name }}</h1>
             </div>
         </section>
+        <section id="description">
+            {{ description.description }}
+        </section>
+        <hr/>
         <section id="informations">
             <div class="info">
                 <img src="~/public/icones/group-team.svg" alt="players">
@@ -30,20 +35,21 @@
                 <div>~ {{ escape.price }}</div>
                 <img src="~/public/icones/euro.svg" alt="price">
             </div>
-            {# TO-DO : Ajouter la note moyenne de l'escape #}
-            <div class="info">
-                <div>~ {{ escape.price }}</div>
-                <img src="~/public/icones/euro.svg" alt="price">
-            </div>
-            {# END TO-DO #}
             <a :href="link.link" class="footer-link">The escape is here !</a>
         </section>
-    </div>    
+        <hr/>
+        <section id="grades">
+            <div class="general">
+                AFFICHER LA MOYENNE DES NOTES DE L ESCAPE
+            </div>
+            <div class="user">
+                <Ratingstars id="grade-escape" :data="userGrade" @grade="gradeEscape" />
+            </div>
+        </section>
+    </div>
 </template>
 
 <script setup>
-import * as path from "node:path"
-import * as fs from "node:fs"
 
 // TEST
 let escape = ref({
@@ -69,18 +75,36 @@ let link = ref({
     link: "https://www.prizoners.com/agence/grenoble/jeux/elixir"
 })
 // TEST
+let image = ref(false)
+let userGrade = ref(4)
 
-// Check if escape's image exist
-const file_exists = (filename) => {
+onMounted(() => {
 
-    const filePath = path.join(process.cwd(), filename)
-    if (fs.readFileSync(filePath)) {
+    // Check if escape's image exist
+    const img = new Image()
+    img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
 
-        return filename
+    if (img.complete) {
+
+        image.value = true
     } else {
 
-        return null
+        img.onload = () => {
+
+            image.value = true
+        }
+
+        img.onerror = () => {
+
+            image.value = false
+        }
     }
+})
+
+const gradeEscape = (data) => {
+
+    // console.log("data")
+    // console.log(data)
 }
 </script>
 
@@ -91,6 +115,20 @@ const file_exists = (filename) => {
     
     width: 100%;
     @include flex($direction:column);
+
+    hr {
+
+        width: 75%;
+        color: $orange;
+        font-size: 1rem;
+        box-shadow: 0 0 10px $orange;
+        transition: all 0.3s ease-in-out;
+
+        &:hover, &:active {
+
+            width: 85%;
+        }
+    }
 
     #title {
         width: 100%;
@@ -116,6 +154,14 @@ const file_exists = (filename) => {
         }
     }
 
+    #description {
+        
+        width: 100%;
+        margin: 20px auto;
+        padding: 0 10px;
+        @include flex();
+    }
+
     #informations {
 
         width: 100%;
@@ -132,7 +178,24 @@ const file_exists = (filename) => {
             img {
 
                 width: 25%;
+                margin: auto 3px;
             }
+        }
+    }
+
+    #grades {
+
+        width: 100%;
+        @include flex($direction:column);
+
+        .general {
+            
+            width: 100%;
+        }
+
+        .user {
+
+            width: 100%;
         }
     }
 }
