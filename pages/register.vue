@@ -194,9 +194,9 @@ const register = async () => {
         error.value.general = "Check your errors please."
     } else {
 
-        const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const { data } = await useFetch("http://127.0.0.1:8000/api/unlog/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: user.value
         })
 
@@ -204,7 +204,7 @@ const register = async () => {
 
             error.value.general = ""
             document.getElementById("informations").classList.remove("error")
-            router.push('/login3')
+            router.push("/login")
         } else {
 
             error.value.general = data.value.message

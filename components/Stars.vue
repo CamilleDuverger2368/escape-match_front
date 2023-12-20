@@ -1,18 +1,18 @@
 <template>
     <form class="rating">
-        <input type="radio" name="rating" value="5" v-model="model" :id="'r1-' + id">
+        <input type="radio" name="rating" value="5" v-model="model" :id="'r1-' + id" disabled>
         <label :for="'r1-' + id"></label>
 
-        <input type="radio" name="rating" value="4" v-model="model" :id="'r2-' + id">
+        <input type="radio" name="rating" value="4" v-model="model" :id="'r2-' + id" disabled>
         <label :for="'r2-' + id"></label>
 
-        <input type="radio" name="rating" value="3" v-model="model" :id="'r3-' + id">
+        <input type="radio" name="rating" value="3" v-model="model" :id="'r3-' + id" disabled>
         <label :for="'r3-' + id"></label>
 
-        <input type="radio" name="rating" value="2" v-model="model" :id="'r4-' + id">
+        <input type="radio" name="rating" value="2" v-model="model" :id="'r4-' + id" disabled>
         <label :for="'r4-' + id"></label>
 
-        <input type="radio" name="rating" value="1" v-model="model" :id="'r5-' + id">
+        <input type="radio" name="rating" value="1" v-model="model" :id="'r5-' + id" disabled>
         <label :for="'r5-' + id"></label>
     </form>
 </template>
@@ -30,17 +30,11 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(["grade"])
 let model = computed({
     
     get() {
 
         return props.data
-    },
-
-    set(value) {
-
-        emit("grade", value)
     }
 })
 </script>
@@ -58,7 +52,6 @@ let model = computed({
         width: 20%;
         display: block;
         position: relative;
-        cursor: pointer;
         @for $i from 5 through 1 {
             &:nth-of-type(#{$i}):after {
                 $animation-delay: $i * .05s;
@@ -79,11 +72,6 @@ let model = computed({
             text-align: center;
             font-size: $size;
             animation: 1s pulse ease;
-        }
-
-        &:hover:after {
-            color: lighten($empty-color, 10%);
-            text-shadow: 0 0 15px lighten($empty-color, 10%);
         }
     }
 
@@ -106,7 +94,7 @@ let model = computed({
 
     width: 100%;
     @include flex($direction:row-reverse, $justify:space-around);
-    margin: 0 auto 50px auto;
+    margin: 0px auto 30px auto;
     @include star-rating();
 }
 </style>

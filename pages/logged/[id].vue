@@ -38,13 +38,48 @@
             <a :href="link.link" class="footer-link">The escape is here !</a>
         </section>
         <hr/>
+        <section id="tags">
+            <button v-bind:key="tag" v-for="tag in escape.tags" class="login-button">{{ tag.name }}</button>
+        </section>
+        <hr/>
         <section id="grades">
             <div class="general">
-                AFFICHER LA MOYENNE DES NOTES DE L ESCAPE
+                <h3>Escape's average</h3>
+                <Stars id="average" :data="average" />
             </div>
             <div class="user">
-                <Ratingstars id="grade-escape" :data="userGrade" @grade="gradeEscape" />
+                <div v-if="userGrade.grade === 0 && changeGrade === false">
+                    <h3>You didn't grade this escape yet !</h3>
+                    <button @click="changeGrade = true" class="login-button">Grade this escape</button>
+                </div>
+                <div v-else-if="userGrade.grade !== 0 && changeGrade === false" class="old-grade">
+                    <h3>Your grade for this escape</h3>
+                    <Stars id="old-grade-user" :data="userGrade.grade" />
+                    <div class="buttons">
+                        <button @click="changeGrade = true" class="login-button">Change my grade</button>
+                        <button @click="deleteGrade" class="login-button">Remove my grade</button>
+                    </div>
+                </div>
+                <div v-else-if="changeGrade === true" class="old-grade">
+                    <h3 v-if="userGrade.grade !== 0">Your new grade for this escape</h3>
+                    <h3 v-else>Grade for this escape</h3>
+                    <Ratingstars id="grade-escape" :data="grade" @grade="gradeEscape" />
+                    <button v-if="userGrade.grade === 0" @click="gradeEscapeGame" class="login-button">Grade</button>
+                    <button v-else @click="updateGrade" class="login-button">Update my grade</button>
+                </div>
             </div>
+        </section>
+        <hr/>
+        <section id="list-to-do">
+
+        </section>
+        <hr/>
+        <section id="list-favori">
+
+        </section>
+        <hr/>
+        <section id="list-done">
+
         </section>
     </div>
 </template>
@@ -66,7 +101,23 @@ let escape = ref({
             name: "Prizoners"
         }
     ],
-    tags: []
+    tags: [
+        {
+            name: "horror"
+        },
+        {
+            name: "potache"
+        },
+        {
+            name: "fantastique"
+        },
+        {
+            name: "historique"
+        },
+        {
+            name: "licence"
+        }
+    ]
 })
 let description = ref({
     description: "1789, glorieuse mais sanglante année pour la France. Notre agence vous envoie en pleine révolution française, les révolutionnaires sont aux portes du monastère de la grande de Chartreuse afin de piller ces lieux. Dans l?urgence les moines sont partis se réfugier. Profitez de cette occasion pour vous infiltrer dans le monastère afin de retrouver la recette de l?Elixir de Chartreuse, la reproduire et la livrer à l?agence."
@@ -76,7 +127,6 @@ let link = ref({
 })
 // TEST
 let image = ref(false)
-let userGrade = ref(4)
 
 onMounted(() => {
 
@@ -101,10 +151,51 @@ onMounted(() => {
     }
 })
 
+// Grade section
+let changeGrade = ref(false)
+let average = ref(3.0)
+let grade = ref(0)
+let userGrade = ref({
+    grade: 2.0
+})
 const gradeEscape = (data) => {
 
-    // console.log("data")
-    // console.log(data)
+    grade.value = data
+}
+const deleteGrade = async () => {
+
+    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/delete/" + escape.value.id, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    })
+}
+const gradeEscapeGame = async () => {
+
+    userGrade.value.grade = grade.value
+
+    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/" + escape.value.id, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: userGrade.value
+    })
+    if (data.value) {
+
+        changeGrade.value = false
+    }
+}
+const updateGrade = async () => {
+
+    userGrade.value.grade = grade.value
+    
+    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/update/" + escape.value.id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: userGrade.value
+    })
+    if (data.value) {
+
+        changeGrade.value = false
+    }
 }
 </script>
 
@@ -183,6 +274,21 @@ const gradeEscape = (data) => {
         }
     }
 
+    #tags {
+
+        width: 90%;
+        margin: 20px auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-row-gap: 20px;
+        grid-column-gap: 20px;
+
+        .login-button {
+            padding: 10px;
+            font-size: 1rem;
+        }
+    }
+
     #grades {
 
         width: 100%;
@@ -191,12 +297,58 @@ const gradeEscape = (data) => {
         .general {
             
             width: 100%;
+            margin: 10px auto;
+            @include flex($direction:column);
         }
 
         .user {
 
             width: 100%;
+            margin: 10px auto;
+            @include flex($direction:column);
+
+            .old-grade {
+                
+                width: 100%;
+                @include flex($direction:column);
+
+                .buttons {
+
+                    width: 100%;
+                    margin: 15px auto;
+                    @include flex($justify:space-around);
+
+                    .login-button {
+                        padding: 10px 25px;
+                        font-size: 1rem;
+                    }
+                }
+
+                .login-button {
+                    margin: 15px auto;
+                    padding: 10px 25px;
+                    font-size: 1rem;
+                }
+            }
         }
+    }
+
+    #list-to-do {
+
+        width: 100%;
+        @include flex();
+    }
+
+    #list-favori {
+
+        width: 100%;
+        @include flex();
+    }
+
+    #list-done {
+
+        width: 100%;
+        @include flex();
     }
 }
 </style>
