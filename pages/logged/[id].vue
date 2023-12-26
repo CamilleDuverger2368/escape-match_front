@@ -71,15 +71,15 @@
         </section>
         <hr/>
         <section id="list-to-do">
-
+            <Tablelist :headers="['User\'s profil', 'since', 'Contact']" :list="escape.listToDo" id="list-to-do-escape" :fromEscapePage="true"/>
         </section>
         <hr/>
         <section id="list-favori">
-
+            <Tablelist :headers="['User\'s profil', 'since', 'Contact']" :list="escape.listFavori" id="list-favori-escape" :fromEscapePage="true"/>
         </section>
         <hr/>
         <section id="list-done">
-
+            <Tablelist :headers="['User\'s profil', 'since', 'Contact']" :list="escape.listDone" id="list-done-escape" :fromEscapePage="true"/>
         </section>
     </div>
 </template>
@@ -117,7 +117,38 @@ let escape = ref({
         {
             name: "licence"
         }
-    ]
+    ],
+    listToDo: [
+        {
+            user: {
+                    id: 7,
+                    name: "test",
+                    firstname: "testouille",
+                    pseudo: ""
+                },
+                since: "2023-12-21T00:00:00+00:00"
+            },
+            {
+                user: {
+                    id: 8,
+                    name: "user",
+                    firstname: "user",
+                    pseudo: ""
+                },
+                since: "2023-12-21T00:00:00+00:00"
+            },
+            {
+                user: {
+                    id: 9,
+                    name: "Duverger",
+                    firstname: "Camille",
+                    pseudo: "Grandma"
+                },
+                since: "2023-12-21T00:00:00+00:00"
+            }
+    ],
+    listFavori: [],
+    listDone: []
 })
 let description = ref({
     description: "1789, glorieuse mais sanglante année pour la France. Notre agence vous envoie en pleine révolution française, les révolutionnaires sont aux portes du monastère de la grande de Chartreuse afin de piller ces lieux. Dans l?urgence les moines sont partis se réfugier. Profitez de cette occasion pour vous infiltrer dans le monastère afin de retrouver la recette de l?Elixir de Chartreuse, la reproduire et la livrer à l?agence."

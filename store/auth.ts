@@ -1,11 +1,11 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia"
 
 interface UserPayloadInterface {
     username: string,
     password: string
 }
 
-export const useAuthStore = defineStore('auth', {
+export const useAuthStore = defineStore("auth", {
 
     state: () => ({
         authenticated: false,
@@ -17,9 +17,9 @@ export const useAuthStore = defineStore('auth', {
         async authenticateUser({ username, password }: UserPayloadInterface) {
 
             // TO-DO : passer les adresses par variable et non en dur
-            const { data, pending }: any = await useFetch('http://127.0.0.1:8000/api/login_check', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const { data, pending }: any = await useFetch("http://127.0.0.1:8000/api/login_check", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: {
                     username,
                     password
@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', {
 
             if (data.value) {
 
-                const token = useCookie('token')
+                const token = useCookie("token")
                 token.value = data.value.token
                 this.authenticated = true
             } else {
@@ -40,7 +40,7 @@ export const useAuthStore = defineStore('auth', {
 
         logUserOut() {
 
-            const token = useCookie('token')
+            const token = useCookie("token")
             this.authenticated = false
             token.value = null
         },
