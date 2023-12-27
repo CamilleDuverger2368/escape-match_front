@@ -71,6 +71,11 @@
         </section>
         <hr/>
         <section id="list-to-do">
+            <button v-if="!isToDo" class="login-button">Add to my to-do list</button>
+            <div v-else class="actions">
+                <button class="login-button">Remove from my to-do list</button>
+                <button class="login-button">Update my willing</button>
+            </div>
             <Tablelist :headers="['User\'s profil', 'since', 'Contact']" :list="escape.listToDo" id="list-to-do-escape" :fromEscapePage="true"/>
         </section>
         <hr/>
@@ -121,31 +126,211 @@ let escape = ref({
     listToDo: [
         {
             user: {
-                    id: 7,
-                    name: "test",
-                    firstname: "testouille",
-                    pseudo: ""
-                },
-                since: "2023-12-21T00:00:00+00:00"
+                id: 7,
+                name: "test",
+                firstname: "testouille",
+                pseudo: ""
             },
-            {
-                user: {
-                    id: 8,
-                    name: "user",
-                    firstname: "user",
-                    pseudo: ""
-                },
-                since: "2023-12-21T00:00:00+00:00"
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
             },
-            {
-                user: {
-                    id: 9,
-                    name: "Duverger",
-                    firstname: "Camille",
-                    pseudo: "Grandma"
-                },
-                since: "2023-12-21T00:00:00+00:00"
-            }
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 8,
+                name: "user",
+                firstname: "user",
+                pseudo: ""
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        },
+        {
+            user: {
+                id: 9,
+                name: "Duverger",
+                firstname: "Camille",
+                pseudo: "Grandma"
+            },
+            since: "2023-12-21T00:00:00+00:00"
+        }
     ],
     listFavori: [],
     listDone: []
@@ -156,6 +341,9 @@ let description = ref({
 let link = ref({
     link: "https://www.prizoners.com/agence/grenoble/jeux/elixir"
 })
+let isToDo = ref(false)
+let isDone = ref(false)
+let isFavorite = ref(false)
 // TEST
 let image = ref(false)
 
@@ -238,6 +426,12 @@ const updateGrade = async () => {
     width: 100%;
     @include flex($direction:column);
 
+    .login-button {
+
+        padding: 10px;
+        font-size: 1rem;
+    }
+
     hr {
 
         width: 75%;
@@ -313,11 +507,6 @@ const updateGrade = async () => {
         grid-template-columns: repeat(2, 1fr);
         grid-row-gap: 20px;
         grid-column-gap: 20px;
-
-        .login-button {
-            padding: 10px;
-            font-size: 1rem;
-        }
     }
 
     #grades {
@@ -368,6 +557,12 @@ const updateGrade = async () => {
 
         width: 100%;
         @include flex();
+
+        .actions {
+
+            width: 100%;
+            @include flex($direction:column, $justify:space-around);
+        }
     }
 
     #list-favori {
