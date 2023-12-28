@@ -68,8 +68,14 @@
         <section id="menu-lists" :class="openList ? 'active' : 'inactive-right'">
             <button @click="openList = false" class="close">X</button>
             <div class="info">
-                <!-- FAIRE UN ENSEMBLE DE BOUTTONS POUR PASSER D UNE LISTE A L AUTRE -->
-                <!-- AFFICHER LA LISTE EN ASSOCIEE AU BOUTTON -->
+                <div class="lists">
+                    <button @click="listToShow = 'To-Do'" class="login-button">To-Do</button>
+                    <button @click="listToShow = 'Favori'" class="login-button">Favori</button>
+                    <button @click="listToShow = 'Done'" class="login-button">Done</button>
+                </div>
+                <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @udpate="updateToDo"/>
+                <Tablelist v-else-if="listToShow == 'Favori'" :headers="['Escape', 'Since', 'Actions']" :list="favoris" id="list-favori-user" @delete="deleteFromFavoris" />
+                <Tablelist v-else-if="listToShow == 'Done'" :headers="['Escape', 'Since', 'Actions']" :list="done" id="list-done-user" @delete="deleteFromDone" />
             </div>
         </section>
         <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
@@ -83,7 +89,29 @@
 
 <script setup>
 
+onMounted(async () => {
+
+    getProfil()
+    getFavoris()
+    getToDo()
+    getDone()
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/unlog/cities", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+
+    if (data.value) {
+
+        for(let i = 0; i < data.value.length; i++) {
+
+            cities.value.push(data.value[i].name)
+        }
+    }
+})
+
 let color = ref("#FF7A00")
+const token = useCookie("token")
 
 // Menu's section
 let openInfo = ref(false)
@@ -91,13 +119,7 @@ let openList = ref(false)
 let openSuccess = ref(false)
 let openConv = ref(false)
 
-let updateProfil = ref(false)
-let updatePwd = ref(false)
-
-let cities = ref([])
-const pronouns = ref(["She", "He", "They"])
-const profil = ref(["Solver", "Leader", "Searcher"])
-
+// Profil's section
 let user = ref({
     id: null,
     email: "",
@@ -125,26 +147,11 @@ let error = ref({
     confPwd: '',
     dataConfPwd: ''
 })
-
-// Section using back
-onMounted(async () => {
-
-    getProfil()
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/unlog/cities", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
-
-    if (data.value) {
-
-        for(let i = 0; i < data.value.length; i++) {
-
-            cities.value.push(data.value[i].name)
-        }
-    }
-})
-const token = useCookie("token")
+let updateProfil = ref(false)
+let updatePwd = ref(false)
+let cities = ref([])
+const pronouns = ref(["She", "He", "They"])
+const profil = ref(["Solver", "Leader", "Searcher"])
 const update = async () => {
 
     if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.age) {
@@ -326,6 +333,111 @@ const checkProfil = (data) => {
         
         color.value = "#FF7A00"
     }
+}
+
+// Lists' section
+let listToShow = ref("To-Do")
+let favoris = ref([])
+let toDo = ref([])
+let done = ref([])
+const getFavoris = async () => {
+
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        favoris.value = data.value
+    }
+}
+const getToDo = async () => {
+
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        toDo.value = data.value
+    }
+}
+const getDone = async () => {
+
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        done.value = data.value
+    }
+}
+const deleteFromFavoris = async (value) => {
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris/remove/" + value, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        getFavoris()
+    }
+}
+const deleteFromToDo = async (value) => {
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/remove/" + value, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    getToDo()
+}
+const deleteFromDone = async (value) => {
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done/remove/" + value, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    getDone()
+}
+const updateToDo = async (value) => {
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/update/" + value, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    getToDo()
 }
 </script>
 
@@ -664,7 +776,7 @@ const checkProfil = (data) => {
         height: 73vh;
         overflow-y: scroll;
         overflow-x: hidden;
-        @include flex($direction:column);
+        @include flex($direction:column, $justify:flex-start);
         transition: transform 0.5s ease-in-out;
 
         .close {
@@ -678,7 +790,17 @@ const checkProfil = (data) => {
         .info {
             width: 100%;
             margin-bottom: 30px;
+            margin-top: 60px;
             @include flex($direction:column);
+
+            .lists {
+                width: 100%;
+                @include flex($justify:space-around);
+            }
+
+            .login-button {
+                padding: 10px 20px;
+            }
         }
     }
 
