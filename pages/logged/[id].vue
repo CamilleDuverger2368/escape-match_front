@@ -117,6 +117,7 @@ let link = ref({
     link: ''
 })
 const route = useRoute()
+const token = useCookie("token")
 let image = ref(false)
 
 onMounted(() => {

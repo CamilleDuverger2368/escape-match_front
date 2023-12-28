@@ -66,7 +66,11 @@
             </div>
         </section>
         <section id="menu-lists" :class="openList ? 'active' : 'inactive-right'">
-            <button @click="openList = false">X</button>
+            <button @click="openList = false" class="close">X</button>
+            <div class="info">
+                <!-- FAIRE UN ENSEMBLE DE BOUTTONS POUR PASSER D UNE LISTE A L AUTRE -->
+                <!-- AFFICHER LA LISTE EN ASSOCIEE AU BOUTTON -->
+            </div>
         </section>
         <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
             <button @click="openSuccess = false">X</button>
@@ -656,18 +660,25 @@ const checkProfil = (data) => {
     #menu-lists {
         width: 100vw;
         position: fixed;
-        // TEST
-        background-color: rgba($orange, .5);
-        height: 70vh;
-        // TEST
+        background-color: $black;
+        height: 73vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
         @include flex($direction:column);
         transition: transform 0.5s ease-in-out;
 
-        button {
+        .close {
             position: fixed;
             top: 3vh;
             right: 6vw;
             font-weight: 900;
+            color: $orange;
+        }
+
+        .info {
+            width: 100%;
+            margin-bottom: 30px;
+            @include flex($direction:column);
         }
     }
 
