@@ -71,19 +71,23 @@
         </section>
         <hr/>
         <section id="list-to-do">
-            <button v-if="!isToDo" class="login-button">Add to my to-do list</button>
-            <div v-else class="actions">
-                <button class="login-button">Remove from my to-do list</button>
-                <button class="login-button">Update my willing</button>
+            <button v-if="!isToDo" @click="addToToDoList" class="login-button top">Add to my to-do list</button>
+            <div v-else class="actions top">
+                <button @click="removeFromToDoList" class="login-button">Remove from my to-do list</button>
+                <button @click="updateToDoList" class="login-button">Update my willing</button>
             </div>
             <Tablelist :headers="['User\'s profil', 'since', 'Contact']" :list="escape.listToDo" id="list-to-do-escape" :fromEscapePage="true"/>
         </section>
         <hr/>
         <section id="list-favori">
+            <button v-if="!isFavorite" @click="addToFavoriList" class="login-button top">Add to my favori</button>
+            <button v-else @click="removeFromFavoriList" class="login-button top">Remove from my favori</button>
             <Tablelist :headers="['User\'s profil', 'since', 'Contact']" :list="escape.listFavori" id="list-favori-escape" :fromEscapePage="true"/>
         </section>
         <hr/>
         <section id="list-done">
+            <button v-if="!isDone" @click="addToDoneList" class="login-button top">Add to my done list</button>
+            <button v-else @click="removeFromDoneList" class="login-button top">Remove from my done list</button>
             <Tablelist :headers="['User\'s profil', 'since', 'Contact']" :list="escape.listDone" id="list-done-escape" :fromEscapePage="true"/>
         </section>
     </div>
@@ -91,263 +95,34 @@
 
 <script setup>
 
-// TEST
 let escape = ref({
-    id: 42,
-    name: "L'Elixir",
-    time: 90,
-    minPlayer: 2,
-    maxPlayer: 6,
-    age: 16,
-    level: 3,
-    price: 28,
-    entreprise: [
-        {
-            name: "Prizoners"
-        }
-    ],
-    tags: [
-        {
-            name: "horror"
-        },
-        {
-            name: "potache"
-        },
-        {
-            name: "fantastique"
-        },
-        {
-            name: "historique"
-        },
-        {
-            name: "licence"
-        }
-    ],
-    listToDo: [
-        {
-            user: {
-                id: 7,
-                name: "test",
-                firstname: "testouille",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 8,
-                name: "user",
-                firstname: "user",
-                pseudo: ""
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        },
-        {
-            user: {
-                id: 9,
-                name: "Duverger",
-                firstname: "Camille",
-                pseudo: "Grandma"
-            },
-            since: "2023-12-21T00:00:00+00:00"
-        }
-    ],
+    id: 0,
+    name: '',
+    time: 0,
+    minPlayer: 0,
+    maxPlayer: 0,
+    age: 0,
+    level: 0,
+    price: 0,
+    entreprise: [],
+    tags: [],
+    listToDo: [],
     listFavori: [],
     listDone: []
 })
 let description = ref({
-    description: "1789, glorieuse mais sanglante année pour la France. Notre agence vous envoie en pleine révolution française, les révolutionnaires sont aux portes du monastère de la grande de Chartreuse afin de piller ces lieux. Dans l?urgence les moines sont partis se réfugier. Profitez de cette occasion pour vous infiltrer dans le monastère afin de retrouver la recette de l?Elixir de Chartreuse, la reproduire et la livrer à l?agence."
+    description: ''
 })
 let link = ref({
-    link: "https://www.prizoners.com/agence/grenoble/jeux/elixir"
+    link: ''
 })
-let isToDo = ref(false)
-let isDone = ref(false)
-let isFavorite = ref(false)
-// TEST
+const route = useRoute()
 let image = ref(false)
 
 onMounted(() => {
+
+    // Get Escape's informations
+    getEscape()
 
     // Check if escape's image exist
     const img = new Image()
@@ -369,13 +144,36 @@ onMounted(() => {
         }
     }
 })
+const getEscape = async () => {
+
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/" + route.params.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        escape.value = data.value.escape
+        description.value = data.value.description
+        link.value = data.value.link
+        average.value = data.value.average
+        userGrade.value = data.value.userGrade
+        isToDo.value = data.value.isToDo
+        isFavorite.value = data.value.isFavorite
+        isDone.value = data.value.isDone
+    }
+}
 
 // Grade section
 let changeGrade = ref(false)
-let average = ref(3.0)
+let average = ref(0.0)
 let grade = ref(0)
 let userGrade = ref({
-    grade: 2.0
+    grade: 0.0
 })
 const gradeEscape = (data) => {
 
@@ -383,37 +181,145 @@ const gradeEscape = (data) => {
 }
 const deleteGrade = async () => {
 
+    // TO-DO : passer les adresses par variable et non en dur
     const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/delete/" + escape.value.id, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
     })
+
+    if (data.value) {
+
+        getEscape()
+    }
 }
 const gradeEscapeGame = async () => {
 
     userGrade.value.grade = grade.value
 
+    // TO-DO : passer les adresses par variable et non en dur
     const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/" + escape.value.id, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: userGrade.value
     })
+
     if (data.value) {
 
         changeGrade.value = false
+        getEscape()
     }
 }
 const updateGrade = async () => {
 
     userGrade.value.grade = grade.value
     
+    // TO-DO : passer les adresses par variable et non en dur
     const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/update/" + escape.value.id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: userGrade.value
     })
+
     if (data.value) {
 
         changeGrade.value = false
+        getEscape()
+    }
+}
+
+// List section
+let isToDo = ref(false)
+let isDone = ref(false)
+let isFavorite = ref(false)
+const addToToDoList = async () => {
+
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/add/" + escape.value.id, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    
+    if (data.value) {
+
+        getEscape()
+    }
+}
+const addToFavoriList = async () => {
+    
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris/add/" + escape.value.id, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    
+    if (data.value) {
+
+        getEscape()
+    }
+}
+const addToDoneList = async () => {
+    
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done/add/" + escape.value.id, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    })
+    
+    if (data.value) {
+
+        getEscape()
+    }
+}
+const removeFromToDoList = async () => {
+    
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/remove/" + isToDo.value.id, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    })
+    
+    if (data.value) {
+
+        getEscape()
+    }
+}
+const removeFromFavoriList = async () => {
+    
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris/remove/" + isFavorite.value.id, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    })
+    
+    if (data.value) {
+
+        getEscape()
+    }
+}
+const removeFromDoneList = async () => {
+    
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done/remove/" + isDone.value.id, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    })
+    
+    if (data.value) {
+
+        getEscape()
+    }
+}
+const updateToDoList = async () => {
+    
+    // TO-DO : passer les adresses par variable et non en dur
+    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/update/" + isToDo.value.id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" }
+    })
+    
+    if (data.value) {
+
+        getEscape()
     }
 }
 </script>
@@ -444,6 +350,11 @@ const updateGrade = async () => {
 
             width: 85%;
         }
+    }
+
+    .top {
+
+        margin-top: 20px;
     }
 
     #title {
@@ -556,25 +467,25 @@ const updateGrade = async () => {
     #list-to-do {
 
         width: 100%;
-        @include flex();
+        @include flex($direction:column);
 
         .actions {
 
             width: 100%;
-            @include flex($direction:column, $justify:space-around);
+            @include flex($justify:space-around);
         }
     }
 
     #list-favori {
 
         width: 100%;
-        @include flex();
+        @include flex($direction:column);
     }
 
     #list-done {
 
         width: 100%;
-        @include flex();
+        @include flex($direction:column);
     }
 }
 </style>
