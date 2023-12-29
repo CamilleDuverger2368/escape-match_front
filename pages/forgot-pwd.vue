@@ -19,7 +19,7 @@ let error = ref({
     email: '',
     general: ''
 })
-
+const runtimeConfig = useRuntimeConfig();
 // Email's section
 const checkEmail = async (datum) => {
 
@@ -29,10 +29,9 @@ const checkEmail = async (datum) => {
 
         email.value = datum
         error.value.email = ""
-        // TO-DO : passer les adresses par variable et non en dur
-        const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/email-exist/' + email.value, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+        const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/email-exist/" + email.value, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
         })
 
         if (data.value) {
@@ -64,10 +63,9 @@ const resetPwd = async () => {
         error.value.general = "Give us a valid email please."
     } else {
 
-        // TO-DO : passer les adresses par variable et non en dur
-        const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/reset-password/' + email.value, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }
+        const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/reset-password/" + email.value, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" }
         })
 
         if (data.value[0] === 200) {

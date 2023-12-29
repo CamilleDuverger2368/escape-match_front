@@ -17,7 +17,7 @@
           </div>
           <div v-else class="info">
             <!--TO-DO : remplacer par les bons liens -->
-            <nuxt-link to="/logged/23" class="footer-link">{{ element.escape.name }}</nuxt-link>
+            <nuxt-link :to="'/logged/' + element.escape.id" class="footer-link">{{ element.escape.name }}</nuxt-link>
           </div>
           <div class="info center">{{ formatDate(element.since) }}</div>
           <div v-if="fromEscapePage" class="info">

@@ -26,10 +26,10 @@
                 <div v-else class="no-profil">No Profil</div>
                 <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
                 <ul v-if="user.level">
-                    <li><span>level {{ user.level }}</span></li>
+                    <li :class="'percent--' + levelDecimal"><span>level {{ level }}</span></li>
                 </ul>
                 <ul v-else>
-                    <li><span>Start your adventure to level up !</span></li>
+                    <li class="percent--1"><span>Start your adventure to level up !</span></li>
                 </ul>
                 <div class="buttons">
                     <button class="login-button" type="submit" @click="updateProfil = true">Modifier</button>
@@ -95,8 +95,7 @@ onMounted(async () => {
     getFavoris()
     getToDo()
     getDone()
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/unlog/cities", {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
         method: "GET",
         headers: { "Content-Type": "application/json" }
     })
@@ -112,6 +111,7 @@ onMounted(async () => {
 
 let color = ref("#FF7A00")
 const token = useCookie("token")
+const runtimeConfig = useRuntimeConfig()
 
 // Menu's section
 let openInfo = ref(false)
@@ -133,6 +133,8 @@ let user = ref({
     profil: "",
     city: ""
 })
+let levelDecimal = ref(1)
+let level = ref(0)
 let password = ref({
     password:''
 })
@@ -159,8 +161,7 @@ const update = async () => {
         error.value.general = "Check your errors please."
     } else {
 
-        // TO-DO : passer les adresses par variable et non en dur
-        const { data } = await useFetch("http://127.0.0.1:8000/api/user/" + user.value.id, {
+        const { data } = await useFetch(runtimeConfig.public.apiBase + "user/" + user.value.id, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -183,8 +184,7 @@ const updatePassword = async () => {
         error.value.general = "Check your errors please."
     } else {
 
-        // TO-DO : passer les adresses par variable et non en dur
-        const { data } = await useFetch("http://127.0.0.1:8000/api/user/password/" + user.value.id, {
+        const { data } = await useFetch(runtimeConfig.public.apiBase + "user/password/" + user.value.id, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -202,8 +202,7 @@ const updatePassword = async () => {
 }
 const getProfil = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/user", {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -215,6 +214,15 @@ const getProfil = async () => {
 
         user.value = data.value
         user.value.city = data.value.city.name
+        levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
+        if (levelDecimal.value.length == 1) {
+
+            levelDecimal.value += '0'
+        } else if (levelDecimal.value[0] == '0') {
+
+            levelDecimal.value = levelDecimal.value.substring(1)
+        }
+        level.value = Math.trunc(user.value.level)
     }
 }
 
@@ -342,8 +350,7 @@ let toDo = ref([])
 let done = ref([])
 const getFavoris = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris", {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -358,8 +365,7 @@ const getFavoris = async () => {
 }
 const getToDo = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do", {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -374,8 +380,7 @@ const getToDo = async () => {
 }
 const getDone = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done", {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -389,8 +394,8 @@ const getDone = async () => {
     }
 }
 const deleteFromFavoris = async (value) => {
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris/remove/" + value, {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + value, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -404,8 +409,8 @@ const deleteFromFavoris = async (value) => {
     }
 }
 const deleteFromToDo = async (value) => {
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/remove/" + value, {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/remove/" + value, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -416,8 +421,8 @@ const deleteFromToDo = async (value) => {
     getToDo()
 }
 const deleteFromDone = async (value) => {
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done/remove/" + value, {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/remove/" + value, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -428,8 +433,8 @@ const deleteFromDone = async (value) => {
     getDone()
 }
 const updateToDo = async (value) => {
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/update/" + value, {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/update/" + value, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -443,6 +448,83 @@ const updateToDo = async (value) => {
 
 <style lang="scss" scoped>
 @import "~/assets/variables";
+
+@mixin test($argument) {
+    $per: unquote($argument);
+
+    &--#{$per} {
+
+        list-style: none;
+        padding: 20px 0;
+        position: relative;
+        font-size: 1.5rem;
+        color: $white;
+        width: 100%;
+        filter: brightness(1.2);
+        transition: all 0.5s ease 0s;
+
+        &:before {
+            content: "";
+            position: absolute;
+            background: $black;
+            height: 0.8rem;
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            border-radius: 5px;
+            border: 1px solid #111;
+            border-color: #111 #323232 #323232 #111;
+            background: linear-gradient(
+                90deg,
+                #2292dd40 calc(calc($per * 1%) + 4px),
+                #1c1c1c calc(calc($per * 1%) + 4px)
+            );
+        }
+
+        &:after {
+            content: "";
+            height: 11px;
+            margin: 0 0 2px 0;
+            background: $orange;
+            border-radius: 5px;
+            position: absolute;
+            box-shadow: 0 0 5px 1px $orange;
+            left: 3px;
+            width: 0%;
+            bottom: 0;
+            width: calc(calc($per * 1%) - 2px);
+        }
+
+        &:hover, &:active {
+            filter: brightness(1.5);
+        }
+
+        &:hover span:after, &:active span:after {
+            right: calc(calc(calc(100 - $per) * 1%) - 40px);
+            opacity: 1;
+            background: $orange;
+            filter: brightness(.7);
+        }
+
+        span {
+            font-weight: 500;
+
+            &:after {
+                position: absolute;
+                right: -40px;
+                top: 40px;
+                counter-reset: percent $per;
+                content: counter(percent);
+                color: $black;
+                padding: 4px 6px;
+                border-radius: 5px;
+                font-weight: bold;
+                pointer-events: none;
+                transition: all 0.5s ease 0s;
+            }
+        }
+    }
+}
 
 .inactive-left {
     transform: translate(-100vw);
@@ -609,77 +691,11 @@ const updateToDo = async (value) => {
                 position: relative;
                 padding: 0 35px;
 
-                li {
-                    --per: 50;
-                    --dur: calc(calc(var(--per) / 100) * 1.5s);
-                    list-style: none;
-                    padding: 20px 0;
-                    position: relative;
-                    font-size: 1.5rem;
-                    color: $white;
-                    width: 100%;
-                    filter: brightness(1.2);
-                    transition: all 0.5s ease 0s;
+                .percent {
 
-                    &:before {
-                        content: "";
-                        position: absolute;
-                        background: $black;
-                        height: 0.8rem;
-                        width: 100%;
-                        left: 0;
-                        bottom: 0;
-                        border-radius: 5px;
-                        border: 1px solid #111;
-                        border-color: #111 #323232 #323232 #111;
-                        background: linear-gradient(
-                            90deg,
-                            #2292dd40 calc(calc(var(--per) * 1%) + 4px),
-                            #1c1c1c calc(calc(var(--per) * 1%) + 4px)
-                        );
-                    }
-
-                    &:after {
-                        content: "";
-                        height: 11px;
-                        margin: 0 0 2px 0;
-                        background: $orange;
-                        border-radius: 5px;
-                        position: absolute;
-                        box-shadow: 0 0 5px 1px $orange;
-                        left: 3px;
-                        width: 0%;
-                        bottom: 0;
-                        width: calc(calc(var(--per) * 1%) - 2px);
-                    }
-
-                    &:hover, &:active {
-                        filter: brightness(1.5);
-                    }
-
-                    &:hover span:after, &:active span:after {
-                        right: calc(calc(calc(100 - var(--per)) * 1%) - 40px);
-                        opacity: 1;
-                        background: $orange;
-                        filter: brightness(.7);
-                    }
-
-                    span {
-                        font-weight: 500;
-
-                        &:after {
-                            position: absolute;
-                            right: -40px;
-                            top: 40px;
-                            counter-reset: percent var(--per);
-                            content: counter(percent);
-                            color: $black;
-                            padding: 4px 6px;
-                            border-radius: 5px;
-                            font-weight: bold;
-                            pointer-events: none;
-                            transition: all 0.5s ease 0s;
-                        }
+                    @for $i from 1 through 100 {
+                        
+                        @include test(#{$i})
                     }
                 }
             }

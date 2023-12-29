@@ -118,6 +118,7 @@ let link = ref({
 })
 const route = useRoute()
 const token = useCookie("token")
+const runtimeConfig = useRuntimeConfig()
 let image = ref(false)
 
 onMounted(() => {
@@ -147,8 +148,7 @@ onMounted(() => {
 })
 const getEscape = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/" + route.params.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/" + route.params.id, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -182,8 +182,7 @@ const gradeEscape = (data) => {
 }
 const deleteGrade = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/delete/" + escape.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/grade/delete/" + escape.value.id, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
     })
@@ -197,8 +196,7 @@ const gradeEscapeGame = async () => {
 
     userGrade.value.grade = grade.value
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/" + escape.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/grade/" + escape.value.id, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: userGrade.value
@@ -214,8 +212,7 @@ const updateGrade = async () => {
 
     userGrade.value.grade = grade.value
     
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/escape/grade/update/" + escape.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/grade/update/" + escape.value.id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: userGrade.value
@@ -234,8 +231,7 @@ let isDone = ref(false)
 let isFavorite = ref(false)
 const addToToDoList = async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/add/" + escape.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/add/" + escape.value.id, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
     })
@@ -247,8 +243,7 @@ const addToToDoList = async () => {
 }
 const addToFavoriList = async () => {
     
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris/add/" + escape.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/add/" + escape.value.id, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
     })
@@ -260,8 +255,7 @@ const addToFavoriList = async () => {
 }
 const addToDoneList = async () => {
     
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done/add/" + escape.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/add/" + escape.value.id, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
     })
@@ -273,8 +267,7 @@ const addToDoneList = async () => {
 }
 const removeFromToDoList = async () => {
     
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/remove/" + isToDo.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/remove/" + isToDo.value.id, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
     })
@@ -286,8 +279,7 @@ const removeFromToDoList = async () => {
 }
 const removeFromFavoriList = async () => {
     
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/favoris/remove/" + isFavorite.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + isFavorite.value.id, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
     })
@@ -299,8 +291,7 @@ const removeFromFavoriList = async () => {
 }
 const removeFromDoneList = async () => {
     
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/done/remove/" + isDone.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/remove/" + isDone.value.id, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" }
     })
@@ -312,8 +303,7 @@ const removeFromDoneList = async () => {
 }
 const updateToDoList = async () => {
     
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch("http://127.0.0.1:8000/api/lists/to-do/update/" + isToDo.value.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/update/" + isToDo.value.id, {
         method: "PUT",
         headers: { "Content-Type": "application/json" }
     })

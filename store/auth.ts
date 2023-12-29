@@ -16,8 +16,8 @@ export const useAuthStore = defineStore("auth", {
 
         async authenticateUser({ username, password }: UserPayloadInterface) {
 
-            // TO-DO : passer les adresses par variable et non en dur
-            const { data, pending }: any = await useFetch("http://127.0.0.1:8000/api/login_check", {
+            const runtimeConfig = useRuntimeConfig()
+            const { data, pending }: any = await useFetch(runtimeConfig.public.apiBase + "login_check", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: {

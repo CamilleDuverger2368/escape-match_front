@@ -38,7 +38,7 @@ let cities = ref([])
 
 const pronouns = ref(["She", "He", "They"])
 const profil = ref(["Solver", "Leader", "Searcher"])
-
+const runtimeConfig = useRuntimeConfig()
 let error = ref({
     general: '',
     name: '',
@@ -53,10 +53,9 @@ let error = ref({
 
 onMounted(async () => {
 
-    // TO-DO : passer les adresses par variable et non en dur
-    const { data } = await useFetch('http://127.0.0.1:8000/api/unlog/cities', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
     })
 
     if (data.value) {
@@ -194,7 +193,7 @@ const register = async () => {
         error.value.general = "Check your errors please."
     } else {
 
-        const { data } = await useFetch("http://127.0.0.1:8000/api/unlog/register", {
+        const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: user.value
