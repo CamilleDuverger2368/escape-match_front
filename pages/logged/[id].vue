@@ -76,19 +76,19 @@
                 <button @click="removeFromToDoList" class="login-button">Remove from my to-do list</button>
                 <button @click="updateToDoList" class="login-button">Update my willing</button>
             </div>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDo" id="list-to-do-escape" :fromEscapePage="true"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" :fromEscapePage="true"/>
         </section>
         <hr/>
         <section id="list-favori">
             <button v-if="!isFavorite" @click="addToFavoriList" class="login-button top">Add to my favori</button>
             <button v-else @click="removeFromFavoriList" class="login-button top">Remove from my favori</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavori" id="list-favori-escape" :fromEscapePage="true"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavoris" id="list-favori-escape" :fromEscapePage="true"/>
         </section>
         <hr/>
         <section id="list-done">
             <button v-if="!isDone" @click="addToDoneList" class="login-button top">Add to my done list</button>
             <button v-else @click="removeFromDoneList" class="login-button top">Remove from my done list</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listDone" id="list-done-escape" :fromEscapePage="true"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listDones" id="list-done-escape" :fromEscapePage="true"/>
         </section>
     </div>
 </template>
@@ -106,9 +106,9 @@ let escape = ref({
     price: 0,
     entreprise: [],
     tags: [],
-    listToDo: [],
-    listFavori: [],
-    listDone: []
+    listToDos: [],
+    listFavoris: [],
+    listDones: []
 })
 let description = ref({
     description: ''
@@ -162,7 +162,13 @@ const getEscape = async () => {
         description.value = data.value.description
         link.value = data.value.link
         average.value = data.value.average
-        userGrade.value = data.value.userGrade
+        if (data.value.userGrade === null) {
+
+            userGrade.value.grade = 0
+        } else {
+
+            userGrade.value.grade = data.value.userGrade
+        }
         isToDo.value = data.value.isToDo
         isFavorite.value = data.value.isFavorite
         isDone.value = data.value.isDone
@@ -174,7 +180,7 @@ let changeGrade = ref(false)
 let average = ref(0.0)
 let grade = ref(0)
 let userGrade = ref({
-    grade: 0.0
+    grade: 0
 })
 const gradeEscape = (data) => {
 
