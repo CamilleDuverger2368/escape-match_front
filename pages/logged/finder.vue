@@ -8,18 +8,19 @@
             <div class="variables">
                 <Input name="Minimum de joueureuses" type="number" id="minimum_player" :data="parameters.nbPlayer" :error="error.nbPlayer" :require="false" @check="checkNbPlayer" />
                 <Input name="Prix maximum" type="number" id="maximu_price" :data="parameters.price" :error="error.price" :require="false" @check="checkPrice" />
+                <Locks id="level-select" :data="parameters.level"/>
                 <Input name="Age minimum" type="number" id="minimum_age" :data="parameters.age" :error="error.age" :require="false" @check="checkAge" />
                 <Input name="Temps (en min) minimum" type="number" id="minimum_time" :data="parameters.time" :error="error.time" :require="false" @check="checkTime" />
             </div>
         </section>
         <section id="result">
             <div v-if="switcher == 'entreprise' && entreprises != []" id="entreprises">
-                <!--WIP-->
+                <hr/>
                 <div class="line" :key="entreprise" v-for="entreprise in entreprises" :id="'item-' + entreprise['entreprise'].id" @click="toggleEscapes(entreprise['entreprise'].id)">
                     <div class="title">
                         <img :alt="'logo ' + entreprise['entreprise'].name" class="image" :src="'/logo/logo-' + entreprise['entreprise'].name.toLowerCase().replaceAll(' ', '-') + '.png'" />
                         <div class="name">
-                            {{ entreprise['entreprise'].name }}
+                            {{ entreprise["entreprise"].name }}
                         </div>
                     </div>
                     <ul :id="'ul-' + entreprise['entreprise'].id">
@@ -27,23 +28,22 @@
                             <nuxt-link :to="'/logged/' + escape.id" class="escape">
                                 <div class="title">{{ escape.name }}</div>
                                 <div class="informations">
-                                    <div class="info">{{ escape.grade }}<span class="material-icons">star</span></div>
-                                    <div class="info">{{ escape.time }}<span class="material-icons">hourglass_empty</span></div>
-                                    <div class="info">{{ escape.level }}<span class="material-icons">psychology</span></div>
+                                    <div class="info">{{ escape.time }}<span>min</span></div>
+                                    <div class="info">{{ escape.maxPlayer }}<span> joueureuses max</span></div>
                                 </div>
                             </nuxt-link>
                         </li>
                     </ul>
+                    <hr/>
                 </div>
-                <!--WIP-->
             </div>
             <div v-else-if="switcher == 'tag' && tags != []" id="tags">
-                <!--WIP-->
+                <hr/>
                 <div class="line" :key="tag" v-for="tag in tags" :id="'item-' + tag['tag'].id" @click="toggleEscapes(tag['tag'].id)">
                     <div class="title">
                         <img :alt="'logo ' + tag['tag'].name" class="image" :src="'/logo/logo-' + tag['tag'].name.toLowerCase().replaceAll(' ', '-') + '.jpg'" />
                         <div class="name">
-                            {{ tag['tag'].name }}
+                            {{ tag["tag"].name }}
                         </div>
                     </div>
                     <ul :id="'ul-' + tag['tag'].id">
@@ -51,15 +51,14 @@
                             <nuxt-link :to="'/logged/' + escape.id" class="escape">
                                 <div class="title">{{ escape.name }}</div>
                                 <div class="informations">
-                                    <div class="info">{{ escape.grade }}<span class="material-icons">star</span></div>
-                                    <div class="info">{{ escape.time }}<span class="material-icons">hourglass_empty</span></div>
-                                    <div class="info">{{ escape.level }}<span class="material-icons">psychology</span></div>
+                                    <div class="info">{{ escape.time }}<span>min</span></div>
+                                    <div class="info">{{ escape.maxPlayer }}<span> joueureuses max</span></div>
                                 </div>
                             </nuxt-link>
                         </li>
                     </ul>
+                    <hr/>
                 </div>
-                <!--WIP-->
             </div>
             <div v-else class="empty">There is no escape for this search, sorry !</div>
         </section>
@@ -81,7 +80,8 @@ let parameters = ref({
     nbPlayer: 1,
     price: 100,
     age: 10,
-    time: 40
+    time: 40,
+    level: 3
 })
 let error = ref({
     nbPlayer: '',
@@ -105,6 +105,7 @@ const getEscapes = async () => {
             level: parameters.value.level,
             age: parameters.value.age,
             time: parameters.value.time,
+            level: parameters.value.level
         }
     })
 
@@ -112,6 +113,16 @@ const getEscapes = async () => {
 
         tags.value = data.value.tags
         entreprises.value = data.value.entreprises
+    }
+}
+
+// Show section
+const toggleEscapes = (id) => {
+
+    let allLi = document.querySelector("#ul-" + id).children
+    for (let i = 0; i < allLi.length; i++) {
+        
+        allLi[i].classList.toggle("appear-li")
     }
 }
 
@@ -263,20 +274,21 @@ const checkTime = (data) => {
             width: 100%;
             @include flex($direction:column);
 
-            .line {
-                display: grid;
-                grid-template-rows: auto 1fr auto;
-                width: 100%;
-                padding: 2% auto;
-                border-top: 1px solid $orange;
+            hr {
 
-                &:last-child {
-                    border-bottom: 1px solid $orange;
-                }
+                width: 100%;
+                color: $orange;
+                font-size: 1rem;
+                box-shadow: 0 0 10px $orange;
+            }
+
+            .line {
+                width: 100%;
+                @include flex($direction:column);
 
                 .title {
                     width: 100%;
-                    margin: 25px auto 0px auto;
+                    margin-top: 25px;
                     @include flex($justify:space-around, $align:flex-start);
 
                     .image {
@@ -292,23 +304,25 @@ const checkTime = (data) => {
                 }
                 
                 ul {
-                    width: 80%;
+                    width: 100%;
                     margin: 15px auto 10px auto;
+                    padding: 0;
                     @include flex($direction: column);
 
                     li {
                         max-height: 0;
-                        width: 50%;
+                        width: 100%;
                         opacity: 0;
                         list-style: none;
-                        border-radius: 5px;
-                        border: 1px solid $orange;
-                        background-color: $white;
+                        border-top: 1px solid $orange;
+                        background-color: $black;
                         transition: max-height 0.5s ease-out, opacity 0.4s ease-out 0.1s;
-                        margin: 1px auto;
-                        color: $black;
+                        color: $white;
+                        &:last-child {
+                            border-bottom: 1px solid $orange;
+                        }
 
-                        &:hover {
+                        &:hover, &:active {
                             background-color: rgba($white, 0.5);
                         }
 
