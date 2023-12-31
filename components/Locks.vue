@@ -1,19 +1,19 @@
 <template>
     <form class="rating">
-        <input type="radio" name="rating" value="5" v-model="model" :id="'r1-' + id">
-        <img :for="'r1-' + id"/>
+        <input type="radio" name="rating" value="5" v-model="model" :id="'r1-' + id" disabled>
+        <label :for="'r1-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="4" v-model="model" :id="'r2-' + id">
-        <img :for="'r2-' + id"/>
+        <input type="radio" name="rating" value="4" v-model="model" :id="'r2-' + id" disabled>
+        <label :for="'r2-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="3" v-model="model" :id="'r3-' + id">
-        <img :for="'r3-' + id"/>
+        <input type="radio" name="rating" value="3" v-model="model" :id="'r3-' + id" disabled>
+        <label :for="'r3-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="2" v-model="model" :id="'r4-' + id">
-        <img :for="'r4-' + id"/>
+        <input type="radio" name="rating" value="2" v-model="model" :id="'r4-' + id" disabled>
+        <label :for="'r4-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="1" v-model="model" :id="'r5-' + id">
-        <img :for="'r5-' + id"/>
+        <input type="radio" name="rating" value="1" v-model="model" :id="'r5-' + id" disabled>
+        <label :for="'r5-' + id"><img  alt="level"></label>
     </form>
 </template>
 
@@ -30,7 +30,8 @@ const props = defineProps({
     }
 })
 
-const emit = defineEmits(["grade"])
+
+const emit = defineEmits(["level"])
 let model = computed({
     
     get() {
@@ -40,7 +41,7 @@ let model = computed({
 
     set(value) {
 
-        emit("grade", value)
+        emit("level", value)
     }
 })
 </script>
@@ -48,55 +49,45 @@ let model = computed({
 <style lang="scss" scoped>
 @import "~/assets/variables";
 
-@mixin star-rating( $filled-color: $orange, $empty-color: #444, $size: 60px) {
+@mixin star-rating() {
     
-    $lock--close: url("~/public/icones/lock-close.svg");
-    $lock--open: url("~/public/icones/lock-open.svg");
-
-    img {
+    label {
         height: 40px;
         width: 20%;
         display: block;
         position: relative;
-        cursor: pointer;
-        @for $i from 5 through 1 {
-            &:nth-of-type(#{$i}):after {
-                $animation-delay: $i * .05s;
-                animation-delay: $animation-delay;
+
+        &:hover, &:active {
+            
+            img {
+    
+                content: url("~/public/icones/lock-close.svg");
             }
         }
+        img {
 
-        &:after {
-            transition: all 0.4s ease-out;
-            -webkit-font-smoothing: antialiased;
-            position: absolute;
-            content: '#{$lock--open}';
-            color: $empty-color;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            font-size: $size;
-            animation: 1s pulse ease;
-        }
+            content: url("~/public/icones/lock-open.svg");
 
-        &:hover:after {
-            color: lighten($empty-color, 10%);
-            text-shadow: 0 0 15px lighten($empty-color, 10%);
+            &:hover, &:active {
+
+                content: url("~/public/icones/lock-close.svg");
+            }
         }
     }
 
     input {
     
         display: none;
+        width: 60px;
+        height: 60px;
 
         &:checked {
-            + img:after,
-            ~ img:after {
-                content: '#{$lock--close}';
-                color: $filled-color;
-                text-shadow: 0 0 20px $filled-color;
+            + label,
+            ~ label {
+                img {
+
+                    content: url("~/public/icones/lock-close.svg");
+                }
             }
         }
     }
@@ -106,7 +97,7 @@ let model = computed({
 
     width: 100%;
     @include flex($direction:row-reverse, $justify:space-around);
-    margin: 0 auto 50px auto;
+    margin: 0px auto 30px auto;
     @include star-rating();
 }
 </style>

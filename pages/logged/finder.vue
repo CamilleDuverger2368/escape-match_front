@@ -8,7 +8,7 @@
             <div class="variables">
                 <Input name="Minimum de joueureuses" type="number" id="minimum_player" :data="parameters.nbPlayer" :error="error.nbPlayer" :require="false" @check="checkNbPlayer" />
                 <Input name="Prix maximum" type="number" id="maximu_price" :data="parameters.price" :error="error.price" :require="false" @check="checkPrice" />
-                <Locks id="level-select" :data="parameters.level"/>
+                <Locks id="level-select" :data="parameters.level" @level="checkLevel" />
                 <Input name="Age minimum" type="number" id="minimum_age" :data="parameters.age" :error="error.age" :require="false" @check="checkAge" />
                 <Input name="Temps (en min) minimum" type="number" id="minimum_time" :data="parameters.time" :error="error.time" :require="false" @check="checkTime" />
             </div>
@@ -194,6 +194,14 @@ const checkTime = (data) => {
 
         error.value.time = "Your time must be between 1 and 180 mintues."
     }
+}
+const checkLevel = (data) => {
+
+    parameters.value.level = data
+    // TEST
+    console.log("parameters.value.level")
+    console.log(parameters.value.level)
+    // TEST
 }
 </script>
 
