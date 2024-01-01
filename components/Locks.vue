@@ -1,18 +1,18 @@
 <template>
     <form class="rating">
-        <input type="radio" name="rating" value="5" v-model="model" :id="'r1-' + id" disabled>
+        <input type="radio" name="rating" value="5" v-model="model" :id="'r1-' + id">
         <label :for="'r1-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="4" v-model="model" :id="'r2-' + id" disabled>
+        <input type="radio" name="rating" value="4" v-model="model" :id="'r2-' + id">
         <label :for="'r2-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="3" v-model="model" :id="'r3-' + id" disabled>
+        <input type="radio" name="rating" value="3" v-model="model" :id="'r3-' + id">
         <label :for="'r3-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="2" v-model="model" :id="'r4-' + id" disabled>
+        <input type="radio" name="rating" value="2" v-model="model" :id="'r4-' + id">
         <label :for="'r4-' + id"><img  alt="level"></label>
 
-        <input type="radio" name="rating" value="1" v-model="model" :id="'r5-' + id" disabled>
+        <input type="radio" name="rating" value="1" v-model="model" :id="'r5-' + id">
         <label :for="'r5-' + id"><img  alt="level"></label>
     </form>
 </template>
@@ -66,6 +66,7 @@ let model = computed({
         }
         img {
 
+            width: 100%;
             content: url("~/public/icones/lock-open.svg");
 
             &:hover, &:active {
@@ -78,8 +79,6 @@ let model = computed({
     input {
     
         display: none;
-        width: 60px;
-        height: 60px;
 
         &:checked {
             + label,

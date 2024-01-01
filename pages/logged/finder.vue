@@ -135,6 +135,7 @@ const checkNbPlayer = (data) => {
 
             parameters.value.nbPlayer = data
             error.value.nbPlayer = ""
+            getEscapes()
         } else {
 
             error.value.nbPlayer = "You must have between 1 and 50 players."
@@ -152,6 +153,7 @@ const checkPrice = (data) => {
 
             parameters.value.price = data
             error.value.price = ""
+            getEscapes()
         } else {
 
             error.value.price = "You must have a price between 1 and 100 per player."
@@ -169,6 +171,7 @@ const checkAge = (data) => {
 
             parameters.value.age = data
             error.value.age = ""
+            getEscapes()
         } else {
 
             error.value.age = "Your age must be between 1 and 150 years old."
@@ -186,6 +189,7 @@ const checkTime = (data) => {
 
             parameters.value.time = data
             error.value.time = ""
+            getEscapes()
         } else {
 
             error.value.time = "Your time must be between 1 and 180 mintues."
@@ -197,11 +201,8 @@ const checkTime = (data) => {
 }
 const checkLevel = (data) => {
 
-    parameters.value.level = data
-    // TEST
-    console.log("parameters.value.level")
-    console.log(parameters.value.level)
-    // TEST
+    parameters.value.level = Number(data)
+    getEscapes()
 }
 </script>
 
