@@ -2,7 +2,7 @@
     <div id="escape">
         <section id="title">
             <div class="composition">
-                <img v-if="image" alt="escape" :src="'/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '.webp'" />
+                <img v-if="image" alt="escape" :src="'/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '-' + escape.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + '.webp'" />
                 <img v-else alt="escape" src="/escapes/no-image-found.webp" />
                 <h1 class="name">{{ escape.name }}</h1>
             </div>
@@ -104,7 +104,9 @@ let escape = ref({
     age: 0,
     level: 0,
     price: 0,
-    entreprise: [],
+    entreprises: [{
+        name: ''
+    }],
     tags: [],
     listToDos: [],
     listFavoris: [],
@@ -125,26 +127,6 @@ onMounted(() => {
 
     // Get Escape's informations
     getEscape()
-
-    // Check if escape's image exist
-    const img = new Image()
-    img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
-
-    if (img.complete) {
-
-        image.value = true
-    } else {
-
-        img.onload = () => {
-
-            image.value = true
-        }
-
-        img.onerror = () => {
-
-            image.value = false
-        }
-    }
 })
 const getEscape = async () => {
 
@@ -172,6 +154,26 @@ const getEscape = async () => {
         isToDo.value = data.value.isToDo
         isFavorite.value = data.value.isFavorite
         isDone.value = data.value.isDone
+        
+        // Check if escape's image exist
+        const img = new Image()
+        img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-')  + '-' + escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + ".webp"
+
+        if (img.complete) {
+
+            image.value = true
+        } else {
+
+            img.onload = () => {
+
+                image.value = true
+            }
+
+            img.onerror = () => {
+
+                image.value = false
+            }
+        }
     }
 }
 
