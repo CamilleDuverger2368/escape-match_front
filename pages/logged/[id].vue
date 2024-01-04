@@ -75,19 +75,19 @@
                 <button @click="removeFromToDoList" class="login-button">Remove from my to-do list</button>
                 <button @click="updateToDoList" class="login-button">Update my willing</button>
             </div>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" :fromEscapePage="true"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" page="escape"/>
         </section>
         <hr/>
         <section id="list-favori">
             <button v-if="!isFavorite" @click="addToFavoriList" class="login-button top">Add to my favori</button>
             <button v-else @click="removeFromFavoriList" class="login-button top">Remove from my favori</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavoris" id="list-favori-escape" :fromEscapePage="true"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavoris" id="list-favori-escape" page="escape"/>
         </section>
         <hr/>
         <section id="list-done">
             <button v-if="!isDone" @click="addToDoneList" class="login-button top">Add to my done list</button>
             <button v-else @click="removeFromDoneList" class="login-button top">Remove from my done list</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listDones" id="list-done-escape" :fromEscapePage="true"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listDones" id="list-done-escape" page="escape"/>
         </section>
     </div>
 </template>

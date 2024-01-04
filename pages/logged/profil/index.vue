@@ -73,9 +73,9 @@
                     <button @click="listToShow = 'Favori'" class="login-button">Favori</button>
                     <button @click="listToShow = 'Done'" class="login-button">Done</button>
                 </div>
-                <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @udpate="updateToDo"/>
-                <Tablelist v-else-if="listToShow == 'Favori'" :headers="['Escape', 'Since', 'Actions']" :list="favoris" id="list-favori-user" @delete="deleteFromFavoris" />
-                <Tablelist v-else-if="listToShow == 'Done'" :headers="['Escape', 'Since', 'Actions']" :list="done" id="list-done-user" @delete="deleteFromDone" />
+                <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @udpate="updateToDo" page="current" />
+                <Tablelist v-else-if="listToShow == 'Favori'" :headers="['Escape', 'Since', 'Actions']" :list="favoris" id="list-favori-user" @delete="deleteFromFavoris" page="current" />
+                <Tablelist v-else-if="listToShow == 'Done'" :headers="['Escape', 'Since', 'Actions']" :list="done" id="list-done-user" @delete="deleteFromDone" page="current" />
             </div>
         </section>
         <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
@@ -449,7 +449,7 @@ const updateToDo = async (value) => {
 <style lang="scss" scoped>
 @import "~/assets/variables";
 
-@mixin test($argument) {
+@mixin percent($argument) {
     $per: unquote($argument);
 
     &--#{$per} {
@@ -695,7 +695,7 @@ const updateToDo = async (value) => {
 
                     @for $i from 1 through 100 {
                         
-                        @include test(#{$i})
+                        @include percent(#{$i})
                     }
                 }
             }

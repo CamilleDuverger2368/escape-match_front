@@ -73,7 +73,8 @@ const login = async () => {
         error.value.general =""
         if (authenticated.value) {
 
-            router.push('/logged/profil')
+            router.push('/logged/profil/1')
+            // router.push('/logged/profil')
         } else {
 
             error.value.general = "Give us a valid email and a password please OR validate your email."
