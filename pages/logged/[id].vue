@@ -2,7 +2,6 @@
     <div id="escape">
         <section id="title">
             <div class="composition">
-                <!--<img v-if="image" alt="escape" :src="'/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '-' + escape.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + '.webp'" />-->
                 <img v-if="image" alt="escape" :src="image" />
                 <img v-else alt="escape" src="/escapes/no-image-found.webp" />
                 <h1 class="name">{{ escape.name }}</h1>
