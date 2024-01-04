@@ -2,7 +2,8 @@
     <div id="escape">
         <section id="title">
             <div class="composition">
-                <img v-if="image" alt="escape" :src="'/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '-' + escape.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + '.webp'" />
+                <!--<img v-if="image" alt="escape" :src="'/escapes/' + escape.name.toLowerCase().replaceAll(' ', '-') + '-' + escape.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + '.webp'" />-->
+                <img v-if="image" alt="escape" :src="image" />
                 <img v-else alt="escape" src="/escapes/no-image-found.webp" />
                 <h1 class="name">{{ escape.name }}</h1>
             </div>
@@ -17,8 +18,7 @@
                 <div>{{ escape.minPlayer }} to {{ escape.maxPlayer }}</div>
             </div>
             <div class="info">
-                <img v-if="escape.age == 16" src="~/public/icones/age-16.svg" alt="age">
-                <img v-else src="~/public/icones/age-18.svg" alt="age">
+                <img :src="'/icones/age-' + escape.age + '.svg'" alt="age">
             </div>
             <div class="info">
                 <img src="~/public/icones/hourglass.svg" alt="time">
@@ -161,17 +161,32 @@ const getEscape = async () => {
 
         if (img.complete) {
 
-            image.value = true
+            image.value = img.src
         } else {
 
             img.onload = () => {
 
-                image.value = true
+                image.value = img.src
             }
 
             img.onerror = () => {
 
-                image.value = false
+                img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
+                if (img.complete) {
+
+                    image.value = img.src
+                } else {
+
+                    img.onload = () => {
+
+                        image.value = img.src
+                    }
+
+                    img.onerror = () => {
+
+                        image.value = false
+                    }
+                }
             }
         }
     }
