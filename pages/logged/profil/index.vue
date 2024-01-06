@@ -84,12 +84,16 @@
         <section id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
             <button @click="openConv = false" class="close">X</button>
             <div class="info">
-                <!-- TO-DO : REMPLACER PAR LES BONS LIENS -->
-                <nuxt-link to="/login" v-bind:key="room" v-for="room in user.rooms" class="conversation">
-                    <div class="name">{{ room.name }}</div>
-                    <!-- TO-DO : FAIRE CONDITION D AFFICHAGE S IL Y A DES NOUVEAUX MESSAGES OU NON -->
-                    <div class="unread"></div>
-                </nuxt-link>
+                <hr v-if="user.rooms.length > 0" />
+                <div v-bind:key="room" v-for="room in user.rooms" class="conversation">
+                    <!-- TO-DO : REMPLACER PAR LES BONS LIENS -->
+                    <nuxt-link to="/login">
+                        <div class="name">{{ room.name }}</div>
+                        <!-- TO-DO : FAIRE CONDITION D AFFICHAGE S IL Y A DES NOUVEAUX MESSAGES OU NON -->
+                        <div class="unread"></div>
+                    </nuxt-link>
+                    <hr />
+                </div>
             </div>
         </section>
     </div>
@@ -874,7 +878,20 @@ const updateToDo = async (value) => {
 
             .conversation {
                 width: 100%;
-                @include flex($justify:space-around);
+                min-height: 25px;
+                @include flex($direction:column);
+
+                a {
+                    width: 100%;
+                    @include flex($justify:space-around);
+                }
+            }
+
+            hr {
+                width: 100%;
+                color: $orange;
+                font-size: 1rem;
+                box-shadow: 0 0 10px $orange;
             }
         }
     }
