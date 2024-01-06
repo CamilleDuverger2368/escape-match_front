@@ -82,7 +82,15 @@
             <button @click="openSuccess = false">X</button>
         </section>
         <section id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
-            <button @click="openConv = false">X</button>
+            <button @click="openConv = false" class="close">X</button>
+            <div class="info">
+                <!-- TO-DO : REMPLACER PAR LES BONS LIENS -->
+                <nuxt-link to="/login" v-bind:key="room" v-for="room in user.rooms" class="conversation">
+                    <div class="name">{{ room.name }}</div>
+                    <!-- TO-DO : FAIRE CONDITION D AFFICHAGE S IL Y A DES NOUVEAUX MESSAGES OU NON -->
+                    <div class="unread"></div>
+                </nuxt-link>
+            </div>
         </section>
     </div>
 </template>
@@ -131,7 +139,9 @@ let user = ref({
     grade: null,
     pronouns: "",
     profil: "",
-    city: ""
+    city: "",
+    rooms: [],
+    unreadMessages: []
 })
 let levelDecimal = ref(1)
 let level = ref(0)
@@ -841,18 +851,31 @@ const updateToDo = async (value) => {
     #menu-conversations {
         width: 100vw;
         position: fixed;
-        // TEST
-        background-color: rgba($orange, .5);
-        height: 70vh;
-        // TEST
-        @include flex($direction:column);
+        background-color: $black;
+        height: 73vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        @include flex($direction:column, $justify:flex-start);
         transition: transform 0.5s ease-in-out;
 
-        button {
+        .close {
             position: fixed;
             top: 3vh;
             right: 6vw;
             font-weight: 900;
+            color: $orange;
+        }
+
+        .info {
+            width: 100%;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            @include flex($direction:column);
+
+            .conversation {
+                width: 100%;
+                @include flex($justify:space-around);
+            }
         }
     }
 }
