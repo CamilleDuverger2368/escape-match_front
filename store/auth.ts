@@ -31,6 +31,8 @@ export const useAuthStore = defineStore("auth", {
 
                 const token = useCookie("token")
                 token.value = data.value.token
+                const email = useCookie("email")
+                email.value = username
                 this.authenticated = true
             } else {
 

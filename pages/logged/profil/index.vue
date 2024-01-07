@@ -84,13 +84,13 @@
         <section id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
             <button @click="openConv = false" class="close">X</button>
             <div class="info">
-                <hr v-if="user.rooms.length > 0" />
-                <div v-bind:key="room" v-for="room in user.rooms" class="conversation">
+                <hr v-if="rooms.length > 0" />
+                <div v-bind:key="conversation" v-for="conversation in rooms" class="conversation">
                     <!-- TO-DO : REMPLACER PAR LES BONS LIENS -->
                     <nuxt-link to="/login">
-                        <div class="name">{{ room.name }}</div>
-                        <!-- TO-DO : FAIRE CONDITION D AFFICHAGE S IL Y A DES NOUVEAUX MESSAGES OU NON -->
-                        <div class="unread"></div>
+                        <div class="name">{{ conversation.room.name }}</div>
+                        <div v-if="conversation.unread > 0" class="unread">{{ conversation.unread }} unread messages</div>
+                        <div v-else class="unread">Nothing to read !</div>
                     </nuxt-link>
                     <hr />
                 </div>
@@ -101,24 +101,14 @@
 
 <script setup>
 
-onMounted(async () => {
+onMounted(() => {
 
     getProfil()
+    getCities()
     getFavoris()
     getToDo()
     getDone()
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
-
-    if (data.value) {
-
-        for(let i = 0; i < data.value.length; i++) {
-
-            cities.value.push(data.value[i].name)
-        }
-    }
+    getRooms()
 })
 
 let color = ref("#FF7A00")
@@ -143,9 +133,7 @@ let user = ref({
     grade: null,
     pronouns: "",
     profil: "",
-    city: "",
-    rooms: [],
-    unreadMessages: []
+    city: ""
 })
 let levelDecimal = ref(1)
 let level = ref(0)
@@ -237,6 +225,21 @@ const getProfil = async () => {
             levelDecimal.value = levelDecimal.value.substring(1)
         }
         level.value = Math.trunc(user.value.level)
+    }
+}
+const getCities = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+
+    if (data.value) {
+
+        for(let i = 0; i < data.value.length; i++) {
+
+            cities.value.push(data.value[i].name)
+        }
     }
 }
 
@@ -457,6 +460,30 @@ const updateToDo = async (value) => {
     })
 
     getToDo()
+}
+
+// Conversations' section
+let rooms = ref([{
+    room: {
+        id: null, 
+        name: ''
+    },
+    unread: null
+}])
+const getRooms = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "rooms/unreads", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        rooms.value = data.value
+    }
 }
 </script>
 
@@ -879,11 +906,18 @@ const updateToDo = async (value) => {
             .conversation {
                 width: 100%;
                 min-height: 25px;
+                transition: color .3s ease-in-out;
                 @include flex($direction:column);
 
                 a {
                     width: 100%;
                     @include flex($justify:space-around);
+                }
+
+                &:hover, &:active {
+
+                    color: $orange;
+                    transition: color .3s ease-in-out;
                 }
             }
 

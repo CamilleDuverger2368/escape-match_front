@@ -124,7 +124,6 @@ let image = ref(false)
 
 onMounted(() => {
 
-    // Get Escape's informations
     getEscape()
 })
 const getEscape = async () => {
