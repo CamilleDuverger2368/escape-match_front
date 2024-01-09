@@ -38,7 +38,7 @@
         </section>
         <hr/>
         <section id="tags">
-            <button v-bind:key="tag" v-for="tag in escape.tags" class="login-button">{{ tag.name }}</button>
+            <button v-bind:key="tag" v-for="tag in escape.tags">{{ tag.name }}</button>
         </section>
         <hr/>
         <section id="grades">
@@ -49,44 +49,44 @@
             <div class="user">
                 <div v-if="userGrade.grade === 0 && changeGrade === false">
                     <h3>You didn't grade this escape yet !</h3>
-                    <button @click="changeGrade = true" class="login-button">Grade this escape</button>
+                    <button @click="changeGrade = true">Grade this escape</button>
                 </div>
                 <div v-else-if="userGrade.grade !== 0 && changeGrade === false" class="old-grade">
                     <h3>Your grade for this escape</h3>
                     <Stars id="old-grade-user" :data="userGrade.grade" />
                     <div class="buttons">
-                        <button @click="changeGrade = true" class="login-button">Change my grade</button>
-                        <button @click="deleteGrade" class="login-button">Remove my grade</button>
+                        <button @click="changeGrade = true">Change my grade</button>
+                        <button @click="deleteGrade">Remove my grade</button>
                     </div>
                 </div>
                 <div v-else-if="changeGrade === true" class="old-grade">
                     <h3 v-if="userGrade.grade !== 0">Your new grade for this escape</h3>
                     <h3 v-else>Grade for this escape</h3>
                     <Ratingstars id="grade-escape" :data="grade" @grade="gradeEscape" />
-                    <button v-if="userGrade.grade === 0" @click="gradeEscapeGame" class="login-button">Grade</button>
-                    <button v-else @click="updateGrade" class="login-button">Update my grade</button>
+                    <button v-if="userGrade.grade === 0" @click="gradeEscapeGame">Grade</button>
+                    <button v-else @click="updateGrade">Update my grade</button>
                 </div>
             </div>
         </section>
         <hr/>
         <section id="list-to-do">
-            <button v-if="!isToDo" @click="addToToDoList" class="login-button top">Add to my to-do list</button>
+            <button v-if="!isToDo" @click="addToToDoList" class=" top">Add to my to-do list</button>
             <div v-else class="actions top">
-                <button @click="removeFromToDoList" class="login-button">Remove from my to-do list</button>
-                <button @click="updateToDoList" class="login-button">Update my willing</button>
+                <button @click="removeFromToDoList">Remove from my to-do list</button>
+                <button @click="updateToDoList">Update my willing</button>
             </div>
             <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" page="escape"/>
         </section>
         <hr/>
         <section id="list-favori">
-            <button v-if="!isFavorite" @click="addToFavoriList" class="login-button top">Add to my favori</button>
-            <button v-else @click="removeFromFavoriList" class="login-button top">Remove from my favori</button>
+            <button v-if="!isFavorite" @click="addToFavoriList" class=" top">Add to my favori</button>
+            <button v-else @click="removeFromFavoriList" class=" top">Remove from my favori</button>
             <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavoris" id="list-favori-escape" page="escape"/>
         </section>
         <hr/>
         <section id="list-done">
-            <button v-if="!isDone" @click="addToDoneList" class="login-button top">Add to my done list</button>
-            <button v-else @click="removeFromDoneList" class="login-button top">Remove from my done list</button>
+            <button v-if="!isDone" @click="addToDoneList" class=" top">Add to my done list</button>
+            <button v-else @click="removeFromDoneList" class=" top">Remove from my done list</button>
             <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listDones" id="list-done-escape" page="escape"/>
         </section>
     </div>
@@ -344,10 +344,9 @@ const updateToDoList = async () => {
     width: 100%;
     @include flex($direction:column);
 
-    .login-button {
+    button {
 
-        padding: 10px;
-        font-size: 1rem;
+        @include button($paddingX:10px, $paddingY:10px, $size:1rem);
     }
 
     hr {
@@ -461,16 +460,15 @@ const updateToDoList = async () => {
                     margin: 15px auto;
                     @include flex($justify:space-around);
 
-                    .login-button {
-                        padding: 10px 25px;
-                        font-size: 1rem;
+                    button {
+            
+                        @include button($paddingY:10px, $paddingX:20px, $size:1rem);
                     }
                 }
 
-                .login-button {
-                    margin: 15px auto;
-                    padding: 10px 25px;
-                    font-size: 1rem;
+                button {
+                    
+                    @include button($paddingY:10px, $paddingX:25px, $size:1rem, $marge:15px auto);
                 }
             }
         }

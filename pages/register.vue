@@ -13,7 +13,7 @@
             <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
             <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
             <Avatar :color="color" page="register"/>
-            <button class="login-button" type="submit">Inscription</button>
+            <button type="submit">Inscription</button>
         </form>
     </div>
 </template>
@@ -247,6 +247,11 @@ const register = async () => {
 
         width: 80%;
         @include flex($direction:column);
+
+        button {
+
+            @include button();
+        }
     }
 }
 </style>

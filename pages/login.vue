@@ -8,7 +8,7 @@
                 <nuxt-link to="/forgot-pwd" class="footer-link">Mot de passe oublié ?</nuxt-link>
                 <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
             </div>
-            <button class="login-button" type="submit">Connexion</button>
+            <button type="submit">Connexion</button>
         </form>
     </div>
 </template>
@@ -131,7 +131,8 @@ const login = async () => {
         }
 
         button {
-            margin-top: 15px;
+
+            @include button($marge:15px auto auto auto);
         }
     }
 }

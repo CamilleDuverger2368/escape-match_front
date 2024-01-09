@@ -7,7 +7,7 @@
                 <nuxt-link to="/login" class="footer-link">Connexion</nuxt-link>
                 <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
             </div>
-            <button class="login-button" type="submit">Réinitialiser mon mot de passe</button>
+            <button type="submit">Réinitialiser mon mot de passe</button>
         </form>
     </div>
 </template>
@@ -146,7 +146,8 @@ const resetPwd = async () => {
         }
 
         button {
-            margin-top: 15px;
+            
+            @include button($marge:15px auto auto auto);
         }
     }
 }

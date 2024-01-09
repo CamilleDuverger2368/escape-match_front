@@ -23,8 +23,8 @@
             <nuxt-link to="/logged/profil">Contacter</nuxt-link>
           </div>
           <div v-else-if="page == 'current'" class="info">
-            <button @click="emit('delete', element.id)" class="login-button">Supprimer</button>
-            <button v-if="toDo" @click="emit('update', element.id)" class="login-button">Actualiser</button>
+            <button @click="emit('delete', element.id)">Supprimer</button>
+            <button v-if="toDo" @click="emit('update', element.id)">Actualiser</button>
           </div>
           <div v-else class="info">
             <!--TO-DO : remplacer par les bonnes actions -->
@@ -130,9 +130,9 @@ const emit = defineEmits(["delete", "udpate"])
           width: 33%;
           @include flex($direction:column);
 
-          .login-button {
-            padding: 5px 10px;
-            margin: 10px auto
+          button {
+
+            @include button($paddingY:5px, $paddingX:10px, $marge:10px auto);
           }
         }
       }

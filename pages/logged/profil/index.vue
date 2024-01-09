@@ -32,8 +32,8 @@
                     <li class="percent--1"><span>Start your adventure to level up !</span></li>
                 </ul>
                 <div class="buttons">
-                    <button class="login-button" type="submit" @click="updateProfil = true">Modifier</button>
-                    <button class="login-button" type="submit" @click="updatePwd = true">Change password</button>
+                    <button type="submit" @click="updateProfil = true">Modifier</button>
+                    <button type="submit" @click="updatePwd = true">Change password</button>
                 </div>
             </div>
             <div v-else-if="updateProfil" class="update-profil">
@@ -48,8 +48,8 @@
                     <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
                     <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
                     <div class="buttons">
-                        <button class="login-button" type="submit">Update</button>
-                        <button class="login-button" @click="updateProfil = false">Retour</button>
+                        <button type="submit">Update</button>
+                        <button @click="updateProfil = false">Retour</button>
                     </div>
                 </form>
             </div>
@@ -59,8 +59,8 @@
                     <Input name="New password" type="password" id="register_pwd" :data="password.password" :error="error.password" :require="true" @check="checkPassword" />
                     <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />
                     <div class="buttons">
-                        <button class="login-button" type="submit">Update</button>
-                        <button class="login-button" @click="updatePwd = false">Retour</button>
+                        <button type="submit">Update</button>
+                        <button @click="updatePwd = false">Retour</button>
                     </div>
                 </form>
             </div>
@@ -69,9 +69,9 @@
             <button @click="openList = false" class="close">X</button>
             <div class="info">
                 <div class="lists">
-                    <button @click="listToShow = 'To-Do'" class="login-button">To-Do</button>
-                    <button @click="listToShow = 'Favori'" class="login-button">Favori</button>
-                    <button @click="listToShow = 'Done'" class="login-button">Done</button>
+                    <button @click="listToShow = 'To-Do'">To-Do</button>
+                    <button @click="listToShow = 'Favori'">Favori</button>
+                    <button @click="listToShow = 'Done'">Done</button>
                 </div>
                 <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @udpate="updateToDo" page="current" />
                 <Tablelist v-else-if="listToShow == 'Favori'" :headers="['Escape', 'Since', 'Actions']" :list="favoris" id="list-favori-user" @delete="deleteFromFavoris" page="current" />
@@ -86,8 +86,7 @@
             <div class="info">
                 <hr v-if="rooms.length > 0" />
                 <div v-bind:key="conversation" v-for="conversation in rooms" class="conversation">
-                    <!-- TO-DO : REMPLACER PAR LES BONS LIENS -->
-                    <nuxt-link to="/login">
+                    <nuxt-link :to="'/logged/conversation/' + conversation.room.id">
                         <div class="name">{{ conversation.room.name }}</div>
                         <div v-if="conversation.unread > 0" class="unread">{{ conversation.unread }} unread messages</div>
                         <div v-else class="unread">Nothing to read !</div>
@@ -855,8 +854,9 @@ const getRooms = async () => {
                 @include flex($justify:space-around);
             }
 
-            .login-button {
-                padding: 10px 20px;
+            button {
+                
+                @include button($paddingY:10px, $paddingX:20px);
             }
         }
     }
