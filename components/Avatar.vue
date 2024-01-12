@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import Avatar from "~/public/avatar.js"
+import Avatar from "~/public/Avatar/experience.js"
 
 const props = defineProps({
     color: {

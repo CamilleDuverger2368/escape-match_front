@@ -1,4 +1,5 @@
 import * as THREE from "three"
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 
 let instance = null
 
@@ -53,10 +54,20 @@ export default class Avatar {
         this.camera.position.z = 3
         this.scene.add(this.camera)
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshBasicMaterial({ color: color })
-        this.mesh = new THREE.Mesh(geometry, material)
-        this.scene.add(this.mesh)
+        // Setup Models
+        const gltfLoader = new GLTFLoader()
+        gltfLoader.load(
+            "../../3D/lego-human.glb",
+            (gltf) =>
+            {
+                scene.add(gltf.scene.children[0])
+            }
+        )
+
+        // const geometry = new THREE.BoxGeometry(1, 1, 1)
+        // const material = new THREE.MeshBasicMaterial({ color: color })
+        // this.mesh = new THREE.Mesh(geometry, material)
+        // this.scene.add(this.mesh)
 
         this.renderer.render(this.scene, this.camera)
 
@@ -86,7 +97,7 @@ export default class Avatar {
         this.time.elapsed = this.time.clock.getElapsedTime()
 
         // Update world
-        this.mesh.rotation.y += 0.01
+        // this.mesh.rotation.y += 0.01
 
         // Render
         this.renderer.render(this.scene, this.camera)
