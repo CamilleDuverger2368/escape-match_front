@@ -5,6 +5,7 @@
                 <img v-if="image" alt="escape" :src="image" />
                 <img v-else alt="escape" src="/escapes/no-image-found.webp" />
                 <h1 class="name">{{ escape.name }}</h1>
+                <h2 v-if="!escape.actual">NO LONGER EXISTS</h2>
             </div>
         </section>
         <section id="description">
@@ -68,8 +69,8 @@
                 </div>
             </div>
         </section>
-        <hr/>
-        <section id="list-to-do">
+        <hr v-if="escape.actual"/>
+        <section v-if="escape.actual" id="list-to-do">
             <button v-if="!isToDo" @click="addToToDoList" class=" top">Add to my to-do list</button>
             <div v-else class="actions top">
                 <button @click="removeFromToDoList">Remove from my to-do list</button>
@@ -97,6 +98,7 @@
 let escape = ref({
     id: 0,
     name: '',
+    actual: true,
     time: 0,
     minPlayer: 0,
     maxPlayer: 0,
@@ -388,6 +390,12 @@ const updateToDoList = async () => {
             .name {
                 position: absolute;
                 text-transform: capitalize;
+            }
+
+            h2 {
+                margin-top: 20%;
+                position: absolute;
+                background-color: $red;
             }
         }
     }
