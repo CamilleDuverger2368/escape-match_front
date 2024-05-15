@@ -14,9 +14,9 @@ $green: #45C4A2;
     flex-direction: $direction;
 }
 
-@mixin button($paddingY: 15px, $paddingX: 35px, $size: 1.25rem, $marge:0) {
+@mixin button($paddingY: 15px, $paddingX: 35px, $size: 1.25rem, $marge:0, $color:$orange) {
     border-radius: 5px;
-    box-shadow: 0 0 10px $orange;
+    box-shadow: 0 0 10px $color;
     padding: $paddingY $paddingX;
     transition: 0.3s ease-in-out;
     color: $white;
@@ -24,8 +24,8 @@ $green: #45C4A2;
     margin: $marge;
 
     &:hover, &:active {
-        box-shadow: 0 0 0 $orange;
-        background-color: rgba($orange, .7);
+        box-shadow: 0 0 0 $color;
+        background-color: rgba($color, .7);
         color: $black;
     }
 }

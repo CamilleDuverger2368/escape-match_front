@@ -35,11 +35,11 @@
                 <div>~ {{ escape.price }}</div>
                 <img src="~/public/icones/euro.svg" alt="price">
             </div>
-            <a :href="link.link" class="footer-link">The escape is here !</a>
+            <a :href="link.link" class="footer-link">The escape here !</a>
         </section>
         <hr/>
         <section id="tags">
-            <button v-bind:key="tag" v-for="tag in escape.tags">{{ tag.name }}</button>
+            <div v-bind:key="tag" v-for="tag in escape.tags">{{ tag.name }}</div>
         </section>
         <hr/>
         <section id="grades">
@@ -402,9 +402,10 @@ const updateToDoList = async () => {
 
     #description {
         
-        width: 100%;
+        width: 90%;
         margin: 20px auto;
         padding: 0 10px;
+        text-align: justify;
         @include flex();
     }
 
@@ -437,6 +438,15 @@ const updateToDoList = async () => {
         grid-template-columns: repeat(2, 1fr);
         grid-row-gap: 20px;
         grid-column-gap: 20px;
+
+        div {
+
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            color: $orange;
+            background-color: rgba($orange, .3);
+        }
     }
 
     #grades {
@@ -504,6 +514,62 @@ const updateToDoList = async () => {
 
         width: 100%;
         @include flex($direction:column);
+    }
+}
+
+@media screen and (min-width: 450px) {
+
+    #escape {
+
+        #title {
+            .composition {
+
+                h2 {
+
+                    margin-top: 8%;
+                }
+            }
+        }
+
+        #description {
+
+            margin: 40px auto;
+        }
+
+        #informations {
+
+            margin: 40px auto;
+            grid-row-gap: 30px;
+            .info {
+
+                img {
+
+                    width: 40px;
+                }
+            }
+        }
+
+        #tags {
+
+            margin: 40px auto;
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+}
+
+@media screen and (min-width: 1100px) {
+
+    #escape {
+
+        #title {
+            .composition {
+
+                h2 {
+
+                    margin-top: 5%;
+                }
+            }
+        }
     }
 }
 </style>
