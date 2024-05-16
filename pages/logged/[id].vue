@@ -45,10 +45,12 @@
         <section id="grades">
             <div class="general">
                 <h3>Escape's average</h3>
-                <Stars id="average" :data="average" />
+                <div v-if="votes > 0">There is {{ votes }} vote(s)</div>
+                <div v-else>There is no vote yet</div>
+                <Stars v-if="votes != 0" id="average" :data="average" />
             </div>
             <div class="user">
-                <div v-if="userGrade.grade === 0 && changeGrade === false">
+                <div v-if="userGrade.grade === 0 && changeGrade === false" class="old-grade">
                     <h3>You didn't grade this escape yet !</h3>
                     <button @click="changeGrade = true">Grade this escape</button>
                 </div>
@@ -95,6 +97,7 @@
 
 <script setup>
 
+// Escape's section
 let escape = ref({
     id: 0,
     name: '',
@@ -144,6 +147,7 @@ const getEscape = async () => {
         description.value = data.value.description
         link.value = data.value.link
         average.value = data.value.average
+        votes.value = data.value.votes
         if (data.value.userGrade === null) {
 
             userGrade.value.grade = 0
@@ -195,10 +199,12 @@ const getEscape = async () => {
 // Grade section
 let changeGrade = ref(false)
 let average = ref(0.0)
+let votes = ref(0)
 let grade = ref(0)
 let userGrade = ref({
     grade: 0
 })
+// Get grade graduating
 const gradeEscape = (data) => {
 
     grade.value = data
@@ -207,11 +213,15 @@ const deleteGrade = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/grade/delete/" + escape.value.id, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
 
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -221,13 +231,19 @@ const gradeEscapeGame = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/grade/" + escape.value.id, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: userGrade.value
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        },
+        body: {
+            grade: Number(userGrade.value.grade)
+        }
     })
 
     if (data.value) {
 
         changeGrade.value = false
+        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -237,13 +253,19 @@ const updateGrade = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/grade/update/" + escape.value.id, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: userGrade.value
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        },
+        body: {
+            grade: Number(userGrade.value.grade)
+        }
     })
 
     if (data.value) {
 
         changeGrade.value = false
+        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -256,11 +278,15 @@ const addToToDoList = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/add/" + escape.value.id, {
         method: "POST",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
     
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -268,11 +294,15 @@ const addToFavoriList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/add/" + escape.value.id, {
         method: "POST",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
     
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -280,11 +310,15 @@ const addToDoneList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/add/" + escape.value.id, {
         method: "POST",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
     
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -292,11 +326,15 @@ const removeFromToDoList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/remove/" + isToDo.value.id, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
     
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -304,11 +342,15 @@ const removeFromFavoriList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + isFavorite.value.id, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
     
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -316,11 +358,15 @@ const removeFromDoneList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/remove/" + isDone.value.id, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" }
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
     
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -328,11 +374,15 @@ const updateToDoList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/update/" + isToDo.value.id, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" }
+                headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
     })
     
     if (data.value) {
 
+        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
         getEscape()
     }
 }
@@ -346,10 +396,10 @@ const updateToDoList = async () => {
     width: 100%;
     @include flex($direction:column);
 
-    button {
+    // button {
 
-        @include button($paddingX:10px, $paddingY:10px, $size:1rem);
-    }
+    //     @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+    // }
 
     hr {
 
@@ -457,7 +507,6 @@ const updateToDoList = async () => {
         .general {
             
             width: 100%;
-            margin: 10px auto;
             @include flex($direction:column);
         }
 
@@ -495,7 +544,13 @@ const updateToDoList = async () => {
     #list-to-do {
 
         width: 100%;
+        margin: 20px auto;
         @include flex($direction:column);
+
+        button {
+
+            @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+        }
 
         .actions {
 
@@ -507,13 +562,25 @@ const updateToDoList = async () => {
     #list-favori {
 
         width: 100%;
+        margin: 20px auto;
         @include flex($direction:column);
+
+        button {
+
+            @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+        }
     }
 
     #list-done {
 
         width: 100%;
+        margin: 20px auto;
         @include flex($direction:column);
+        
+        button {
+
+            @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+        }
     }
 }
 
@@ -554,6 +621,41 @@ const updateToDoList = async () => {
             margin: 40px auto;
             grid-template-columns: repeat(3, 1fr);
         }
+
+        #grades {
+
+            margin: 40px auto;
+
+            .user {
+                .old-grade {
+                    .buttons {
+
+                        width: 50%;
+                        margin: 20px auto;
+                    }
+                }
+            }
+        }
+
+        #list-to-do {
+
+            margin: 40px auto;
+
+            .actions {
+
+                width: 50%;
+            }
+        }
+        
+        #list-favori {
+
+            margin: 40px auto;
+        }
+        
+        #list-done {
+
+            margin: 40px auto;
+        }
     }
 }
 
@@ -568,6 +670,25 @@ const updateToDoList = async () => {
 
                     margin-top: 5%;
                 }
+            }
+        }
+
+        #grades {
+
+            .user {
+                .old-grade {
+                    .buttons {
+
+                        width: 40%;
+                    }
+                }
+            }
+        }
+
+        #list-to-do {
+            .actions {
+
+                width: 40%;
             }
         }
     }
