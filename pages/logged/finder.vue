@@ -5,7 +5,11 @@
                 <button @click="switcher = 'entreprise'" :class="switcher == 'entreprise' ? 'switch left selected' : 'switch left'">entreprise</button>
                 <button @click="switcher = 'tag'" :class="switcher == 'tag' ? 'switch right selected' : 'switch right'">tag</button>
             </div>
-            <div class="variables">
+            <div class="parameters" @click="toggleParameters = !toggleParameters">Parameters</div>
+            <div v-show="toggleParameters" class="variables">
+                <div class="reset" @click="resetParamters()">Reset Parameters</div>
+                <div v-if="parameters.actual === 1" @click="getActualOrNot(0)" class="playable">Playable Actually</div>
+                <div v-else @click="getActualOrNot(1)" class="unplayable">Unplayable Actually</div>
                 <Input name="Minimum de joueureuses" type="number" id="minimum_player" :data="parameters.nbPlayer" :error="error.nbPlayer" :require="false" @check="checkNbPlayer" />
                 <Input name="Prix maximum" type="number" id="maximu_price" :data="parameters.price" :error="error.price" :require="false" @check="checkPrice" />
                 <Locks id="level-select" :data="parameters.level" @level="checkLevel" />
@@ -76,12 +80,14 @@ onMounted(() => {
 
 // Search section
 let switcher = ref("entreprise")
+let toggleParameters = ref(false)
 let parameters = ref({
-    nbPlayer: 1,
-    price: 100,
-    age: 10,
-    time: 40,
-    level: 3
+    nbPlayer: 0,
+    price: 0,
+    age: 0,
+    time: 0,
+    level: 0,
+    actual: 1
 })
 let error = ref({
     nbPlayer: '',
@@ -105,7 +111,8 @@ const getEscapes = async () => {
             level: parameters.value.level,
             age: parameters.value.age,
             time: parameters.value.time,
-            level: parameters.value.level
+            level: parameters.value.level,
+            actual: parameters.value.actual
         }
     })
 
@@ -204,6 +211,21 @@ const checkLevel = (data) => {
     parameters.value.level = Number(data)
     getEscapes()
 }
+const getActualOrNot = (data) => {
+
+    parameters.value.actual = data
+    getEscapes()
+}
+const resetParamters = () => {
+
+    parameters.value.nbPlayer = 0
+    parameters.value.price = 0
+    parameters.value.age = 0
+    parameters.value.time = 0
+    parameters.value.level = 0
+    parameters.value.actual = 1
+    getEscapes()
+}
 </script>
 
 <style lang="scss" scoped>
@@ -262,6 +284,18 @@ const checkLevel = (data) => {
 
         }
 
+        .parameters {
+
+            margin: 10px auto;
+            transition: all 0.5s;
+
+            &:hover, &:active {
+
+                color: $orange;
+                transition: all 0.5s;
+            }
+        }
+
         .variables {
 
             width: 80%;
@@ -269,6 +303,46 @@ const checkLevel = (data) => {
             display: grid;
             grid-template-columns: repeat(1, 1fr);
             grid-row-gap: 5px;
+
+            .reset {
+
+                margin: 10px auto;
+                color: rgba($orange, .7);
+                transition: all 0.5s;
+                @include flex();
+
+                &:hover, &:active {
+
+                    color: $orange;
+                    transition: all 0.5s;
+                }
+            }
+
+            .playable {
+
+                width: 100%;
+                margin-bottom: 20px;
+                color: $green;
+                @include flex();
+
+                &:hover {
+
+                    cursor: pointer;
+                }
+            }
+
+            .unplayable {
+
+                width: 100%;
+                margin-bottom: 20px;
+                color: $red;
+                @include flex();
+
+                &:hover {
+
+                    cursor: pointer;
+                }
+            }
         }
     }
 
