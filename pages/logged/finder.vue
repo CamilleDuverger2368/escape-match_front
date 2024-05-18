@@ -22,7 +22,7 @@
                 <hr/>
                 <div class="line" :key="entreprise" v-for="entreprise in entreprises" :id="'item-' + entreprise['entreprise'].id" @click="toggleEscapes(entreprise['entreprise'].id)">
                     <div class="title">
-                        <img :alt="'logo ' + entreprise['entreprise'].name" class="image" :src="'/logo/logo-' + entreprise['entreprise'].name.toLowerCase().replaceAll(' ', '-') + '.png'" />
+                        <img :alt="'logo ' + entreprise['entreprise'].name" class="image" :src="'/logo/logo-' + entreprise['entreprise'].name.toLowerCase().replaceAll(' ', '-') + '.webp'" />
                         <div class="name">
                             {{ entreprise["entreprise"].name }}
                         </div>
@@ -32,8 +32,14 @@
                             <nuxt-link :to="'/logged/' + escape.id" class="escape">
                                 <div class="title">{{ escape.name }}</div>
                                 <div class="informations">
-                                    <div class="info">{{ escape.time }}<span>min</span></div>
-                                    <div class="info">{{ escape.maxPlayer }}<span> joueureuses max</span></div>
+                                    <div class="info">
+                                        <img src="~/public/icones/hourglass.svg" alt="time">
+                                        <div>{{ escape.time }} min</div>
+                                    </div>
+                                    <div class="info">
+                                        <img src="~/public/icones/group-team.svg" alt="players">
+                                        <div>{{ escape.minPlayer }} to {{ escape.maxPlayer }}</div>
+                                    </div>
                                 </div>
                             </nuxt-link>
                         </li>
@@ -45,7 +51,6 @@
                 <hr/>
                 <div class="line" :key="tag" v-for="tag in tags" :id="'item-' + tag['tag'].id" @click="toggleEscapes(tag['tag'].id)">
                     <div class="title">
-                        <img :alt="'logo ' + tag['tag'].name" class="image" :src="'/logo/logo-' + tag['tag'].name.toLowerCase().replaceAll(' ', '-') + '.jpg'" />
                         <div class="name">
                             {{ tag["tag"].name }}
                         </div>
@@ -55,8 +60,14 @@
                             <nuxt-link :to="'/logged/' + escape.id" class="escape">
                                 <div class="title">{{ escape.name }}</div>
                                 <div class="informations">
-                                    <div class="info">{{ escape.time }}<span>min</span></div>
-                                    <div class="info">{{ escape.maxPlayer }}<span> joueureuses max</span></div>
+                                    <div class="info">
+                                        <img src="~/public/icones/hourglass.svg" alt="time">
+                                        <div>{{ escape.time }} min</div>
+                                    </div>
+                                    <div class="info">
+                                        <img src="~/public/icones/group-team.svg" alt="players">
+                                        <div>{{ escape.minPlayer }} to {{ escape.maxPlayer }}</div>
+                                    </div>
                                 </div>
                             </nuxt-link>
                         </li>
@@ -372,17 +383,17 @@ const resetParamters = () => {
                 .title {
                     width: 100%;
                     margin-top: 25px;
-                    @include flex($justify:space-around, $align:flex-start);
+                    @include flex($justify:space-around, $align:center);
 
                     .image {
                         width: 20%;
                     }
 
                     .name {
-                        width: 50%;
+                        width: 60%;
                         z-index: 40;
-                        margin-top: 25px;
-                        text-align: flex-start;
+                        font-size: 1.5rem;
+                        text-align: center;
                     }
                 }
                 
@@ -418,18 +429,28 @@ const resetParamters = () => {
 
                         a {
                             width: 100%;
-                            @include flex($justify: space-between);
+                            margin: 10px auto;
+                            @include flex($justify: space-around);
 
                             .title {
+                                width: 50%;
                                 margin: unset;
                             }
 
                             .informations {
-                                @include flex($justify: space-between);
+                                width: 45%;
+                                @include flex($justify: space-around);
 
                                 .info {
+
+                                    width: 50%;
                                     @include flex();
-                                    margin: 5px;
+
+                                    img {
+
+                                        width: 30%;
+                                        margin: auto 3px;
+                                    }
                                 }
                             }
                         }

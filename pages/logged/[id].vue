@@ -396,11 +396,6 @@ const updateToDoList = async () => {
     width: 100%;
     @include flex($direction:column);
 
-    // button {
-
-    //     @include button($paddingX:10px, $paddingY:10px, $size:1rem);
-    // }
-
     hr {
 
         width: 75%;
