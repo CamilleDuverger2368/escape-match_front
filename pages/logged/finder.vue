@@ -297,7 +297,7 @@ const resetParamters = () => {
 
         .parameters {
 
-            margin: 10px auto;
+            margin: 30px auto 0 auto;
             transition: all 0.5s;
 
             &:hover, &:active {
@@ -310,7 +310,7 @@ const resetParamters = () => {
         .variables {
 
             width: 80%;
-            margin: 30px auto 20px auto;
+            margin: 20px auto;
             display: grid;
             grid-template-columns: repeat(1, 1fr);
             grid-row-gap: 5px;
@@ -333,12 +333,15 @@ const resetParamters = () => {
 
                 width: 100%;
                 margin-bottom: 20px;
-                color: $green;
+                color: rgba($green, .7);
+                transition: all 0.5s;
                 @include flex();
 
-                &:hover {
+                &:hover, &:active {
 
                     cursor: pointer;
+                    color: $green;
+                    transition: all 0.5s;
                 }
             }
 
@@ -346,12 +349,15 @@ const resetParamters = () => {
 
                 width: 100%;
                 margin-bottom: 20px;
-                color: $red;
+                color: rgba($red, .7);
+                transition: all 0.5s;
                 @include flex();
 
                 &:hover {
 
                     cursor: pointer;
+                    color: $red;
+                    transition: all 0.5s;
                 }
             }
         }
@@ -451,6 +457,110 @@ const resetParamters = () => {
                                         width: 30%;
                                         margin: auto 3px;
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 450px) {
+
+    #finder {
+        #search {
+            #switcher {
+                width: 40%;
+            }
+
+            .variables {
+                margin: 10px auto;
+                grid-template-columns: repeat(2, 1fr);
+                grid-column-gap: 30px;
+                grid-row-gap: 20px;
+
+                .playable {
+                    margin: 10px auto;
+                }
+            }
+        }
+
+        #result {
+            #tags, #entreprises, .emtpy {
+                .line {
+                    .title {
+                        .image {
+                            width: 10%;
+                        }
+
+                        .name {
+                            width: 40%;
+                            text-align: start;
+                        }
+                    }
+
+                    ul {
+                        li {
+                            a {
+                                margin: 20px auto;
+                                
+                                .title {
+                                    width: 60%;
+                                }
+                            
+                                .informations {
+                                    width: 40%;
+
+                                    .info {
+                                        img {
+                                            width: 20%;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 1100px) {
+
+    #finder {
+        #search {
+            #switcher {
+                width: 30%;
+            }
+
+            .variables {
+                width: 40%;
+            }
+        }
+
+        #result {
+            #tags, #entreprises, .emtpy {
+                .line {
+                    .title {
+                        .image {
+                            width: 5%;
+                        }
+                    }
+
+                    ul {
+                        li {
+                            a {
+                                margin: 20px auto;
+                                
+                                .title {
+                                    width: 70%;
+                                }
+                            
+                                .informations {
+                                    width: 20%;
                                 }
                             }
                         }

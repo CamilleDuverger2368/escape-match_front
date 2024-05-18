@@ -35,7 +35,7 @@
                 <div>~ {{ escape.price }}</div>
                 <img src="~/public/icones/euro.svg" alt="price">
             </div>
-            <a :href="link.link" class="footer-link">The escape here !</a>
+            <a :href="link.link" class="footer-link" target="_blanck">The escape here !</a>
         </section>
         <hr/>
         <section id="tags">
