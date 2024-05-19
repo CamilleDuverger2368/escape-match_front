@@ -1,8 +1,8 @@
 <template>
     <div class="input">      
         <div class="error">{{ error }}</div>
-            <input v-if="require" v-model="model" :id="'input_' + id" class="require" :type="type" required>
-            <input v-else v-model="model" :id="'input_' + id" :type="type">
+        <input v-if="require" v-model="model" :id="'input_' + id" class="require" :type="type" required>
+        <input v-else v-model="model" :id="'input_' + id" :type="type">
         <label>{{ name }}</label>
     </div>
 </template>
@@ -58,14 +58,15 @@ let model = computed({
     width: 100%;
     position: relative;
     z-index: 0;
-    margin: 15px auto;
+    margin: 20px auto;
 
     .error {
         color: $red;
         position: absolute;
+        width: 100%;
         pointer-events: none;
-        right: 10px;
-        top: -20px;
+        // right: 10px;
+        top: 45px;
         font-size: .8rem;
 
         &:not(:empty) ~ label {
