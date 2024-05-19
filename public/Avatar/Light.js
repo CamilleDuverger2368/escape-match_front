@@ -28,4 +28,9 @@ export default class Light {
         this.directional.shadow.camera.far = 15
         this.scene.add(this.directional)
     }
+
+    changeColor(color) {
+
+        this.directional.color.set(color)
+    }
 }

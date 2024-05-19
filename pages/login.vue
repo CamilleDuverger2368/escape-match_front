@@ -1,6 +1,6 @@
 <template>
     <div id="login">
-        <section id="error">{{ error.general }}</section>
+        <section id="informations">{{ error.general }}</section>
         <form id="form" @submit.prevent="login()">
             <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="error.email" :require="true" @check="checkEmail" />
             <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="error.password" :require="true" @check="checkPwd" />
@@ -20,6 +20,8 @@ import { useAuthStore } from "~/store/auth";
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const router = useRouter()
+const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
 
 let user = ref({
     username: '',
@@ -32,7 +34,37 @@ let error = ref({
     general: ''
 })
 
-// Email's section
+// Validation mail's section
+onMounted(() => {
+    if (link in route.query) {
+
+        validateEmail(route.query.link)
+    }
+})
+const validateEmail = async (link) => {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/validation/" + link, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"}
+    })
+
+    if (data.value) {
+
+        if (data.value[0] === 204) {
+
+            error.value.general = data.value.message
+            document.getElementById("informations").classList.add("success")
+            document.getElementById("informations").classList.remove("error")
+        } else {
+
+            error.value.general = data.value.message
+            document.getElementById("informations").classList.add("error")
+            document.getElementById("informations").classList.remove("success")
+        }
+    }
+}
+
+// Check's section
 const checkEmail = (data) => {
 
     const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
@@ -46,8 +78,6 @@ const checkEmail = (data) => {
         error.value.email = "Give us a valid email please."
     }
 }
-
-// Password's section
 const checkPwd = (data) => {
 
     if (data.length > 1) {
@@ -90,7 +120,7 @@ const login = async () => {
     width: 100%;
     @include flex($direction:column);
 
-    #error {
+    #informations {
         
         width: 80%;
         min-height: 40px;
@@ -102,9 +132,23 @@ const login = async () => {
         -moz-transition: 0.2s ease all;
         -webkit-transition: 0.2s ease all;
 
-        &:not(:empty) {
+        &.success {
+            
+            color: $green;
+        }
+
+        &.error:not(:empty) {
 
             box-shadow: 0 0 5px $red;
+            background-color: $black;
+            padding: 0 15px;
+            border-radius: 5px;
+            opacity: 1;
+        }
+
+        &.success:not(:empty) {
+
+            box-shadow: 0 0 5px $green;
             background-color: $black;
             padding: 0 15px;
             border-radius: 5px;
@@ -133,6 +177,32 @@ const login = async () => {
         button {
 
             @include button($marge:15px auto auto auto);
+        }
+    }
+}
+
+@media screen and (min-width: 450px) {
+
+    #login {
+        #informations {
+            width: 60%;
+        }
+
+        #form {
+            width: 60%;
+        }
+    }
+}
+
+@media screen and (min-width: 1100px) {
+
+    #login {
+        #informations {
+            width: 35%;
+        }
+
+        #form {
+            width: 35%;
         }
     }
 }

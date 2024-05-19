@@ -67,12 +67,7 @@ export default class Experience {
 
     changeColor(color) {
 
-        this.scene.remove(this.mesh)
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshBasicMaterial({ color: color })
-        this.mesh = new THREE.Mesh(geometry, material)
-        this.scene.add(this.mesh)
-
+        this.world.changeColor(color)
         this.renderer.update()
     }
 }

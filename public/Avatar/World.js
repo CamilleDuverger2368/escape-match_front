@@ -35,4 +35,9 @@ export default class World {
             this.avatar.avatar.rotation.y += 0.01
         }
     }
+
+    changeColor(color) {
+
+        this.light.changeColor(color)
+    }
 }

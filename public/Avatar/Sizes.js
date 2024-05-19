@@ -8,7 +8,13 @@ export default class Sizes extends EventEmitter {
 
         if (page === "register") {
 
-            this.width = window.innerWidth * 0.8
+            if (window.innerWidth > 1100) {
+                this.width = window.innerWidth * 0.35
+            } else if (window.innerWidth > 450 && window.innerWidth <= 1100) {
+                this.width = window.innerWidth * 0.6
+            } else {
+                this.width = window.innerWidth * 0.8
+            }
             this.height = 400
         } else {
 

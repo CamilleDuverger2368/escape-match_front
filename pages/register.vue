@@ -10,8 +10,8 @@
             <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
             <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" :require="true" @check="checkPassword" />
             <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />
-            <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
-            <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
+            <Multipleradio title="Choose your pronouns" :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
+            <Multipleradio title="Choose your profil" :options="profil" :data="user.profil" @radio="checkProfil" />
             <Avatar :color="color" page="register"/>
             <button type="submit">Inscription</button>
         </form>
@@ -193,6 +193,7 @@ const register = async () => {
         error.value.general = "Check your errors please."
     } else {
 
+        document.documentElement.scrollTop = 0
         const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -246,11 +247,38 @@ const register = async () => {
     form {
 
         width: 80%;
+        margin-bottom: 30px;
         @include flex($direction:column);
 
         button {
 
             @include button();
+        }
+    }
+}
+
+@media screen and (min-width: 450px) {
+
+    #register {
+        #informations {
+            width: 60%;
+        }
+
+        form {
+            width: 60%;
+        }
+    }
+}
+
+@media screen and (min-width: 1100px) {
+
+    #register {
+        #informations {
+            width: 35%;
+        }
+
+        form {
+            width: 35%;
         }
     }
 }
