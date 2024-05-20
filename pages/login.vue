@@ -36,28 +36,29 @@ let error = ref({
 
 // Validation mail's section
 onMounted(() => {
-    if (link in route.query) {
+
+    if (route.query.link) {
 
         validateEmail(route.query.link)
     }
 })
 const validateEmail = async (link) => {
     
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/validation/" + link, {
+    const data = await useFetch(runtimeConfig.public.apiBase + "unlog/validation/" + link, {
         method: "PUT",
         headers: {"Content-Type": "application/json"}
     })
 
-    if (data.value) {
+    if (data) {
 
-        if (data.value[0] === 204) {
+        if (data.status.value === "success") {
 
-            error.value.general = data.value.message
+            error.value.general = "Email validated !"
             document.getElementById("informations").classList.add("success")
             document.getElementById("informations").classList.remove("error")
         } else {
 
-            error.value.general = data.value.message
+            error.value.general = data.error.value
             document.getElementById("informations").classList.add("error")
             document.getElementById("informations").classList.remove("success")
         }

@@ -194,21 +194,29 @@ const register = async () => {
     } else {
 
         document.documentElement.scrollTop = 0
-        const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/register", {
+        const data = await useFetch(runtimeConfig.public.apiBase + "unlog/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: user.value
         })
 
-        if (data.value[0] === 201) {
+        if (data) {
 
-            error.value.general = ""
-            document.getElementById("informations").classList.remove("error")
-            router.push("/login")
-        } else {
+            if (data.status.value === "success") {
 
-            error.value.general = data.value.message
-            document.getElementById("informations").classList.add("error")
+                error.value.general = "Account created !"
+                document.getElementById("informations").classList.add("success")
+                document.getElementById("informations").classList.remove("error")
+                setTimeout(() => {
+
+                    router.push("/login")
+                }, 3000)
+            } else {
+
+                error.value.general = data.error.value
+                document.getElementById("informations").classList.add("error")
+                document.getElementById("informations").classList.remove("success")
+            }
         }
     }
 }
@@ -234,9 +242,23 @@ const register = async () => {
         -moz-transition: 0.2s ease all;
         -webkit-transition: 0.2s ease all;
 
+        &.success {
+            
+            color: $green;
+        }
+
         &.error:not(:empty) {
 
             box-shadow: 0 0 5px $red;
+            background-color: $black;
+            padding: 0 15px;
+            border-radius: 5px;
+            opacity: 1;
+        }
+
+        &.success:not(:empty) {
+
+            box-shadow: 0 0 5px $green;
             background-color: $black;
             padding: 0 15px;
             border-radius: 5px;
