@@ -30,7 +30,7 @@ $green: #45C4A2;
     }
 }
 
-@mixin link($color:$orange) {
+@mixin link($color: $orange) {
     position: relative;
     margin: 5px auto;
     transition: color .3s ease-in-out;
