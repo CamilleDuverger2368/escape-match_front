@@ -29,7 +29,7 @@
                     </div>
                     <ul :id="'ul-' + entreprise['entreprise'].id">
                         <li v-for="escape in entreprise['escapes']" :key="escape">
-                            <nuxt-link :to="'/logged/' + escape.id" class="escape">
+                            <nuxt-link :to="'/logged/' + escape.id + '?entreprise=' + entreprise['entreprise'].id" class="escape">
                                 <div class="title">{{ escape.name }}</div>
                                 <div class="informations">
                                     <div class="info">

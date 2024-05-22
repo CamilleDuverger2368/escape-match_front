@@ -129,8 +129,81 @@ let image = ref(false)
 
 onMounted(() => {
 
-    getEscape()
+    if (route.query.entreprise) {
+
+        getEscapeWithEntreprise()
+    } else {
+
+        getEscape()
+    }
+
 })
+
+const getEscapeWithEntreprise = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/" + route.params.id + "/entreprise/" + route.query.entreprise, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        escape.value = data.value.escape
+        description.value = data.value.description
+        link.value = data.value.link
+        average.value = data.value.average
+        votes.value = data.value.votes
+        if (data.value.userGrade === null) {
+
+            userGrade.value.grade = 0
+        } else {
+
+            userGrade.value.grade = data.value.userGrade
+        }
+        isToDo.value = data.value.isToDo
+        isFavorite.value = data.value.isFavorite
+        isDone.value = data.value.isDone
+        
+        // Check if escape's image exist
+        const img = new Image()
+        img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-')  + '-' + escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + ".webp"
+
+        if (img.complete) {
+
+            image.value = img.src
+        } else {
+
+            img.onload = () => {
+
+                image.value = img.src
+            }
+
+            img.onerror = () => {
+
+                img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
+                if (img.complete) {
+
+                    image.value = img.src
+                } else {
+
+                    img.onload = () => {
+
+                        image.value = img.src
+                    }
+
+                    img.onerror = () => {
+
+                        image.value = false
+                    }
+                }
+            }
+        }
+    }
+}
+
 const getEscape = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/" + route.params.id, {
