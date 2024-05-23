@@ -68,11 +68,12 @@ const validateEmail = async (link) => {
 // Check's section
 const checkEmail = (data) => {
 
+    user.value.username = data
+
     const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
     if (data.match(validRegex)) {
 
-        user.value.username = data
         error.value.email = ""
     } else {
 
@@ -80,10 +81,11 @@ const checkEmail = (data) => {
     }
 }
 const checkPwd = (data) => {
+    
+    user.value.password = data
 
     if (data.length > 1) {
 
-        user.value.password = data
         error.value.password = ""
     } else {
 

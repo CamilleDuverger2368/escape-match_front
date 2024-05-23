@@ -22,12 +22,13 @@ let error = ref({
 const runtimeConfig = useRuntimeConfig();
 // Email's section
 const checkEmail = async (datum) => {
+    
+    email.value = datum
 
     const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
     if (datum.match(validRegex)) {
 
-        email.value = datum
         error.value.email = ""
         const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/email-exist/" + email.value, {
             method: "GET",

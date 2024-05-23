@@ -96,11 +96,12 @@ const checkFirstname = (data) => {
 }
 const checkEmail = (data) => {
 
+    user.value.email = data
+    
     const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
     if (data.match(validRegex)) {
 
-        user.value.email = data
         error.value.email = ""
     } else {
 
@@ -142,12 +143,13 @@ const checkCity = (data) => {
     user.value.city = data
 }
 const checkPassword = (data) => {
+    
+    user.value.password = data
 
     const validRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
 
     if (data.match(validRegex)) {
 
-        user.value.password = data
         error.value.password = ""
     } else {
 

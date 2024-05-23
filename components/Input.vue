@@ -45,7 +45,7 @@ let model = computed({
     },
 
     set(value) {
-
+        
         emit("check", value)
     }
 })
