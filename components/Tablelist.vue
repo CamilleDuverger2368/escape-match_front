@@ -11,24 +11,22 @@
         <hr />
         <div class="line">
           <div v-if="page == 'escape'" class="info">
-            <nuxt-link v-if="element.user.pseudo" :to="'/logged/profil' + element.user.id" class="footer-link">{{ element.user.pseudo }}</nuxt-link>
-            <nuxt-link v-else :to="'/logged/profil' + element.user.id" class="footer-link">{{ element.user.firstname + ' ' + element.user.name }}</nuxt-link>
+            <div v-if="element.user.pseudo">{{ element.user.pseudo }}</div>
+            <div v-else>{{ element.user.firstname + ' ' + element.user.name }}</div>
           </div>
           <div v-else class="info">
             <nuxt-link :to="'/logged/' + element.escape.id" class="footer-link">{{ element.escape.name }}</nuxt-link>
           </div>
           <div class="info center">{{ formatDate(element.since) }}</div>
           <div v-if="page == 'escape'" class="info">
-            <!--TO-DO : remplacer par les bonnes actions -->
-            <nuxt-link to="/logged/profil">Contacter</nuxt-link>
+            <nuxt-link :to="'/logged/profil/' + element.user.id" class="footer-link">Profil</nuxt-link>
           </div>
           <div v-else-if="page == 'current'" class="info">
             <button @click="emit('delete', element.id)">Supprimer</button>
             <button v-if="toDo" @click="emit('update', element.id)">Actualiser</button>
           </div>
           <div v-else class="info">
-            <!--TO-DO : remplacer par les bonnes actions -->
-            <nuxt-link to="/logged/profil">Contacter</nuxt-link>
+            <nuxt-link :to="'/logged/profil/' + element.user.id" class="footer-link">Profil</nuxt-link>
           </div>
         </div>
       </div>

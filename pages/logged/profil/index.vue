@@ -88,7 +88,7 @@
                 <div v-bind:key="conversation" v-for="conversation in rooms" class="conversation">
                     <nuxt-link :to="'/logged/conversation/' + conversation.room.id">
                         <div class="name">{{ conversation.room.name }}</div>
-                        <div v-if="conversation.unread > 0" class="unread">{{ conversation.unread }} unread messages</div>
+                        <div v-if="conversation.unread_message > 0" class="unread">{{ conversation.unread_message }} unread messages</div>
                         <div v-else class="unread">Nothing to read !</div>
                     </nuxt-link>
                     <hr />
@@ -473,7 +473,7 @@ let rooms = ref([{
 }])
 const getRooms = async () => {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "rooms/unreads", {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "messages/unread", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

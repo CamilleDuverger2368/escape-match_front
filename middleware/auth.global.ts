@@ -4,6 +4,7 @@ export default defineNuxtRouteMiddleware((to) => {
     
     const { authenticated } = storeToRefs(useAuthStore())
     const token = useCookie("token")
+    // for messages' request
 
     if (token.value) {
 
@@ -12,7 +13,7 @@ export default defineNuxtRouteMiddleware((to) => {
 
     if (token.value && to.name === "login") {
 
-        return navigateTo('/logged/profil')
+        return navigateTo("/logged/profil")
     }
 
     if (!token.value && to.name !== "login" && to.name !== "/" && to.name !== "forgot-pwd" && to.name !== "register") {
