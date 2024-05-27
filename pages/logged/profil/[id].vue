@@ -7,6 +7,7 @@
         <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
         <div v-else class="no-profil">No Profil</div>
         <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
+        <div class="contact" @click="getRoom()">Start a talk !</div>
         <ul v-if="user.level">
             <li :class="'percent--' + levelDecimal"><span>level {{ level }}</span></li>
         </ul>
@@ -25,6 +26,7 @@
 <script setup>
 
 const route = useRoute()
+const router = useRouter()
 const token = useCookie("token")
 const runtimeConfig = useRuntimeConfig()
 let color = ref("#FF7A00")
@@ -72,6 +74,24 @@ const getAlterUserProfil = async () => {
             levelDecimal.value = levelDecimal.value.substring(1)
         }
         level.value = Math.trunc(user.value.level)
+    }
+}
+const getRoom = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "rooms/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        },
+        body: {
+            members: [route.params.id]
+        }
+    })
+
+    if (data.value) {
+        
+        router.push("/logged/conversation/" + data.value.id)
     }
 }
 </script>
@@ -185,6 +205,12 @@ const getAlterUserProfil = async () => {
             width: 25px;
             margin-right: 15px;
         }
+    }
+
+    .contact {
+
+        color: $orange;
+        @include link($color:$orange);
     }
 
     .Solver {

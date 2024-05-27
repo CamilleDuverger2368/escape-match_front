@@ -20,6 +20,11 @@
                     <div v-else>{{ admin.firstname + ' ' + admin.name }}</div>
                 </div>
                 <div class="title">Members</div>
+                <div v-if="addingMember === false && isAdmin === true" class="change" @click="addingMember = true">add member</div>
+                <form v-else-if="addingMember === true && isAdmin === true" id="form-add-member" @submit.prevent="addMember()">
+                    <ListfieldUsers title="Choose member to add" :options="people" :data="newMember" @select="checkMember"/>
+                    <button type="submit" class="submit">Add</button>
+                </form>
                 <div class="line" v-bind:key="member" v-for="member in room.members">
                     <div v-if="member.pseudo">{{ member.pseudo }}</div>
                     <div v-else>{{ member.firstname + ' ' + member.name }}</div>
@@ -65,10 +70,12 @@ const router = useRouter()
 
 let openInformations = ref(false)
 let changeName = ref(false)
+let addingMember = ref(false)
 
 onMounted(() => {
 
     getRoom()
+    getPeople()
     readMessages()
 })
 onBeforeUnmount(() => {
@@ -87,6 +94,8 @@ let room = ref({
 })
 let message = ref('')
 let roomName = ref('')
+let people = ref([])
+let newMember = ref(0)
 let error = ref({
     message: '',
     roomName: ''
@@ -220,6 +229,43 @@ const kickOff = async (userId) => {
             member: userId
         }
     })
+}
+const getPeople = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/list", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        people.value = data.value
+    }
+}
+const addMember = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "rooms/add/member/" + route.params.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        },
+        body: {
+            member: newMember.value
+        }
+    })
+
+    if (data.value) {
+
+        addingMember.value = false
+    }
+}
+const checkMember = async (data) => {
+
+    newMember.value = data
 }
 </script>
 
