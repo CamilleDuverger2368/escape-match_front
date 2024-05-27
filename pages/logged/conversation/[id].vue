@@ -6,7 +6,13 @@
         <section id="informations" :class="openInformations ? 'active' : 'inactive'">
             <button @click="openInformations = false" class="close">X</button>
             <div class="info">
-                <div class="name">{{ room.name }}</div>
+                <div v-if="changeName === false" class="name">{{ roomName }}</div>
+                <form v-else id="form-update-room-name" @submit.prevent="updateRoomName()">
+                    <Input name="Room's new name" type="text" id="room_name" :data="roomName" :error="error.roomName" :require="true" @check="checkName" />
+                    <button type="submit" class="submit">Update</button>
+                </form>
+                <button v-if="changeName === false" @click="changeName = true" class="change">Change Room's name</button>
+                <button v-else @click="changeName = false" class="change">Retour</button>
                 <div class="date">Created at {{ formatDate(room.createdAt) }}</div>
                 <div class="title">Admin(s)</div>
                 <div class="line" v-bind:key="admin" v-for="admin in room.admins">
@@ -58,13 +64,17 @@ const route = useRoute()
 const router = useRouter()
 
 let openInformations = ref(false)
+let changeName = ref(false)
 
 onMounted(() => {
 
     getRoom()
     readMessages()
 })
-// VERIRIFER QUAND ON PART POUR ARRETER LE TIMEOUT
+onBeforeUnmount(() => {
+    
+    clearTimeout()
+})
 const currentUser = useCookie("email")
 let isAdmin = ref(false)
 let room = ref({
@@ -76,8 +86,10 @@ let room = ref({
     admins: []
 })
 let message = ref('')
+let roomName = ref('')
 let error = ref({
-    message: ''
+    message: '',
+    roomName: ''
 })
 const getRoom = async () => {
 
@@ -92,6 +104,9 @@ const getRoom = async () => {
     if (data.value) {
 
         room.value = data.value
+        if (roomName.value === '') {
+            roomName.value = data.value.name
+        }
         for(let i = 0; i < room.value.admins.length; i++) {
 
             if (room.value.admins[0].email === currentUser.value) {
@@ -101,6 +116,28 @@ const getRoom = async () => {
         }
         setTimeout(getRoom, 200)
     }
+}
+const updateRoomName = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "rooms/update/name/" + route.params.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        },
+        body: {
+            name: roomName.value
+        }
+    })
+
+    if (data.value) {
+
+        changeName.value = false
+    }
+}
+const checkName = (data) => {
+
+    roomName.value = data
 }
 const sendMessage = async () => {
 
@@ -148,7 +185,6 @@ const quitRoom = async () => {
 
     if (data.value) {
 
-        clearTimeout()
         router.push("/logged/profil")
     }
 }
@@ -311,6 +347,23 @@ const kickOff = async (userId) => {
                 font-size: 1.5rem;
                 font-weight: bold;
                 color: $orange;
+            }
+
+            form {
+                width: 70%;
+                @include flex($direction:column);
+
+                .submit {
+                    width: 50%;
+                    margin: 20px auto;
+                    @include button($color:$orange);
+                    @include flex();
+                }
+            }
+
+            .change {
+                color: $orange;
+                @include link($color:$orange);
             }
 
             .date {
