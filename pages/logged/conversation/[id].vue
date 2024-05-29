@@ -494,4 +494,47 @@ const checkMember = async (data) => {
         transform: translate(100vw);
     }
 }
+
+@media screen and (min-width: 450px) {
+    #room {
+        #current {
+            width: 70%;
+        }
+
+        #informations {
+            #info {
+                width: 70%;
+            }
+        }
+    }
+}
+
+@media screen and (min-width: 1100px) {
+    #room {
+        #current {
+            width: 50%;
+
+            #message {
+
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+            }
+        }
+
+        #informations {
+
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            #info {
+                width: 50%;
+            }
+        }
+    }
+}
 </style>
