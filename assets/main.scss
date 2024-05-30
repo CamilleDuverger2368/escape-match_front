@@ -1,0 +1,141 @@
+@import "variables";
+
+html {
+    font-size: 15px;
+    color: $white;
+    background-color: $black;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        overflow-x: hidden;
+        margin: 0;
+        @include flex(space-between, unset, column);
+
+        .container {
+            margin: 0 auto;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        button {
+            font-family: inherit;
+            background: unset;
+            color: inherit;
+            border: none;
+        }
+    
+        input {
+            outline: none;
+            border: none;
+            font-family: 'Geomanist', sans-serif;
+        }
+    
+        select {
+            appearance: none;
+            border: 0;
+            outline: 0;
+            font: inherit;
+        }
+
+        figure {
+            margin: 0;
+        }
+    
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+    
+        img {
+            object-fit: contain;
+        }
+
+        .composition {
+            position: relative;
+        }
+
+        // Links
+
+        .footer-link {
+            
+            @include link();
+        }
+
+        // Buttons
+
+        // .login {
+        //     position: relative;
+        //     color: $white;
+        //     box-shadow: 0 0 5px $orange;
+        //     border-radius: 5px;
+        //     transition: all 500ms cubic-bezier(0.77, 0, 0.175, 1);
+        //     cursor: pointer;
+        //     user-select: none;
+        //     font-size: 1rem;
+        //     padding: 15px 40px;
+
+        //     &:before {
+        //         top: 0;
+        //         left: 50%;
+        //         height: 100%;
+        //         width: 0;
+        //         border: 1px solid $orange;
+        //         border-left: 0;
+        //         border-right: 0;
+        //     }
+
+        //     &:after {
+        //         bottom: 0;
+        //         left: 0;
+        //         height: 0;
+        //         width: 100%;
+        //         background: $orange;
+        //     }
+
+            
+        //     &:before, &:after {
+        //         content: '';
+        //         position: absolute;
+        //         transition: inherit;
+        //         z-index: -1;
+        //     }
+
+        //     &:hover {
+        //         color: $black;
+        //         box-shadow: 0 0 0 $orange;
+        //         transition-delay: .5s;
+        //     }
+
+        //     &:hover:before {
+        //         transition-delay: 0s;
+        //         left: 0;
+	    //         width: 100%;
+        //     }
+
+        //     &:hover:after {
+        //         background: $orange;
+        //         transition-delay: .35s;
+        //         top: 0;
+	    //         height: 100%;
+        //     }
+        // }
+    }
+}
+
+@media screen and (min-width: 450px) {
+
+    html {
+        font-size: 18px;
+    }
+}
+
+@media screen and (min-width: 1100px) {
+
+    html {
+        font-size: 20px;
+    }
+}

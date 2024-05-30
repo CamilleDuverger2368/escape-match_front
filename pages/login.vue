@@ -1,0 +1,212 @@
+<template>
+    <div id="login">
+        <section id="informations">{{ error.general }}</section>
+        <form id="form" @submit.prevent="login()">
+            <Input name="Email" type="email" id="connexion_email" :data="user.username" :error="error.email" :require="true" @check="checkEmail" />
+            <Input name="Password" type="password" id="connexion_password" :data="user.password" :error="error.password" :require="true" @check="checkPwd" />
+            <div class="links">
+                <nuxt-link to="/forgot-pwd" class="footer-link">Mot de passe oublié ?</nuxt-link>
+                <nuxt-link to="/register" class="footer-link">Inscription</nuxt-link>
+            </div>
+            <button type="submit">Connexion</button>
+        </form>
+    </div>
+</template>
+
+<script setup>
+import { storeToRefs } from "pinia";
+import { useAuthStore } from "~/store/auth";
+
+const { authenticateUser } = useAuthStore();
+const { authenticated } = storeToRefs(useAuthStore());
+const router = useRouter()
+const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
+
+let user = ref({
+    username: '',
+    password: ''
+})
+
+let error = ref({
+    email: '',
+    password: '',
+    general: ''
+})
+
+// Validation mail's section
+onMounted(() => {
+
+    if (route.query.link) {
+
+        validateEmail(route.query.link)
+    }
+})
+const validateEmail = async (link) => {
+    
+    const data = await useFetch(runtimeConfig.public.apiBase + "unlog/validation/" + link, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"}
+    })
+
+    if (data) {
+
+        if (data.status.value === "success") {
+
+            error.value.general = "Email validated !"
+            document.getElementById("informations").classList.add("success")
+            document.getElementById("informations").classList.remove("error")
+        } else {
+
+            error.value.general = data.error.value
+            document.getElementById("informations").classList.add("error")
+            document.getElementById("informations").classList.remove("success")
+        }
+    }
+}
+
+// Check's section
+const checkEmail = (data) => {
+
+    user.value.username = data
+
+    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+
+    if (data.match(validRegex)) {
+
+        error.value.email = ""
+    } else {
+
+        error.value.email = "Give us a valid email please."
+    }
+}
+const checkPwd = (data) => {
+    
+    user.value.password = data
+
+    if (data.length > 1) {
+
+        error.value.password = ""
+    } else {
+
+        error.value.password = "Give us a password please."
+    }
+}
+
+// login's section
+const login = async () => {
+
+    error.value.general = ""
+    if (error.value.password || error.value.email) {
+
+        error.value.general = "Give us a valid email and a password please."
+    } else {
+
+        await authenticateUser(user.value)
+        error.value.general =""
+        if (authenticated.value) {
+
+            router.push("/logged/profil")
+        } else {
+
+            error.value.general = "Give us a valid email and a password please OR validate your email."
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+@import "~/assets/variables";
+
+#login {
+
+    width: 100%;
+    @include flex($direction:column);
+
+    #informations {
+        
+        width: 80%;
+        min-height: 40px;
+        margin-bottom: 20px;
+        color: $red;
+        opacity: 0;
+        @include flex();
+        transition: 0.2s ease all;
+        -moz-transition: 0.2s ease all;
+        -webkit-transition: 0.2s ease all;
+
+        &.success {
+            
+            color: $green;
+        }
+
+        &.error:not(:empty) {
+
+            box-shadow: 0 0 5px $red;
+            background-color: $black;
+            padding: 0 15px;
+            border-radius: 5px;
+            opacity: 1;
+        }
+
+        &.success:not(:empty) {
+
+            box-shadow: 0 0 5px $green;
+            background-color: $black;
+            padding: 0 15px;
+            border-radius: 5px;
+            opacity: 1;
+        }
+    }
+
+    form {
+
+        width: 80%;
+        @include flex($direction:column);
+
+        .links {
+
+            width: 100%;
+            margin: 10px auto;
+            @include flex($justify:space-around);
+
+            a {
+                color: $orange;
+                font-style: italic;
+                font-weight: bold;
+            }
+        }
+
+        button {
+
+            @include button($marge:15px auto auto auto);
+        }
+    }
+}
+
+@media screen and (min-width: 450px) {
+
+    #login {
+        #informations {
+            width: 60%;
+        }
+
+        #form {
+            width: 60%;
+        }
+    }
+}
+
+@media screen and (min-width: 1100px) {
+
+    #login {
+        #informations {
+            width: 35%;
+        }
+
+        #form {
+            width: 35%;
+        }
+    }
+}
+</style>
