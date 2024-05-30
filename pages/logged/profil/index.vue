@@ -69,11 +69,11 @@
             <button @click="openList = false" class="close">X</button>
             <div class="info">
                 <div class="lists">
-                    <button @click="listToShow = 'To-Do'">To-Do</button>
-                    <button @click="listToShow = 'Favori'">Favori</button>
-                    <button @click="listToShow = 'Done'">Done</button>
+                    <button @click="listToShow = 'To-Do'" :class="listToShow === 'To-Do' ? 'active-list' : ''">To-Do</button>
+                    <button @click="listToShow = 'Favori'" :class="listToShow === 'Favori' ? 'active-list' : ''">Favori</button>
+                    <button @click="listToShow = 'Done'" :class="listToShow === 'Done' ? 'active-list' : ''">Done</button>
                 </div>
-                <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @udpate="updateToDo" page="current" />
+                <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @actualise="updateToDo" page="current" />
                 <Tablelist v-else-if="listToShow == 'Favori'" :headers="['Escape', 'Since', 'Actions']" :list="favoris" id="list-favori-user" @delete="deleteFromFavoris" page="current" />
                 <Tablelist v-else-if="listToShow == 'Done'" :headers="['Escape', 'Since', 'Actions']" :list="done" id="list-done-user" @delete="deleteFromDone" page="current" />
             </div>
@@ -102,6 +102,7 @@
 
 onMounted(() => {
 
+    // To-Do: Faire en sorte que tout ne soit recupere que par une seule et meme route au chagement de la page
     getProfil()
     getCities()
     getFavoris()
@@ -314,7 +315,7 @@ const checkAge = (data) => {
 }
 const checkCity = (data) => {
 
-user.value.city = data
+    user.value.city = data
 }
 const checkPassword = (data) => {
     
@@ -422,11 +423,11 @@ const deleteFromFavoris = async (value) => {
 
     if (data.value) {
 
-        getFavoris()
+        favoris.value = data.value
     }
 }
 const deleteFromToDo = async (value) => {
-    
+
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/remove/" + value, {
         method: "DELETE",
         headers: {
@@ -435,10 +436,13 @@ const deleteFromToDo = async (value) => {
         }
     })
 
-    getToDo()
+    if (data.value) {
+
+        toDo.value = data.value
+    }
 }
 const deleteFromDone = async (value) => {
-    
+
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/remove/" + value, {
         method: "DELETE",
         headers: {
@@ -447,19 +451,27 @@ const deleteFromDone = async (value) => {
         }
     })
 
-    getDone()
+    
+    if (data.value) {
+
+        done.value = data.value
+    }
 }
 const updateToDo = async (value) => {
-    
+
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/update/" + value, {
-        method: "DELETE",
+        method: "PUT",
         headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + token.value
         }
     })
 
-    getToDo()
+    
+    if (data.value) {
+
+        toDo.value = data.value
+    }
 }
 
 // Conversations' section
@@ -853,6 +865,12 @@ const getRooms = async () => {
             .lists {
                 width: 100%;
                 @include flex($justify:space-around);
+
+                .active-list {
+                    box-shadow: 0 0 0 $orange;
+                    background-color: rgba($orange, .7);
+                    color: $black;
+                }
             }
 
             button {

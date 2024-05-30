@@ -22,8 +22,8 @@
             <nuxt-link :to="'/logged/profil/' + element.user.id" class="footer-link">Profil</nuxt-link>
           </div>
           <div v-else-if="page === 'current'" class="info">
-            <button @click="emit('delete', element.id)">Supprimer</button>
-            <button v-if="toDo" @click="emit('update', element.id)">Actualiser</button>
+            <button @click="emit('delete', element.id)" class="delete">Supprimer</button>
+            <button v-if="toDo" @click="emit('actualise', element.id)">Actualiser</button>
           </div>
           <div v-else class="info">
             <nuxt-link :to="'/logged/' + element.escape.id" class="footer-link">Voir</nuxt-link>
@@ -68,7 +68,7 @@ const formatDate = (dateString) => {
   return date.format("DD-MM-YYYY");
 }
 
-const emit = defineEmits(["delete", "udpate"])
+const emit = defineEmits(["delete", "actualise"])
 </script>
 
 <style lang="scss" scoped>
@@ -131,6 +131,11 @@ const emit = defineEmits(["delete", "udpate"])
           button {
 
             @include button($paddingY:5px, $paddingX:10px, $marge:10px auto);
+          }
+
+          .delete {
+
+            @include button($paddingY:5px, $paddingX:10px, $marge:10px auto, $color:$red);
           }
         }
       }
