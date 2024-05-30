@@ -429,7 +429,7 @@ const checkMember = async (data) => {
             }
 
             .line {
-                width: 90%;
+                width: 70%;
                 margin: 5px auto;
                 @include flex();
 
@@ -451,7 +451,7 @@ const checkMember = async (data) => {
             }
 
             .quit {
-                width: 50%;
+                width: 60%;
                 margin: 20px auto;
                 @include button($color:$red);
                 @include flex();
@@ -502,7 +502,7 @@ const checkMember = async (data) => {
         }
 
         #informations {
-            #info {
+            .info {
                 width: 70%;
             }
         }
@@ -514,7 +514,7 @@ const checkMember = async (data) => {
         #current {
             width: 50%;
 
-            #message {
+            #messages {
 
                 -ms-overflow-style: none;
                 scrollbar-width: none;
@@ -531,7 +531,7 @@ const checkMember = async (data) => {
             &::-webkit-scrollbar {
                 display: none;
             }
-            #info {
+            .info {
                 width: 50%;
             }
         }

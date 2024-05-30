@@ -6,11 +6,11 @@
       <div class="title center">{{ headers[1] }}</div>
       <div class="title">{{ headers[2] }}</div>
     </div>
-    <div v-if="list.length > 0"  :class="page == 'escape' ? 'table-body big' : 'table-body'">
+    <div v-if="list.length > 0"  :class="page === 'escape' ? 'table-body big' : 'table-body'">
       <div v-bind:key="element" v-for="element in list" class="block">
         <hr />
         <div class="line">
-          <div v-if="page == 'escape'" class="info">
+          <div v-if="page === 'escape'" class="info">
             <div v-if="element.user.pseudo">{{ element.user.pseudo }}</div>
             <div v-else>{{ element.user.firstname + ' ' + element.user.name }}</div>
           </div>
@@ -18,15 +18,15 @@
             <nuxt-link :to="'/logged/' + element.escape.id" class="footer-link">{{ element.escape.name }}</nuxt-link>
           </div>
           <div class="info center">{{ formatDate(element.since) }}</div>
-          <div v-if="page == 'escape'" class="info">
+          <div v-if="page === 'escape'" class="info">
             <nuxt-link :to="'/logged/profil/' + element.user.id" class="footer-link">Profil</nuxt-link>
           </div>
-          <div v-else-if="page == 'current'" class="info">
+          <div v-else-if="page === 'current'" class="info">
             <button @click="emit('delete', element.id)">Supprimer</button>
             <button v-if="toDo" @click="emit('update', element.id)">Actualiser</button>
           </div>
           <div v-else class="info">
-            <nuxt-link :to="'/logged/profil/' + element.user.id" class="footer-link">Profil</nuxt-link>
+            <nuxt-link :to="'/logged/' + element.escape.id" class="footer-link">Voir</nuxt-link>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@ const emit = defineEmits(["delete", "udpate"])
   .table-body {
 
     width: 100%;
-    height: 25vh;
+    height: 45vh;
     overflow-y: scroll;
     @include flex($direction:column, $justify:flex-start);
 

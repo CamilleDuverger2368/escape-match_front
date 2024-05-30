@@ -37,7 +37,6 @@ let user = ref({
     pseudo: '',
     age: null,
     level: null,
-    grade: null,
     pronouns: null,
     profil: null,
     city: '',

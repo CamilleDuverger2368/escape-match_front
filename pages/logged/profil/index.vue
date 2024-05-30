@@ -129,7 +129,6 @@ let user = ref({
     pseudo: "",
     age: null,
     level: null,
-    grade: null,
     pronouns: "",
     profil: "",
     city: ""
@@ -412,7 +411,7 @@ const getDone = async () => {
     }
 }
 const deleteFromFavoris = async (value) => {
-    
+
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + value, {
         method: "DELETE",
         headers: {
