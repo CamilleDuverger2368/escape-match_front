@@ -17,7 +17,7 @@ export const useAuthStore = defineStore("auth", {
         async authenticateUser({ username, password }: UserPayloadInterface) {
 
             const runtimeConfig = useRuntimeConfig()
-            const { data, pending }: any = await useFetch(runtimeConfig.public.apiBase + "login_check", {
+            const { data, pending }: any = await useFetch(runtimeConfig.public.apiBase + "unlog/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: {
@@ -40,11 +40,23 @@ export const useAuthStore = defineStore("auth", {
             }
         },
 
-        logUserOut() {
+        async logUserOut() {
 
             const token = useCookie("token")
-            this.authenticated = false
-            token.value = null
+            const runtimeConfig = useRuntimeConfig()
+            const { data, pending }: any = await useFetch(runtimeConfig.public.apiBase + "user/logout", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token.value
+                }
+            })
+            this.loading = pending
+
+            if (data) {
+                this.authenticated = false
+                token.value = null
+            }
         },
     },
 });
