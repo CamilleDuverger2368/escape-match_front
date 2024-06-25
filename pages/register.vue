@@ -158,12 +158,13 @@ const checkPassword = (data) => {
 }
 const checkConfPwd = (data) => {
 
+    error.value.dataConfPwd = data
+    
     if (user.value.password !== data) {
 
         error.value.confPwd = "Your passwords don't match"
     } else {
 
-        error.value.dataConfPwd = data
         error.value.confPwd = ''
     }
 }

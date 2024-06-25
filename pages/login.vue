@@ -20,8 +20,6 @@ import { useAuthStore } from "~/store/auth";
 const { authenticateUser } = useAuthStore();
 const { authenticated } = storeToRefs(useAuthStore());
 const router = useRouter()
-const route = useRoute()
-const runtimeConfig = useRuntimeConfig()
 
 let user = ref({
     username: '',
@@ -33,37 +31,6 @@ let error = ref({
     password: '',
     general: ''
 })
-
-// Validation mail's section
-onMounted(() => {
-
-    if (route.query.link) {
-
-        validateEmail(route.query.link)
-    }
-})
-const validateEmail = async (link) => {
-    
-    const data = await useFetch(runtimeConfig.public.apiBase + "unlog/validation/" + link, {
-        method: "PUT",
-        headers: {"Content-Type": "application/json"}
-    })
-
-    if (data) {
-
-        if (data.status.value === "success") {
-
-            error.value.general = "Email validated !"
-            document.getElementById("informations").classList.add("success")
-            document.getElementById("informations").classList.remove("error")
-        } else {
-
-            error.value.general = data.error.value
-            document.getElementById("informations").classList.add("error")
-            document.getElementById("informations").classList.remove("success")
-        }
-    }
-}
 
 // Check's section
 const checkEmail = (data) => {
