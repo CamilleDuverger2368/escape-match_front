@@ -1,21 +1,19 @@
 <template>
     <select v-model="model">
-        <option disabled value="">{{ title }}</option>
-        <option :key="option" v-for="option in options" :value="option">{{ option }}</option>
+        <option disabled value="">Choose your city</option>
+        <option :key="city" v-for="city in cities" :value="city.name">{{ city.name }}</option>
     </select>
 </template>
 
 <script setup>
 
+const runtimeConfig = useRuntimeConfig()
+const { data: cities } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+
 const props = defineProps({
-    title: {
-        type: String,
-        require: true
-    },
-    options: {
-        type: Array,
-        require: true
-    },
     data: {
         type: String,
         require: true

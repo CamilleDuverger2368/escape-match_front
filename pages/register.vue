@@ -7,7 +7,7 @@
             <Input name="Email (Mandatory)" type="email" id="register_email" :data="user.email" :error="error.email" :require="true" @check="checkEmail" />
             <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" :require="false" @check="checkPseudo" />
             <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" :require="false" @check="checkAge" />
-            <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
+            <ListfieldCities :data="user.city" @select="checkCity"/>
             <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" :require="true" @check="checkPassword" />
             <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />
             <Multipleradio title="Choose your pronouns" :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
@@ -34,8 +34,6 @@ let user = ref({
 
 let color = ref("#FF7A00")
 
-let cities = ref([])
-
 const pronouns = ref(["She", "He", "They"])
 const profil = ref(["Solver", "Leader", "Searcher"])
 const runtimeConfig = useRuntimeConfig()
@@ -49,22 +47,6 @@ let error = ref({
     password: '',
     confPwd: '',
     dataConfPwd: ''
-})
-
-onMounted(async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
-
-    if (data.value) {
-
-        for(let i = 0; i < data.value.length; i++) {
-
-            cities.value.push(data.value[i].name)
-        }
-    }
 })
 
 // Check's section

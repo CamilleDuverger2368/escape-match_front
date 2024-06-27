@@ -44,7 +44,7 @@
                     <Input name="Email" type="email" id="register_email" :data="user.email" :error="error.email" :require="true" @check="checkEmail" />
                     <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" :require="false" @check="checkPseudo" />
                     <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" :require="false" @check="checkAge" />
-                    <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
+                    <ListfieldCities :data="user.city" @select="checkCity"/>
                     <Multipleradio title="Choose your pronouns." :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
                     <Multipleradio title="Choose your profil." :options="profil" :data="user.profil" @radio="checkProfil" />
                     <div class="buttons">

@@ -2,8 +2,7 @@
     <footer>
         <div class="links">
             <div class="informations">
-                <!-- TO-DO : Remplacer par le systeme de navigation de nuxt -->
-                <a class="footer-link">CGU</a>
+                <nuxt-link to="/cgu" class="footer-link">CGU</nuxt-link>
             </div>
             <div class="usefull">
                 <nuxt-link to="/login" class="footer-link">Connexion</nuxt-link>

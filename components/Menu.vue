@@ -3,7 +3,6 @@
         <button @click="closeMenu()">X</button>
         <LinkMenu v-if="!logged" @click="closeMenu()" link="/" name="S'inscrire" />
         <LinkMenu v-if="!logged" @click="closeMenu()" link="/login" name="Se Connecter" />
-        <!-- TO-DO : Ajouter les differents liens manquants -->
         <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/profil" name="Profil" />
         <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/finder" name="Finder" />
         <LinkMenu v-if="logged" @click="logout()" link="/" name="Se Déconnecter" />
