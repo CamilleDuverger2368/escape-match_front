@@ -11,6 +11,15 @@ export default class Light {
 
         this.setAmbientLight()
         this.setDirectionalLight()
+
+        // Debug
+        if (this.experience.debug.active) {
+
+            this.debugFolder = this.experience.debug.ui.addFolder("lights")
+            this.debugFolder.add(this.directional.position, 'y').min(0).max(10).step(0.01).name("elevation")
+            this.debugFolder.add(this.directional.position, 'x').min(0).max(10).step(0.01).name("x")
+            this.debugFolder.add(this.directional.position, 'z').min(0).max(10).step(0.01).name("z")
+        }
     }
 
     setAmbientLight() {

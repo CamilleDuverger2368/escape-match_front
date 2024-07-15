@@ -6,6 +6,7 @@ import Renderer from "./Renderer"
 import World from "./World"
 import Resources from "./Resources"
 import sources from "./sources"
+import Debug from "./Debug"
 
 // Singleton = on garde la premiere instanciation de la class en quesiton quand elle est appelee ailleurs (pour faire comme une variable globale)
 let instance = null
@@ -26,6 +27,7 @@ export default class Experience {
         this.canvas = canvas
 
         // Setup
+        this.debug = new Debug()
         this.sizes = new Sizes(page)
         this.time = new Time()
         this.scene = new THREE.Scene()

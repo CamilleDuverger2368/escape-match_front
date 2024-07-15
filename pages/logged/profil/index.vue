@@ -102,7 +102,7 @@
 
 onMounted(() => {
 
-    // To-Do: Faire en sorte que tout ne soit recupere que par une seule et meme route au chagement de la page
+    // To-Do: Faire en sorte que tout ne soit recupere que par une seule et meme route au chargement de la page
     getProfil()
     getCities()
     getFavoris()
