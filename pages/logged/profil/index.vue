@@ -79,7 +79,16 @@
             </div>
         </section>
         <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
-            <button @click="openSuccess = false">X</button>
+            <button @click="openSuccess = false" class="close">X</button>
+            <div class="info">
+                <div class="lists">
+                    <button @click="achievementsToShow = 'all'" :class="achievementsToShow === 'all' ? 'active-list' : ''">All</button>
+                    <button @click="achievementsToShow = 'unlocked'" :class="achievementsToShow === 'unlocked' ? 'active-list' : ''">Unlocked</button>
+                    <button @click="achievementsToShow = 'locked'" :class="achievementsToShow === 'locked' ? 'active-list' : ''">Locked</button>
+                    <button @click="achievementsToShow = 'objects3D'" :class="achievementsToShow === 'objects3D' ? 'active-list' : ''">Objects 3D</button>
+                </div>
+                <AchievementList :id="'unlocked'" :achievements="unlocked"/>
+            </div>
         </section>
         <section id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
             <button @click="openConv = false" class="close">X</button>
@@ -109,6 +118,7 @@ onMounted(() => {
     getToDo()
     getDone()
     getRooms()
+    getAchievements()
 })
 
 let color = ref("#FF7A00")
@@ -471,6 +481,44 @@ const updateToDo = async (value) => {
     if (data.value) {
 
         toDo.value = data.value
+    }
+}
+
+// Achievements' section
+let achievementsToShow = ref("all")
+let unlocked = ref([{
+    id: null,
+    conditionType: '',
+    tropheeType: '',
+    trophee: '',
+    description: '',
+    name: '',
+    nextStep: '',
+    scalable: false
+}])
+let locked = ref([{
+    id: null,
+    conditionType: '',
+    tropheeType: '',
+    trophee: '',
+    description: '',
+    name: '',
+    nextStep: '',
+    scalable: false
+}])
+const getAchievements = async () => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "achievements", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        unlocked.value = data.value.unlocked
+        locked.value = data.value.locked
     }
 }
 
@@ -883,18 +931,45 @@ const getRooms = async () => {
     #menu-success {
         width: 100vw;
         position: fixed;
-        // TEST
-        background-color: rgba($orange, .5);
-        height: 70vh;
-        // TEST
-        @include flex($direction:column);
+        background-color: $black;
+        height: 73vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        @include flex($direction:column, $justify:flex-start);
         transition: transform 0.5s ease-in-out;
 
-        button {
+        .close {
             position: fixed;
             top: 3vh;
             right: 6vw;
             font-weight: 900;
+            color: $orange;
+        }
+
+        .info {
+            width: 100%;
+            margin-bottom: 30px;
+            margin-top: 60px;
+            @include flex($direction:column);
+
+            .lists {
+                width: 90%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-row-gap: 10px;
+                grid-column-gap: 10px;
+
+                .active-list {
+                    box-shadow: 0 0 0 $orange;
+                    background-color: rgba($orange, .7);
+                    color: $black;
+                }
+            }
+
+            button {
+                
+                @include button($paddingY:10px, $paddingX:20px);
+            }
         }
     }
 
