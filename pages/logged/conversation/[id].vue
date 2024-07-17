@@ -116,7 +116,8 @@ const getRoom = async () => {
         if (roomName.value === '') {
             roomName.value = data.value.name
         }
-        for(let i = 0; i < room.value.admins.length; i++) {
+        max = room.value.admins.length
+        for(let i = 0; i < max; i++) {
 
             if (room.value.admins[0].email === currentUser.value) {
 

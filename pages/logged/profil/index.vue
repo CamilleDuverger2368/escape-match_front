@@ -82,12 +82,22 @@
             <button @click="openSuccess = false" class="close">X</button>
             <div class="info">
                 <div class="lists">
-                    <button @click="achievementsToShow = 'all'" :class="achievementsToShow === 'all' ? 'active-list' : ''">All</button>
                     <button @click="achievementsToShow = 'unlocked'" :class="achievementsToShow === 'unlocked' ? 'active-list' : ''">Unlocked</button>
                     <button @click="achievementsToShow = 'locked'" :class="achievementsToShow === 'locked' ? 'active-list' : ''">Locked</button>
                     <button @click="achievementsToShow = 'objects3D'" :class="achievementsToShow === 'objects3D' ? 'active-list' : ''">Objects 3D</button>
                 </div>
-                <AchievementList :id="'unlocked'" :achievements="unlocked"/>
+                <AchievementList v-if="achievementsToShow == 'unlocked'" :id="'unlocked'" :achievements="unlocked" />
+                <AchievementList v-else-if="achievementsToShow == 'locked'" :id="'locked'" :achievements="locked" />
+                <div v-else-if="achievementsToShow == 'objects3D'" class="objects">
+                    <div class="lists">
+                        <button @click="objectsToShow = 'hats'" :class="objectsToShow === 'hats' ? 'active-list' : ''">hats</button>
+                        <button @click="objectsToShow = 'suits'" :class="objectsToShow === 'suits' ? 'active-list' : ''">suits</button>
+                        <button @click="objectsToShow = 'goodies'" :class="objectsToShow === 'goodies' ? 'active-list' : ''">goodies</button>
+                    </div>
+                    <Objects3dShop v-if="objectsToShow == 'hats'" :id="'hats'" :objects="object3D" :objectsRef="hats"/>
+                    <Objects3dShop v-if="objectsToShow == 'suits'" :id="'suits'" :objects="object3D" :objectsRef="suits"/>
+                    <Objects3dShop v-if="objectsToShow == 'goodies'" :id="'goodies'" :objects="object3D" :objectsRef="objects"/>
+                </div>
             </div>
         </section>
         <section id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
@@ -485,7 +495,11 @@ const updateToDo = async (value) => {
 }
 
 // Achievements' section
-let achievementsToShow = ref("all")
+const hats = ["test 3", "test 5"]
+const suits = ["test 1", "test 6"]
+const objects = ["test 12", "test 2"]
+let achievementsToShow = ref("unlocked")
+let objectsToShow = ref("hats")
 let unlocked = ref([{
     id: null,
     conditionType: '',
@@ -506,6 +520,7 @@ let locked = ref([{
     nextStep: '',
     scalable: false
 }])
+let object3D = ref([])
 const getAchievements = async () => {
     const { data } = await useFetch(runtimeConfig.public.apiBase + "achievements", {
         method: "GET",
@@ -519,6 +534,7 @@ const getAchievements = async () => {
 
         unlocked.value = data.value.unlocked
         locked.value = data.value.locked
+        object3D.value = data.value.object3D
     }
 }
 
@@ -955,7 +971,7 @@ const getRooms = async () => {
             .lists {
                 width: 90%;
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(3, 1fr);
                 grid-row-gap: 10px;
                 grid-column-gap: 10px;
 
@@ -964,6 +980,13 @@ const getRooms = async () => {
                     background-color: rgba($orange, .7);
                     color: $black;
                 }
+            }
+
+            .objects {
+
+                width: 90%;
+                margin: 15px auto;
+                @include flex($direction:column);
             }
 
             button {
