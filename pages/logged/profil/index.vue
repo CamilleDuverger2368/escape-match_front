@@ -20,6 +20,8 @@
             <div v-if="!updateProfil && !updatePwd" class="info">
                 <div class="name">{{ user.firstname }} {{ user.name }}</div>
                 <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
+                <!--WIP CHANGER EN FONCTION DE CE QUI EST MIS SUR LE PROFIL-->
+                <img class="profil-pic" alt="profil-picture" src="/profil-pictures/neutral.webp" />
                 <div class="classic">{{ user.email }}</div>
                 <div v-if="user.age" class="classic">{{ user.age }} years old</div>
                 <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
@@ -738,6 +740,12 @@ const getRooms = async () => {
             margin-bottom: 30px;
             @include flex($direction:column);
             
+            .profil-pic {
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+            }
+
             .name {
                 font-size: 3rem;
                 margin: 10px auto 0 auto;

@@ -32,11 +32,15 @@ const closeMenu = () => {
 // logout's section
 const router = useRouter();
 const { logUserOut } = useAuthStore();
-const logout = () => {
+const { authenticated } = storeToRefs(useAuthStore());
+const logout = async () => {
 
-    emit('close')
-    logUserOut();
-    router.push('/login');
+    await logUserOut()
+    if (!authenticated.value) {
+
+        emit('close')
+        router.push("/login")
+    }
 }
 </script>
 
@@ -58,7 +62,6 @@ const logout = () => {
     top: 0;
     z-index: 42;
     @include flex($direction:column);
-    // background-color: rgba($color: #000000, $alpha: 0.5);
     background-color: $black;
     transition: transform 0.5s ease-in-out;
 
