@@ -6,7 +6,8 @@
             <Input name="Firstname (Mandatory)" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" :require="true" @check="checkFirstname" />
             <Input name="Email (Mandatory)" type="email" id="register_email" :data="user.email" :error="error.email" :require="true" @check="checkEmail" />
             <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" :require="false" @check="checkPseudo" />
-            <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" :require="false" @check="checkAge" />
+            <ProfilPicChoice :images="['droopy', 'totoro', 'fou-a-pieds-bleus', 'neutral']" :data="user.profilPic" @check="checkProfilPic"/>
+            <Datepicker id="birthday" data="" name="Birthday" @check="checkBirthday" />
             <ListfieldCities :data="user.city" @select="checkCity"/>
             <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" :require="true" @check="checkPassword" />
             <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />
@@ -25,7 +26,8 @@ let user = ref({
     firstname: '',
     email: '',
     pseudo: '',
-    age: '',
+    profilPic: '',
+    birthday: '',
     city: '',
     password: '',
     pronouns: '',
@@ -43,7 +45,6 @@ let error = ref({
     firstname: '',
     email: '',
     pseudo: '',
-    age: '',
     password: '',
     confPwd: '',
     dataConfPwd: ''
@@ -103,22 +104,13 @@ const checkPseudo = (data) => {
         error.value.pseudo = "Your pseudo can only have letters, numbers or '-' '_'."
     }
 }
-const checkAge = (data) => {
+const checkProfilPic = (data) => {
 
-    if (parseInt(data)) {
+    user.value.profilPic = data
+}
+const checkBirthday = (data) => {
 
-        if (data > 0 && data < 150) {
-
-            user.value.age = data
-            error.value.age = ""
-        } else {
-
-            error.value.age = "Your age must be between 1 and 150 years old."
-        }
-    } else {
-
-        error.value.age = "Your age must be between 1 and 150 years old."
-    }
+    user.value.birthday = data
 }
 const checkCity = (data) => {
 
@@ -173,7 +165,7 @@ const checkProfil = (data) => {
 const router = useRouter()
 const register = async () => {
 
-    if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.age || error.value.password || error.value.confPwd) {
+    if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.password || error.value.confPwd) {
 
         error.value.general = "Check your errors please."
     } else {
