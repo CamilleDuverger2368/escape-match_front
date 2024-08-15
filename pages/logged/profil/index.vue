@@ -91,7 +91,7 @@ const redirectToInformations = () => {
     setTimeout(() => router.push("/logged/profil/informations"), 500);
 }
 
-const router = useRouter();
+const router = useRouter()
 let color = ref("#FF7A00")
 const token = useCookie("token")
 const runtimeConfig = useRuntimeConfig()

@@ -2,12 +2,16 @@
     <div id="alter-profil">
         <div class="name">{{ user.firstname }} {{ user.name }}</div>
         <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
+        <img v-if="user.profilPic" class="profil-pic" alt="profil-picture" :src="'/profil-pictures/' + user.profilPic + '.webp'" />
+        <img v-else class="profil-pic" alt="profil-picture" src="/profil-pictures/neutral.webp" />
         <Avatar :color="color" page="profil"/>
-        <div v-if="user.age" class="classic">{{ user.age }} years old</div>
+        <div v-if="user.birthday" class="classic"><span>Birthday :</span> {{ formatDate(user.birthday) }}</div>
+        <div class="classic"><span>Member since :</span> {{ formatDate(user.createdAt) }}</div>
         <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
         <div v-else class="no-profil">No Profil</div>
         <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
         <div class="contact" @click="getRoom()">Start a talk !</div>
+        <button @click="sendFriendRequest">Send friend request !</button>
         <ul v-if="user.level">
             <li :class="'percent--' + levelDecimal"><span>level {{ level }}</span></li>
         </ul>
@@ -18,12 +22,13 @@
         <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listToDos" id="list-to-do-user-alter" page="alter" />
         <div class="classic">Favori List</div>
         <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listFavoris" id="list-favori-user-alter" page="alter" />
-        <div class="classic">Done List</div>
-        <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listDones" id="list-done-user-alter" page="alter" />
+        <!--<div class="classic">Done List</div>
+        <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listDones" id="list-done-user-alter" page="alter" />-->
     </div>
 </template>
 
 <script setup>
+import dayjs from "dayjs"
 
 const route = useRoute()
 const router = useRouter()
@@ -35,7 +40,9 @@ let user = ref({
     name: '',
     firstname: '',
     pseudo: '',
-    age: null,
+    profilPic: '',
+    birthday: '',
+    createdAt: '',
     level: null,
     pronouns: null,
     profil: null,
@@ -46,6 +53,13 @@ let user = ref({
 })
 let levelDecimal = ref(1)
 let level = ref(0)
+
+const formatDate = (dateString) => {
+  
+  const date = dayjs(dateString);
+  return date.format("DD-MM-YYYY");
+}
+
 onMounted(() => {
     
     getAlterUserProfil()
@@ -91,6 +105,23 @@ const getRoom = async () => {
     if (data.value) {
         
         router.push("/logged/conversation/" + data.value.id)
+    }
+}
+const sendFriendRequest = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/asking/" + route.params.id, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        // DEBUG !!!
+        alert("COUCOU")
+        // DEBUG !!!
     }
 }
 </script>
@@ -180,6 +211,12 @@ const getRoom = async () => {
     width: 100%;
     margin-bottom: 30px;
     @include flex($direction:column);
+     
+    .profil-pic {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
 
     .name {
         font-size: 3rem;
@@ -195,6 +232,10 @@ const getRoom = async () => {
     .classic {
         font-size: 1.5rem;
         margin: 10px auto;
+        
+        span {
+            color: $orange;
+        }
     }
 
     .city {

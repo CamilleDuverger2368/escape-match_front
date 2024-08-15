@@ -4,7 +4,9 @@
         <LinkMenu v-if="!logged" @click="closeMenu()" link="/" name="S'inscrire" />
         <LinkMenu v-if="!logged" @click="closeMenu()" link="/login" name="Se Connecter" />
         <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/profil" name="Profil" />
-        <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/finder" name="Finder" />
+        <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/finder/escape" name="Finder" />
+        <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/finder/friends" name="Find Friends" />
+        <LinkMenu v-if="logged" @click="closeMenu()" link="/logged/profil/list" name="Friends" />
         <LinkMenu v-if="logged" @click="logout()" link="/" name="Se Déconnecter" />
     </div>
 </template>

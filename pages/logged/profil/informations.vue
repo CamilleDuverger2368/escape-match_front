@@ -1,4 +1,3 @@
-<!-- WIP !!!!!!!!!!!!!!! -->
 <template>
     <div id="informations-profil" :class="load ? 'active' : 'inactive-left'">
         <button class="close" @click="redirectToProfil">X</button>
@@ -9,7 +8,7 @@
             <img v-else class="profil-pic" alt="profil-picture" src="/profil-pictures/neutral.webp" />
             <div class="classic">{{ user.email }}</div>
             <div v-if="user.birthday" class="classic"><span>Birthday :</span> {{ formatDate(user.birthday) }}</div>
-            <div v-if="user.birthday" class="classic"><span>Member since :</span> {{ formatDate(user.createdAt) }}</div>
+            <div class="classic"><span>Member since :</span> {{ formatDate(user.createdAt) }}</div>
             <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
             <div v-else class="no-profil">No Profil</div>
             <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
@@ -57,7 +56,6 @@
 </template>
 
 <script setup>
-// WIP !!!!!!!!!!!!!!!
 import dayjs from "dayjs"
 
 onMounted(() => {
