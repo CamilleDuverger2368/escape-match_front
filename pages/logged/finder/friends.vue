@@ -82,28 +82,28 @@ const searchFriends = async (data) => {
         }
 
         .line {
+            width: 100%;
+            @include flex($direction:column);
+
+            .title {
                 width: 100%;
-                @include flex($direction:column);
+                @include flex($justify:space-around, $align:center);
 
-                .title {
-                    width: 100%;
-                    @include flex($justify:space-around, $align:center);
-
-                    .image {
-                        width: 20%;
-                    }
-
-                    .name {
-                        width: 60%;
-                        font-size: 1.5rem;
-                        text-align: center;
-                    }
+                .image {
+                    width: 20%;
                 }
 
-                &:hover, &:active {
-                    background-color: rgba($white, 0.5);
+                .name {
+                    width: 60%;
+                    font-size: 1.5rem;
+                    text-align: center;
                 }
             }
+
+            &:hover, &:active {
+                background-color: rgba($white, 0.5);
+            }
+        }
     }
 }
 </style>
