@@ -20,19 +20,24 @@
                 <button class="reject-request" @click="declineFriendship">X</button>
             </div>
         </div>
-        <div v-else class="request-sent">Friends since {{ formatDate(friendship.since) }}</div>
+        <div v-else-if="friendship.friend === true && removeFriendship === false" class="request-sent" @click="removeFriendship = true">Friends since {{ formatDate(friendship.since) }}</div>
+        <div v-else-if="friendship.friend === true && removeFriendship === true" class="decision">
+            <div class="title">Remove friendship ?</div>
+            <div class="choice">
+                <button class="request-sent" @click="declineFriendship">&#10003;</button>
+                <button class="reject-request" @click="removeFriendship = false">X</button>
+            </div>
+        </div>
         <ul v-if="user.level">
             <li :class="'percent--' + levelDecimal"><span>level {{ level }}</span></li>
         </ul>
         <ul v-else>
-            <li class="percent--1"><span>Start your adventure to level up !</span></li>
+            <li class="percent--1"><span>level 0</span></li>
         </ul>
         <div class="classic">To-Do List</div>
         <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listToDos" id="list-to-do-user-alter" page="alter" />
         <div class="classic">Favori List</div>
         <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listFavoris" id="list-favori-user-alter" page="alter" />
-        <!--<div class="classic">Done List</div>
-        <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listDones" id="list-done-user-alter" page="alter" />-->
     </div>
 </template>
 
@@ -58,13 +63,13 @@ let user = ref({
     profil: null,
     city: '',
     listFavoris: [],
-    listToDos: [],
-    listDones: []
+    listToDos: []
 })
 let levelDecimal = ref(1)
 let level = ref(0)
 let friendship = ref(null)
 let load = ref(false)
+let removeFriendship = ref(false)
 
 const formatDate = (dateString) => {
   

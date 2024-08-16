@@ -80,18 +80,12 @@
             </div>
             <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" page="escape"/>
         </section>
-        <hr/>
+        <!--<hr/>
         <section id="list-favori">
             <button v-if="!isFavorite" @click="addToFavoriList" class=" top">Add to my favori</button>
             <button v-else @click="removeFromFavoriList" class=" top">Remove from my favori</button>
             <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavoris" id="list-favori-escape" page="escape"/>
-        </section>
-        <hr/>
-        <section id="list-done">
-            <button v-if="!isDone" @click="addToDoneList" class=" top">Add to my done list</button>
-            <button v-else @click="removeFromDoneList" class=" top">Remove from my done list</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listDones" id="list-done-escape" page="escape"/>
-        </section>
+        </section>-->
     </div>
 </template>
 
@@ -113,8 +107,7 @@ let escape = ref({
     }],
     tags: [],
     listToDos: [],
-    listFavoris: [],
-    listDones: []
+    listFavoris: []
 })
 let description = ref({
     description: ''
@@ -165,7 +158,6 @@ const getEscapeWithEntreprise = async () => {
         }
         isToDo.value = data.value.isToDo
         isFavorite.value = data.value.isFavorite
-        isDone.value = data.value.isDone
         
         // Check if escape's image exist
         const img = new Image()
@@ -230,7 +222,6 @@ const getEscape = async () => {
         }
         isToDo.value = data.value.isToDo
         isFavorite.value = data.value.isFavorite
-        isDone.value = data.value.isDone
         
         // Check if escape's image exist
         const img = new Image()
@@ -345,7 +336,6 @@ const updateGrade = async () => {
 
 // List section
 let isToDo = ref(false)
-let isDone = ref(false)
 let isFavorite = ref(false)
 const addToToDoList = async () => {
 
@@ -379,22 +369,6 @@ const addToFavoriList = async () => {
         getEscape()
     }
 }
-const addToDoneList = async () => {
-    
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/add/" + escape.value.id, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-    
-    if (data.value) {
-
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
-    }
-}
 const removeFromToDoList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/remove/" + isToDo.value.id, {
@@ -414,22 +388,6 @@ const removeFromToDoList = async () => {
 const removeFromFavoriList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + isFavorite.value.id, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-    
-    if (data.value) {
-
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
-    }
-}
-const removeFromDoneList = async () => {
-    
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/remove/" + isDone.value.id, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -638,18 +596,6 @@ const updateToDoList = async () => {
             @include button($paddingX:10px, $paddingY:10px, $size:1rem);
         }
     }
-
-    #list-done {
-
-        width: 100%;
-        margin: 20px auto;
-        @include flex($direction:column);
-        
-        button {
-
-            @include button($paddingX:10px, $paddingY:10px, $size:1rem);
-        }
-    }
 }
 
 @media screen and (min-width: 450px) {
@@ -716,11 +662,6 @@ const updateToDoList = async () => {
         }
         
         #list-favori {
-
-            margin: 40px auto;
-        }
-        
-        #list-done {
 
             margin: 40px auto;
         }

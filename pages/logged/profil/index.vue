@@ -25,11 +25,9 @@
                 <div class="lists">
                     <button @click="listToShow = 'To-Do'" :class="listToShow === 'To-Do' ? 'active-list' : ''">To-Do</button>
                     <button @click="listToShow = 'Favori'" :class="listToShow === 'Favori' ? 'active-list' : ''">Favori</button>
-                    <button @click="listToShow = 'Done'" :class="listToShow === 'Done' ? 'active-list' : ''">Done</button>
                 </div>
                 <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @actualise="updateToDo" page="current" />
                 <Tablelist v-else-if="listToShow == 'Favori'" :headers="['Escape', 'Since', 'Actions']" :list="favoris" id="list-favori-user" @delete="deleteFromFavoris" page="current" />
-                <Tablelist v-else-if="listToShow == 'Done'" :headers="['Escape', 'Since', 'Actions']" :list="done" id="list-done-user" @delete="deleteFromDone" page="current" />
             </div>
         </section>
         <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
@@ -80,7 +78,6 @@ onMounted(() => {
     getCities()
     // getFavoris()
     // getToDo()
-    // getDone()
     // getRooms()
     // getAchievements()
 })
@@ -163,7 +160,6 @@ const getCities = async () => {
 let listToShow = ref("To-Do")
 let favoris = ref([])
 let toDo = ref([])
-let done = ref([])
 const getFavoris = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris", {
@@ -194,21 +190,6 @@ const getToDo = async () => {
         toDo.value = data.value
     }
 }
-const getDone = async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    if (data.value) {
-
-        done.value = data.value
-    }
-}
 const deleteFromFavoris = async (value) => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + value, {
@@ -237,22 +218,6 @@ const deleteFromToDo = async (value) => {
     if (data.value) {
 
         toDo.value = data.value
-    }
-}
-const deleteFromDone = async (value) => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/remove/" + value, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    
-    if (data.value) {
-
-        done.value = data.value
     }
 }
 const updateToDo = async (value) => {
