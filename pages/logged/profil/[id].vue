@@ -1,5 +1,5 @@
 <template>
-    <div id="alter-profil">
+    <div id="alter-profil" :class="load ? 'visible' : 'invisible'">
         <div class="name">{{ user.firstname }} {{ user.name }}</div>
         <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
         <img v-if="user.profilPic" class="profil-pic" alt="profil-picture" :src="'/profil-pictures/' + user.profilPic + '.webp'" />
@@ -11,7 +11,16 @@
         <div v-else class="no-profil">No Profil</div>
         <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
         <div class="contact" @click="getRoom()">Start a talk !</div>
-        <button @click="sendFriendRequest">Send friend request !</button>
+        <button v-if="friendship === null" @click="sendFriendRequest" class="button">Send friend request !</button>
+        <button v-else-if="friendship.friend === false && friendship.sender.email === currentEmail" class="request-sent">Request sent</button>
+        <div v-else-if="friendship.friend === false && friendship.receiver.email === currentEmail" class="decision">
+            <div class="title">Answer request</div>
+            <div class="choice">
+                <button class="request-sent" @click="acceptFriendship">&#10003;</button>
+                <button class="reject-request" @click="declineFriendship">X</button>
+            </div>
+        </div>
+        <div v-else class="request-sent">Friends since {{ formatDate(friendship.since) }}</div>
         <ul v-if="user.level">
             <li :class="'percent--' + levelDecimal"><span>level {{ level }}</span></li>
         </ul>
@@ -33,6 +42,7 @@ import dayjs from "dayjs"
 const route = useRoute()
 const router = useRouter()
 const token = useCookie("token")
+const currentEmail = useCookie("email")
 const runtimeConfig = useRuntimeConfig()
 let color = ref("#FF7A00")
 let user = ref({
@@ -53,6 +63,8 @@ let user = ref({
 })
 let levelDecimal = ref(1)
 let level = ref(0)
+let friendship = ref(null)
+let load = ref(false)
 
 const formatDate = (dateString) => {
   
@@ -76,8 +88,10 @@ const getAlterUserProfil = async () => {
 
     if (data.value) {
 
-        user.value = data.value
-        user.value.city = data.value.city.name
+        load.value = true
+        friendship.value = data.value.friendship
+        user.value = data.value.user
+        user.value.city = data.value.user.city.name
         levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
         if (levelDecimal.value.length == 1) {
 
@@ -119,99 +133,87 @@ const sendFriendRequest = async () => {
 
     if (data.value) {
         
-        // DEBUG !!!
-        alert("COUCOU")
-        // DEBUG !!!
+        friendship.value = data.value
     }
+}
+const acceptFriendship = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/accept/" + friendship.value.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        friendship.value.friend = true
+        friendship.value.since = Date.now()
+    } 
+}
+const declineFriendship = async () => {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/decline/" + friendship.value.id, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+    friendship.value = null
 }
 </script>
 
 <style lang="scss" scoped>
 @import "~/assets/variables";
 
-@mixin percent($argument) {
-    $per: unquote($argument);
+.visible {
+    opacity: 100%;
+    transition: 0.3s ease-in-out;
+}
 
-    &--#{$per} {
-
-        list-style: none;
-        padding: 20px 0;
-        position: relative;
-        font-size: 1.5rem;
-        color: $white;
-        width: 100%;
-        filter: brightness(1.2);
-        transition: all 0.5s ease 0s;
-
-        &:before {
-            content: "";
-            position: absolute;
-            background: $black;
-            height: 0.8rem;
-            width: 100%;
-            left: 0;
-            bottom: 0;
-            border-radius: 5px;
-            border: 1px solid #111;
-            border-color: #111 #323232 #323232 #111;
-            background: linear-gradient(
-                90deg,
-                #2292dd40 calc(calc($per * 1%) + 4px),
-                #1c1c1c calc(calc($per * 1%) + 4px)
-            );
-        }
-
-        &:after {
-            content: "";
-            height: 11px;
-            margin: 0 0 2px 0;
-            background: $orange;
-            border-radius: 5px;
-            position: absolute;
-            box-shadow: 0 0 5px 1px $orange;
-            left: 3px;
-            width: 0%;
-            bottom: 0;
-            width: calc(calc($per * 1%) - 2px);
-        }
-
-        &:hover, &:active {
-            filter: brightness(1.5);
-        }
-
-        &:hover span:after, &:active span:after {
-            right: calc(calc(calc(100 - $per) * 1%) - 40px);
-            opacity: 1;
-            background: $orange;
-            filter: brightness(.7);
-        }
-
-        span {
-            font-weight: 500;
-
-            &:after {
-                position: absolute;
-                right: -40px;
-                top: 40px;
-                counter-reset: percent $per;
-                content: counter(percent);
-                color: $black;
-                padding: 4px 6px;
-                border-radius: 5px;
-                font-weight: bold;
-                pointer-events: none;
-                transition: all 0.5s ease 0s;
-            }
-        }
-    }
+.invisible {
+    opacity: 0%;
+    transition: 0.3s ease-in-out;
 }
 
 #alter-profil {
 
     width: 100%;
     margin-bottom: 30px;
+    overflow-x: hidden;
     @include flex($direction:column);
-     
+
+    .button {
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px);
+    }
+
+    .request-sent {
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$green);
+    }
+
+    .reject-request {
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$red);
+    }
+
+    .decision {
+        width: 100%;
+        @include flex($direction:column);
+
+        .title {
+            width: 100%;
+            font-size: large;
+            margin: 10px auto;
+            text-align: center;
+            color: $orange;
+        }
+
+        .choice {
+            @include flex();
+        }
+    }
+
     .profil-pic {
         width: 100px;
         height: 100px;
