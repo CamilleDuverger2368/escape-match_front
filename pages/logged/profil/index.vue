@@ -7,7 +7,7 @@
             <div class="slider informations" @click="redirectToInformations">
                 <img src="~/public/icones/user.svg" alt="profil's informations">
             </div>
-            <div class="slider lists" @click="openList = true">
+            <div class="slider lists" @click="redirectToSessions">
                 <img src="~/public/icones/list.svg" alt="profil's lists">
             </div>
             <div class="slider success" @click="openSuccess = true">
@@ -20,15 +20,6 @@
         <section id="menu-informations" :class="openInfo ? 'active' : 'inactive-left'">
         </section>
         <section id="menu-lists" :class="openList ? 'active' : 'inactive-right'">
-            <button @click="openList = false" class="close">X</button>
-            <div class="info">
-                <div class="lists">
-                    <button @click="listToShow = 'To-Do'" :class="listToShow === 'To-Do' ? 'active-list' : ''">To-Do</button>
-                    <button @click="listToShow = 'Favori'" :class="listToShow === 'Favori' ? 'active-list' : ''">Favori</button>
-                </div>
-                <Tablelist v-if="listToShow == 'To-Do'" :headers="['Escape', 'Since', 'Actions']" :list="toDo" id="list-to-do-user" :toDo="true" @delete="deleteFromToDo" @actualise="updateToDo" page="current" />
-                <Tablelist v-else-if="listToShow == 'Favori'" :headers="['Escape', 'Since', 'Actions']" :list="favoris" id="list-favori-user" @delete="deleteFromFavoris" page="current" />
-            </div>
         </section>
         <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
             <button @click="openSuccess = false" class="close">X</button>
@@ -74,18 +65,21 @@
 onMounted(() => {
 
     // To-Do: Faire en sorte que tout ne soit recupere que par une seule et meme route au chargement de la page
-    getProfil()
-    getCities()
-    // getFavoris()
-    // getToDo()
-    // getRooms()
-    // getAchievements()
+    // getProfil()
+    // getCities()
+    getRooms()
+    getAchievements()
 })
 
 const redirectToInformations = () => {
 
     openInfo.value = true
     setTimeout(() => router.push("/logged/profil/informations"), 500);
+}
+const redirectToSessions = () => {
+
+    openList.value = true
+    setTimeout(() => router.push("/logged/profil/sessions"), 500);
 }
 
 const router = useRouter()
@@ -99,143 +93,7 @@ let openList = ref(false)
 let openSuccess = ref(false)
 let openConv = ref(false)
 
-// Profil's section
-let user = ref({
-    id: null,
-    email: "",
-    name: "",
-    firstname: "",
-    pseudo: "",
-    profilPic: "",
-    age: null,
-    pronouns: "",
-    profil: "",
-    city: ""
-})
-let error = ref({
-    general: '',
-    name: '',
-    firstname: '',
-    email: '',
-    pseudo: '',
-    age: '',
-    password: '',
-    confPwd: '',
-    dataConfPwd: ''
-})
-let cities = ref([])
-const getProfil = async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "user", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    if (data.value) {
-
-        user.value = data.value
-        user.value.city = data.value.city.name
-    }
-}
-const getCities = async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
-
-    if (data.value) {
-
-        for(let i = 0; i < data.value.length; i++) {
-
-            cities.value.push(data.value[i].name)
-        }
-    }
-}
-
 // Lists' section
-let listToShow = ref("To-Do")
-let favoris = ref([])
-let toDo = ref([])
-const getFavoris = async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    if (data.value) {
-
-        favoris.value = data.value
-    }
-}
-const getToDo = async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    if (data.value) {
-
-        toDo.value = data.value
-    }
-}
-const deleteFromFavoris = async (value) => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + value, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    if (data.value) {
-
-        favoris.value = data.value
-    }
-}
-const deleteFromToDo = async (value) => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/remove/" + value, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    if (data.value) {
-
-        toDo.value = data.value
-    }
-}
-const updateToDo = async (value) => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/update/" + value, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    
-    if (data.value) {
-
-        toDo.value = data.value
-    }
-}
 
 // Achievements' section
 const hats = ["test 3", "test 5"]

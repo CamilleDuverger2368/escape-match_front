@@ -7,13 +7,16 @@
         <section v-if="switcher === 'friends'" id="friends">
             <hr />
             <div v-if="friends.length > 0" class="content">
-                <nuxt-link class="line" :key="friend" v-for="friend in friends" :to="currentEmail === friend.sender.email ? '/logged/profil/' + friend.receiver.id : '/logged/profil/' + friend.sender.id" :id="'friendship-' + friend.id">
+                <nuxt-link class="line" :key="friend" v-for="friend in friends" :to="currentEmail === friend.friend.sender.email ? '/logged/profil/' + friend.friend.receiver.id : '/logged/profil/' + friend.friend.sender.id" :id="'friendship-' + friend.friend.id">
                     <div class="title">
-                        <img v-if="currentEmail === friend.sender.email ? friend.receiver.profilPic : friend.sender.profilPic" alt="profil picture" class="image" :src="currentEmail === friend.sender.email ? '/profil-pictures/' + friend.receiver.profilPic + '.webp' : '/profil-pictures/' + friend.sender.profilPic + '.webp'" />
+                        <img v-if="currentEmail === friend.friend.sender.email ? friend.friend.receiver.profilPic : friend.friend.sender.profilPic" alt="profil picture" class="image" :src="currentEmail === friend.friend.sender.email ? '/profil-pictures/' + friend.friend.receiver.profilPic + '.webp' : '/profil-pictures/' + friend.friend.sender.profilPic + '.webp'" />
                         <img v-else alt="neutral profil picture" class="image" src="/profil-pictures/neutral.webp" />
-                        <div class="name">
-                            {{ currentEmail === friend.sender.email ? friend.receiver.firstname + ' ' + friend.receiver.name :  friend.sender.firstname + ' ' + friend.sender.name }}
-                            <span v-if="currentEmail === friend.sender.email ? friend.receiver.pseudo : friend.sender.pseudo"> aka {{ currentEmail === friend.sender.email ? friend.receiver.pseudo : friend.sender.pseudo }}</span>
+                        <div class="text">
+                            <div class="name">
+                                {{ currentEmail === friend.friend.sender.email ? friend.friend.receiver.firstname + ' ' + friend.friend.receiver.name :  friend.friend.sender.firstname + ' ' + friend.friend.sender.name }}
+                                <span v-if="currentEmail === friend.friend.sender.email ? friend.friend.receiver.pseudo : friend.friend.sender.pseudo"> aka {{ currentEmail === friend.friend.sender.email ? friend.friend.receiver.pseudo : friend.friend.sender.pseudo }}</span>
+                            </div>
+                            <div class="sessions">{{ friend.sessions }} session(s) done together</div>
                         </div>
                     </div>
                     <hr/>
@@ -186,13 +189,24 @@ const declineFriendship = async (id) => {
                 @include flex($justify:space-around, $align:center);
 
                 .image {
-                    width: 20%;
+                    width: 100px;
                 }
 
-                .name {
+                .text {
                     width: 60%;
-                    font-size: 1.5rem;
-                    text-align: center;
+                    @include flex($direction:column);
+
+                    .name {
+                        width: 100%;
+                        font-size: 1.5rem;
+                        text-align: center;
+                    }
+
+                    .sessions {
+                        color: $orange;
+                        margin: 5px auto;
+                        font-size: .8rem;
+                    }
                 }
             }
 
