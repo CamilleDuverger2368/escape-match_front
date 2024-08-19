@@ -17,7 +17,7 @@ const props = defineProps({
         require: true
     },
     data: {
-        type: [Date],
+        type: [Date, String],
         require: false
     }
 })

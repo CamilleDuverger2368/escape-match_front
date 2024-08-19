@@ -7,7 +7,7 @@
             <Input name="Email (Mandatory)" type="email" id="register_email" :data="user.email" :error="error.email" :require="true" @check="checkEmail" />
             <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" :require="false" @check="checkPseudo" />
             <ProfilPicChoice :images="['droopy', 'totoro', 'fou-a-pieds-bleus', 'neutral']" :data="user.profilPic" @check="checkProfilPic"/>
-            <Datepicker id="birthday" data="" name="Birthday" @check="checkBirthday" />
+            <Datepicker id="birthday" :data="user.birthday" name="Birthday" @check="checkBirthday" />
             <ListfieldCities :data="user.city" @select="checkCity"/>
             <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" :require="true" @check="checkPassword" />
             <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />

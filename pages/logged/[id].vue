@@ -80,6 +80,35 @@
             </div>
             <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" page="escape"/>
         </section>
+        <hr />
+        <section id="done">
+            <button @click="markAsDone = true" class=" top">Add a new session</button>
+            <form v-if="markAsDone" id="add-session" @submit.prevent="addNewSession()">
+                <Datepicker id="session-date" :data="newSession.date" name="Session's date" @check="checkSessionDate" />
+                <div class="members">
+                    <div class="title">Members</div>
+                    <div class="member">{{ findUserNameByIdOrEmail("email", currentEmail) }}</div>
+                    <div :key="member" v-for="member in newSession.members" class="member">{{ findUserNameByIdOrEmail("id", member) }}</div>
+                </div>
+                <ListfieldUsers title="Choose session's member to add" :options="users" :data="newSession.members" @select="checkSessionMember"/>
+                <button type="submit">Save</button>
+            </form>
+            <div class="sessions">
+                <div :key="session" v-for="session in sessions" class="session">
+                    <div class="time">
+                        <img src="~/public/icones/hourglass.svg" alt="time">
+                        {{ formatDate(session.playedAt) }}
+                    </div>
+                    <div class="members">
+                        <div class="title">Members</div>
+                        <nuxt-link :key="member" v-for="member in session.members" :to="member.email === currentEmail ? '/logged/profil' : '/logged/profil/' + member.id" class="member">
+                            {{ member.firstname + ' ' + member.name }}
+                            <span v-if="member.pseudo"> aka {{ member.pseudo }}</span>
+                        </nuxt-link>
+                    </div>
+                </div>
+            </div>
+        </section>
         <!--<hr/>
         <section id="list-favori">
             <button v-if="!isFavorite" @click="addToFavoriList" class=" top">Add to my favori</button>
@@ -90,6 +119,7 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs"
 
 // Escape's section
 let escape = ref({
@@ -117,6 +147,7 @@ let link = ref({
 })
 const route = useRoute()
 const token = useCookie("token")
+const currentEmail = useCookie("email")
 const runtimeConfig = useRuntimeConfig()
 let image = ref(false)
 
@@ -129,7 +160,8 @@ onMounted(() => {
 
         getEscape()
     }
-
+    getUsers()
+    getSessions()
 })
 
 const getEscapeWithEntreprise = async () => {
@@ -260,6 +292,12 @@ const getEscape = async () => {
     }
 }
 
+const formatDate = (dateString) => {
+  
+  const date = dayjs(dateString);
+  return date.format("DD-MM-YYYY");
+}
+
 // Grade section
 let changeGrade = ref(false)
 let average = ref(0.0)
@@ -337,6 +375,79 @@ const updateGrade = async () => {
 // List section
 let isToDo = ref(false)
 let isFavorite = ref(false)
+let markAsDone = ref(false)
+let sessions = ref({})
+let users = ref({})
+let newSession = ref({
+    date: '',
+    escape: route.params.id,
+    members: []
+})
+
+const checkSessionDate = (data) => {
+
+    newSession.value.date = data
+}
+const checkSessionMember = (data) => {
+    
+    if (!newSession.value.members.includes(data)) {
+
+        newSession.value.members.push(data)
+    }
+}
+const findUserNameByIdOrEmail = (key, value) => {
+    
+    let max = users.value.length
+    for (let i = 0; i < max; i++) {
+        if (users.value[i][key] === value) {
+
+            let name = users.value[i].firstname + ' ' + users.value[i].name
+            if (users.value[i].pseudo) {
+                name += " aka " + users.value[i].pseudo
+            }
+            return name
+        }
+    }
+}
+const getUsers = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/list", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        users.value = data.value
+    }
+}
+const addNewSession = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/session/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        },
+        body: newSession.value
+    })
+}
+const getSessions = async () => {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/session", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        sessions.value = data.value
+    }
+}
 const addToToDoList = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/add/" + escape.value.id, {
@@ -582,6 +693,76 @@ const updateToDoList = async () => {
 
             width: 100%;
             @include flex($justify:space-around);
+        }
+    }
+
+    #done {
+        
+        width: 100%;
+        margin: 20px auto;
+        @include flex($direction:column);
+
+        button {
+
+            @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+        }
+
+        form {
+            width: 70%;
+            margin: 10px auto;
+            @include flex($direction:column);
+
+            .title {
+                color: $orange;
+                font-size: 1.25rem;
+                font-weight: 400;
+            }
+
+            .members {
+                width: 100%;
+                margin: 10px auto;
+                @include flex($direction:column);
+            }
+        }
+
+        .sessions {
+            width: 70%;
+            margin: 20px auto;
+            padding: 15px;
+            @include flex($direction:column);
+            border: solid 1px rgba($orange, 0.7);
+            border-radius: 5px;
+
+            .session {
+                width: 100;
+                @include flex($direction:column);
+
+                .time {
+                    width: 100%;
+                    @include flex();
+
+                    img {
+                        width: 40px;
+                        margin: auto 3px;
+                    }
+                }
+                
+                .title {
+                    color: $orange;
+                    font-size: 1.25rem;
+                    font-weight: 400;
+                }
+
+                .members {
+                    width: 100%;
+                    margin: 10px auto;
+                    @include flex($direction:column);
+
+                    .member {
+                        @include link();
+                    }
+                }
+            }
         }
     }
 
