@@ -72,4 +72,8 @@ export default class Experience {
         this.world.changeColor(color)
         this.renderer.update()
     }
+
+    unMounted() {
+        instance = null
+    }
 }

@@ -18,7 +18,7 @@ const props = defineProps({
     }
 })
 
-let avatar
+let avatar = null
 
 onMounted(() => {
     
@@ -28,6 +28,10 @@ onMounted(() => {
 onUpdated(() => {
 
     avatar.changeColor(props.color)
+})
+
+onUnmounted(() => {
+    avatar.unMounted()
 })
 </script>
 

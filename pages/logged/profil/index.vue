@@ -17,13 +17,9 @@
                 <img src="~/public/icones/message.svg" alt="profil's conversations">
             </div>
         </section>
-        <section id="menu-informations" :class="openInfo ? 'active' : 'inactive-left'">
+        <section :class="openInfo ? 'menu active' : 'menu inactive-left'">
         </section>
-        <section id="menu-lists" :class="openList ? 'active' : 'inactive-right'">
-        </section>
-        <section id="menu-success" :class="openSuccess ? 'active' : 'inactive-left'">
-        </section>
-        <section id="menu-conversations" :class="openConv ? 'active' : 'inactive-right'">
+        <section :class="openList ? 'menu active' : 'menu inactive-right'">
         </section>
     </div>
 </template>
@@ -45,12 +41,12 @@ const redirectToSessions = () => {
 }
 const redirectToMessages = () => {
 
-    openConv.value = true
+    openList.value = true
     setTimeout(() => router.push("/logged/profil/messages"), 500);
 }
 const redirectToSuccess = () => {
 
-    openSuccess.value = true
+    openInfo.value = true
     setTimeout(() => router.push("/logged/profil/success"), 500);
 }
 
@@ -62,8 +58,6 @@ const runtimeConfig = useRuntimeConfig()
 // Menu's section
 let openInfo = ref(false)
 let openList = ref(false)
-let openSuccess = ref(false)
-let openConv = ref(false)
 
 </script>
 
@@ -150,7 +144,7 @@ let openConv = ref(false)
         }
     }
 
-    #menu-informations {
+    .menu {
         width: 100vw;
         position: fixed;
         background-color: $black;
@@ -158,39 +152,6 @@ let openConv = ref(false)
         // background-color: $red;
         // DEBUG !!!
         height: 73vh;
-        overflow-x: hidden;
-        @include flex($direction:column, $justify:flex-start);
-        transition: transform 0.5s ease-in-out;
-    }
-
-    #menu-lists {
-        width: 100vw;
-        position: fixed;
-        background-color: $black;
-        height: 73vh;
-        overflow-x: hidden;
-        @include flex($direction:column, $justify:flex-start);
-        transition: transform 0.5s ease-in-out;
-    }
-
-    #menu-success {
-        width: 100vw;
-        position: fixed;
-        background-color: $black;
-        height: 73vh;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        @include flex($direction:column, $justify:flex-start);
-        transition: transform 0.5s ease-in-out;
-
-    }
-
-    #menu-conversations {
-        width: 100vw;
-        position: fixed;
-        background-color: $black;
-        height: 73vh;
-        overflow-y: scroll;
         overflow-x: hidden;
         @include flex($direction:column, $justify:flex-start);
         transition: transform 0.5s ease-in-out;
