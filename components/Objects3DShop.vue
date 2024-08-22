@@ -1,11 +1,10 @@
-<!-- WIP -->
 <template>
     <div class="objects3D-list" :id="id">
-        <div class="icone">
-            <div class="gain">Nothing</div>
+        <div :class="data === '' || !data ? 'icone active' : 'icone'" @click="model = ''">
+            <div>Nothing</div>
         </div>
-        <div v-bind:key="element" v-for="element in obj" class="icone">
-            <div class="gain">{{ element.trophee }}</div>
+        <div v-bind:key="element" v-for="element in obj" @click="model = element.trophee" :class="data === element.trophee ? 'icone active' : 'icone'">
+            <div>{{ element.trophee }}</div>
         </div>
 </div>
 </template>
@@ -23,6 +22,10 @@ const props = defineProps({
     id: {
         type: String,
         require: true
+    },
+    data: {
+        type: String,
+        require: false
     }
 })
 
@@ -40,10 +43,30 @@ let obj = computed({
         return obj
     }
 })
+
+const emit = defineEmits(["choose"])
+let model = computed({
+    
+    get() {
+
+        return props.data
+    },
+
+    set(value) {
+        
+        emit("choose", value)
+    }
+})
 </script>
 
 <style lang="scss" scoped>
 @import "~/assets/variables";
+
+.active {
+    background-color: rgba($orange, 0.7);
+    color: $black !important;
+    transition: 0.3s ease-in-out;
+}
 
 .objects3D-list {
 
@@ -60,12 +83,15 @@ let obj = computed({
         border-radius: 5px;
         border: solid 1px rgba($orange, 0.7);
         @include flex($direction:column, $justify:flex-start);
+        transition: 0.3s ease-in-out;
+        color: $orange;
+        font-style: italic;
+        text-align: center;
 
-        .gain {
-
-            color: $orange;
-            font-style: italic;
-            text-align: center;
+        &:hover {
+            background-color: rgba($orange, 0.7);
+            color: $black;
+            transition: 0.3s ease-in-out;
         }
     }
 }

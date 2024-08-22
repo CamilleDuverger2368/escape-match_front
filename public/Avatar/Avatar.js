@@ -1,6 +1,6 @@
 import Experience from "./Experience"
 
-export default class LinkCV {
+export default class Avatar {
 
     constructor() {
 

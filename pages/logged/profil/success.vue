@@ -15,9 +15,9 @@
                     <button @click="objectsToShow = 'suits'" :class="objectsToShow === 'suits' ? 'active-list' : ''">suits</button>
                     <button @click="objectsToShow = 'goodies'" :class="objectsToShow === 'goodies' ? 'active-list' : ''">goodies</button>
                 </div>
-                <Objects3dShop v-if="objectsToShow == 'hats'" :id="'hats'" :objects="object3D" :objectsRef="hats"/>
-                <Objects3dShop v-if="objectsToShow == 'suits'" :id="'suits'" :objects="object3D" :objectsRef="suits"/>
-                <Objects3dShop v-if="objectsToShow == 'goodies'" :id="'goodies'" :objects="object3D" :objectsRef="objects"/>
+                <Objects3dShop v-if="objectsToShow == 'hats'" :id="'hats'" :objects="object3D" :objectsRef="hats" @choose="chooseHat" />
+                <Objects3dShop v-if="objectsToShow == 'suits'" :id="'suits'" :objects="object3D" :objectsRef="suits" @choose="chooseSuit" />
+                <Objects3dShop v-if="objectsToShow == 'goodies'" :id="'goodies'" :objects="object3D" :objectsRef="objects" @choose="chooseObject" />
             </div>
         </div>
     </div>
@@ -40,9 +40,9 @@ const redirectToProfil = () => {
     setTimeout(() => router.push("/logged/profil"), 500)
 }
 
-const hats = ["test 3", "test 5"]
-const suits = ["test 1", "test 6"]
-const objects = ["test 12", "test 2"]
+const hats = ["BowlerHat", "SherlockHat", "Cap", "TopHat"]
+const suits = ["Smoking", "Sweat", "Tshirt", "Jogging", "Skirt", "SuitPants"]
+const objects = ["Glass", "Torchman", "Weapon"]
 let achievementsToShow = ref("unlocked")
 let objectsToShow = ref("hats")
 let unlocked = ref([{
@@ -83,6 +83,24 @@ const getAchievements = async () => {
         object3D.value = data.value.object3D
     }
 }
+const chooseHat = (data) => {
+    // DEBUG !!!
+    console.log("hat")
+    console.log(data)
+    // DEBUG !!!
+}
+const chooseSuit = (data) => {
+    // DEBUG !!!
+    console.log("suit")
+    console.log(data)
+    // DEBUG !!!
+}
+const chooseObject = (data) => {
+    // DEBUG !!!
+    console.log("object")
+    console.log(data)
+    // DEBUG !!!
+}
 </script>
 
 <style lang="scss" scoped>
@@ -98,7 +116,6 @@ const getAchievements = async () => {
 
 #success {
     width: 100%;
-    position: fixed;
     overflow-x: hidden;
     @include flex($direction:column);
     transition: transform 0.5s ease-in-out;
