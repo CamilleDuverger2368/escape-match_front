@@ -1,6 +1,7 @@
 <template>
     <div id="profil">
-        <Avatar :color="color"
+        <Avatar v-if="avatar.id !== ''"
+                :color="color"
                 page="profil"
                 :hat="avatar.hat"
                 :suit="avatar.suit"
@@ -51,9 +52,6 @@ const getAvatar = async () => {
 
     if (data.value) {
 
-        // DEBUG !!!
-        console.log("no update without console.log ?")
-        // DEBUG !!!
         avatar.value = data.value
     }
 }
