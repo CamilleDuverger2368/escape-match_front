@@ -1,8 +1,11 @@
 <template>
     <div id="profil">
-        <Avatar :color="color" page="profil"/>
-        <!--WIP TEST DE TITRE-->
-        <section id="title">Nouvel arrivant !</section>
+        <Avatar :color="color"
+                page="profil"
+                :hat="avatar.hat"
+                :suit="avatar.suit"
+                :goodie="avatar.goodie"/>
+        <section v-if="avatar.title" id="title">{{ avatar.title }}</section>
         <section id="slider-menu">
             <div class="slider informations" @click="redirectToInformations">
                 <img src="~/public/icones/user.svg" alt="profil's informations">
@@ -27,8 +30,33 @@
 <script setup>
 
 onMounted(() => {
+    getAvatar()
 })
 
+let avatar = ref({
+    id: '',
+    hat: '',
+    suit: '',
+    goodie: '',
+    title: ''
+})
+const getAvatar = async () => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/find", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        // DEBUG !!!
+        console.log("no update without console.log ?")
+        // DEBUG !!!
+        avatar.value = data.value
+    }
+}
 const redirectToInformations = () => {
 
     openInfo.value = true
@@ -148,9 +176,6 @@ let openList = ref(false)
         width: 100vw;
         position: fixed;
         background-color: $black;
-        // DEBUG !!!
-        // background-color: $red;
-        // DEBUG !!!
         height: 73vh;
         overflow-x: hidden;
         @include flex($direction:column, $justify:flex-start);

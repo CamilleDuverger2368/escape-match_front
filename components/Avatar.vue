@@ -15,6 +15,18 @@ const props = defineProps({
     page: {
         type: String,
         require: true
+    },
+    hat: {
+        type: String,
+        require: false
+    },
+    suit: {
+        type: String,
+        require: false
+    },
+    goodie: {
+        type: String,
+        require: false
     }
 })
 
@@ -22,12 +34,23 @@ let avatar = null
 
 onMounted(() => {
     
-    avatar = new Avatar(document.querySelector("canvas.webgl"), props.color, props.page)
+    avatar = new Avatar(
+                        document.querySelector("canvas.webgl"),
+                        props.color,
+                        props.page,
+                        props.hat,
+                        props.suit,
+                        props.goodie
+                    )
 })
 
 onUpdated(() => {
 
     avatar.changeColor(props.color)
+    avatar.changeDressing(props.hat,
+                          props.suit,
+                          props.goodie
+    )
 })
 
 onUnmounted(() => {

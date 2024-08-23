@@ -15,9 +15,9 @@
                     <button @click="objectsToShow = 'suits'" :class="objectsToShow === 'suits' ? 'active-list' : ''">suits</button>
                     <button @click="objectsToShow = 'goodies'" :class="objectsToShow === 'goodies' ? 'active-list' : ''">goodies</button>
                 </div>
-                <Objects3dShop v-if="objectsToShow == 'hats'" :id="'hats'" :objects="object3D" :objectsRef="hats" @choose="chooseHat" />
-                <Objects3dShop v-if="objectsToShow == 'suits'" :id="'suits'" :objects="object3D" :objectsRef="suits" @choose="chooseSuit" />
-                <Objects3dShop v-if="objectsToShow == 'goodies'" :id="'goodies'" :objects="object3D" :objectsRef="objects" @choose="chooseObject" />
+                <Objects3dShop v-if="objectsToShow == 'hats'" id="hats" :data="avatar.hat" :objects="object3D" :objectsRef="hats" @choose="chooseHat" />
+                <Objects3dShop v-if="objectsToShow == 'suits'" id="suits" :data="avatar.suit" :objects="object3D" :objectsRef="suits" @choose="chooseSuit" />
+                <Objects3dShop v-if="objectsToShow == 'goodies'" id="goodies" :data="avatar.goodie" :objects="object3D" :objectsRef="objects" @choose="chooseObject" />
             </div>
         </div>
     </div>
@@ -33,6 +33,7 @@ const router = useRouter();
 onMounted(() => {
 
     getAchievements()
+    getAvatar()
 })
 const redirectToProfil = () => {
 
@@ -66,6 +67,13 @@ let locked = ref([{
     scalable: false
 }])
 let object3D = ref([])
+let avatar = ref({
+    id: '',
+    hat: '',
+    suit: '',
+    goodie: '',
+    title: ''
+})
 const getAchievements = async () => {
     const { data } = await useFetch(runtimeConfig.public.apiBase + "achievements", {
         method: "GET",
@@ -83,23 +91,61 @@ const getAchievements = async () => {
         object3D.value = data.value.object3D
     }
 }
-const chooseHat = (data) => {
-    // DEBUG !!!
-    console.log("hat")
-    console.log(data)
-    // DEBUG !!!
+const getAvatar = async () => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/find", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        avatar.value = data.value
+    }
 }
-const chooseSuit = (data) => {
-    // DEBUG !!!
-    console.log("suit")
-    console.log(data)
-    // DEBUG !!!
+const chooseHat = async (element) => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/dress/" + avatar.value.id + "/hat/" + element, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        avatar.value = data.value
+    }
 }
-const chooseObject = (data) => {
-    // DEBUG !!!
-    console.log("object")
-    console.log(data)
-    // DEBUG !!!
+const chooseSuit = async (element) => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/dress/" + avatar.value.id + "/suit/" + element, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        avatar.value = data.value
+    }
+}
+const chooseObject = async (element) => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/dress/" + avatar.value.id + "/goodie/" + element, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        avatar.value = data.value
+    }
 }
 </script>
 
