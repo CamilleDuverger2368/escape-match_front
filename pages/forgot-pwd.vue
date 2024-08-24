@@ -95,37 +95,7 @@ const resetPwd = async () => {
     #informations {
         
         width: 80%;
-        min-height: 40px;
-        margin-bottom: 20px;
-        color: $red;
-        opacity: 0;
-        @include flex();
-        transition: 0.2s ease all;
-        -moz-transition: 0.2s ease all;
-        -webkit-transition: 0.2s ease all;
-
-        &.success {
-            
-            color: $green;
-        }
-
-        &.error:not(:empty) {
-
-            box-shadow: 0 0 5px $red;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
-
-        &.success:not(:empty) {
-
-            box-shadow: 0 0 5px $green;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
+        @include panel-error-success();
     }
 
     form {

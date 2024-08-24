@@ -14,11 +14,11 @@
 </template>
 
 <script setup>
-import { storeToRefs } from "pinia";
-import { useAuthStore } from "~/store/auth";
+import { storeToRefs } from "pinia"
+import { useAuthStore } from "~/store/auth"
 
-const { authenticateUser } = useAuthStore();
-const { authenticated } = storeToRefs(useAuthStore());
+const { authenticateUser } = useAuthStore()
+const { authenticated } = storeToRefs(useAuthStore())
 const router = useRouter()
 
 let user = ref({
@@ -73,10 +73,12 @@ const login = async () => {
         error.value.general =""
         if (authenticated.value) {
 
+            document.getElementById("informations").classList.remove("error")
             router.push("/logged/profil")
         } else {
 
             error.value.general = "Give us a valid email and a password please OR validate your email."
+            document.getElementById("informations").classList.add("error")
         }
     }
 }
@@ -93,37 +95,7 @@ const login = async () => {
     #informations {
         
         width: 80%;
-        min-height: 40px;
-        margin-bottom: 20px;
-        color: $red;
-        opacity: 0;
-        @include flex();
-        transition: 0.2s ease all;
-        -moz-transition: 0.2s ease all;
-        -webkit-transition: 0.2s ease all;
-
-        &.success {
-            
-            color: $green;
-        }
-
-        &.error:not(:empty) {
-
-            box-shadow: 0 0 5px $red;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
-
-        &.success:not(:empty) {
-
-            box-shadow: 0 0 5px $green;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
+        @include panel-error-success();
     }
 
     form {
