@@ -6,6 +6,7 @@
                 <button @click="achievementsToShow = 'unlocked'" :class="achievementsToShow === 'unlocked' ? 'active-list' : ''">Unlocked</button>
                 <button @click="achievementsToShow = 'locked'" :class="achievementsToShow === 'locked' ? 'active-list' : ''">Locked</button>
                 <button @click="achievementsToShow = 'objects3D'" :class="achievementsToShow === 'objects3D' ? 'active-list' : ''">Objects 3D</button>
+                <button @click="achievementsToShow = 'titles'" :class="achievementsToShow === 'titles' ? 'active-list' : ''">Titles</button>
             </div>
             <AchievementList v-if="achievementsToShow == 'unlocked'" :id="'unlocked'" :achievements="unlocked" />
             <AchievementList v-else-if="achievementsToShow == 'locked'" :id="'locked'" :achievements="locked" />
@@ -18,6 +19,9 @@
                 <Objects3dShop v-if="objectsToShow == 'hats'" id="hats" :data="avatar.hat" :objects="object3D" :objectsRef="hats" @choose="chooseHat" />
                 <Objects3dShop v-if="objectsToShow == 'suits'" id="suits" :data="avatar.suit" :objects="object3D" :objectsRef="suits" @choose="chooseSuit" />
                 <Objects3dShop v-if="objectsToShow == 'goodies'" id="goodies" :data="avatar.goodie" :objects="object3D" :objectsRef="objects" @choose="chooseObject" />
+            </div>
+            <div v-else-if="achievementsToShow == 'titles'" class="objects">
+                <Objects3dShop id="titles" :data="avatar.title" :objects="titles" :objectsRef="titlesRef" @choose="chooseTitle" />
             </div>
         </div>
     </div>
@@ -44,6 +48,7 @@ const redirectToProfil = () => {
 const hats = ["BowlerHat", "SherlockHat", "Cap", "TopHat"]
 const suits = ["Smoking", "Sweat", "Tshirt", "Jogging", "Skirt", "SuitPants"]
 const objects = ["Glass", "Torchman", "Weapon"]
+const titlesRef = ["Maitre du Donjon", "Le newbie !", "Super Copaing"]
 let achievementsToShow = ref("unlocked")
 let objectsToShow = ref("hats")
 let unlocked = ref([{
@@ -67,6 +72,7 @@ let locked = ref([{
     scalable: false
 }])
 let object3D = ref([])
+let titles = ref([])
 let avatar = ref({
     id: '',
     hat: '',
@@ -89,6 +95,7 @@ const getAchievements = async () => {
         unlocked.value = data.value.unlocked
         locked.value = data.value.locked
         object3D.value = data.value.object3D
+        titles.value = data.value.titles
     }
 }
 const getAvatar = async () => {
@@ -147,6 +154,20 @@ const chooseObject = async (element) => {
         avatar.value = data.value
     }
 }
+const chooseTitle = async (element) => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/title/" + avatar.value.id + '/' + element, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        avatar.value = data.value
+    }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -182,7 +203,7 @@ const chooseObject = async (element) => {
         .lists {
             width: 90%;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             grid-row-gap: 10px;
             grid-column-gap: 10px;
 
@@ -198,6 +219,30 @@ const chooseObject = async (element) => {
             width: 90%;
             margin: 15px auto;
             @include flex($direction:column);
+            
+            .active {
+                background-color: rgba($orange, 0.7);
+                color: $black !important;
+                transition: 0.3s ease-in-out;
+            }
+
+            .icone {
+
+                padding: 10px 15px;
+                border-radius: 5px;
+                border: solid 1px rgba($orange, 0.7);
+                @include flex($direction:column, $justify:flex-start);
+                transition: 0.3s ease-in-out;
+                color: $orange;
+                font-style: italic;
+                text-align: center;
+
+                &:hover {
+                    background-color: rgba($orange, 0.7);
+                    color: $black;
+                    transition: 0.3s ease-in-out;
+                }
+            }
         }
 
         button {
