@@ -4,6 +4,7 @@
         <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
         <img v-if="user.profilPic" class="profil-pic" alt="profil-picture" :src="'/profil-pictures/' + user.profilPic + '.webp'" />
         <img v-else class="profil-pic" alt="profil-picture" src="/profil-pictures/neutral.webp" />
+        <div v-if="avatar.title" class="title">{{ avatar.title }}</div>
         <Avatar v-if="avatar.id !== ''"
                 :color="color"
                 page="profil"
@@ -48,6 +49,7 @@
 
 <script setup>
 import { formatDate } from "~/public/usefull/usefull"
+import { profilChecker } from "~/public/usefull/checker"
 
 const route = useRoute()
 const router = useRouter()
@@ -98,15 +100,22 @@ onMounted( async () => {
         friendship.value = data.value.friendship
         user.value = data.value.user
         user.value.city = data.value.user.city.name
-        levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
-        if (levelDecimal.value.length == 1) {
+        color.value = profilChecker(user.value.profil)
+        if (user.value.level) {
 
-            levelDecimal.value += '0'
-        } else if (levelDecimal.value[0] == '0') {
+            levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
+            if (levelDecimal.value.length == 1) {
 
-            levelDecimal.value = levelDecimal.value.substring(1)
+                levelDecimal.value += '0'
+            } else if (levelDecimal.value[0] == '0') {
+
+                levelDecimal.value = levelDecimal.value.substring(1)
+            }
+            level.value = Math.trunc(user.value.level)
+        } else {
+            level.value = 0
+            levelDecimal.value = 0
         }
-        level.value = Math.trunc(user.value.level)
         avatar.value = data.value.avatar
     }
 })
@@ -247,6 +256,14 @@ const declineFriendship = async () => {
         font-size: 1rem;
         font-style: italic;
         margin: 0 auto 10px auto;
+    }
+
+    .title {
+        margin-top: 20px;
+        font-style: italic;
+        font-size: 1.2rem;
+        color: $orange;
+        text-align: center;
     }
 
     .classic {

@@ -206,15 +206,22 @@ const getProfil = async () => {
 const fillUpProfil = (data) => {
     user.value = data
     user.value.city = data.city.name
-    levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
-    if (levelDecimal.value.length == 1) {
+    
+    if (user.value.level) {
 
-        levelDecimal.value += '0'
-    } else if (levelDecimal.value[0] == '0') {
+        levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
+        if (levelDecimal.value.length == 1) {
 
-        levelDecimal.value = levelDecimal.value.substring(1)
+            levelDecimal.value += '0'
+        } else if (levelDecimal.value[0] == '0') {
+
+            levelDecimal.value = levelDecimal.value.substring(1)
+        }
+        level.value = Math.trunc(user.value.level)
+    } else {
+        level.value = 0
+        levelDecimal.value = 0
     }
-    level.value = Math.trunc(user.value.level)
 }
 
 // Check's section
