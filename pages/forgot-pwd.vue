@@ -13,23 +13,22 @@
 </template>
 
 <script setup>
+import { emailChecker } from '~/public/usefull/checker'
 
 let email = ref('')
 let error = ref({
     email: '',
     general: ''
 })
-const runtimeConfig = useRuntimeConfig();
+const runtimeConfig = useRuntimeConfig()
 // Email's section
 const checkEmail = async (datum) => {
     
     email.value = datum
 
-    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    error.value.email = emailChecker(datum)
+    if (error.value.email === '') {
 
-    if (datum.match(validRegex)) {
-
-        error.value.email = ""
         const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/email-exist/" + email.value, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
@@ -49,9 +48,6 @@ const checkEmail = async (datum) => {
                 document.getElementById("informations").classList.remove("success")
             }
         }
-    } else {
-
-        error.value.email = "Give us a valid email please."
     }
 }
 

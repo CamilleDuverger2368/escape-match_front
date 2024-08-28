@@ -33,19 +33,34 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs"
+import { formatDate } from "~/public/usefull/usefull"
 
 let load = ref(false)
 const token = useCookie("token")
 const runtimeConfig = useRuntimeConfig()
 const router = useRouter();
 
-onMounted(() => {
+onMounted(async () => {
 
-    getFavoris()
-    getSessions()
-    getToDo()
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/lists", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        load.value = true
+        sessions.value = data.value.sessions
+        favoris.value = data.value.favoris
+        toDo.value = data.value.toDo
+    }
 })
+
+// Menu's section
+let listToShow = ref("To-Do")
 
 const redirectToProfil = () => {
 
@@ -53,17 +68,12 @@ const redirectToProfil = () => {
     setTimeout(() => router.push("/logged/profil"), 500)
 }
 
-const formatDate = (dateString) => {
-  
-  const date = dayjs(dateString);
-  return date.format("DD-MM-YYYY");
-}
-
-let listToShow = ref("To-Do")
+// Lists' section
 let favoris = ref([])
 let toDo = ref([])
 let sessions = ref([])
 
+// Get
 const getSessions = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/session", {
@@ -107,9 +117,9 @@ const getToDo = async () => {
     if (data.value) {
 
         toDo.value = data.value
-        load.value = true
     }
 }
+// Delete
 const deleteFromFavoris = async (value) => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + value, {
@@ -122,7 +132,7 @@ const deleteFromFavoris = async (value) => {
 
     if (data.value) {
 
-        favoris.value = data.value
+        getFavoris()
     }
 }
 const deleteFromToDo = async (value) => {
@@ -137,7 +147,7 @@ const deleteFromToDo = async (value) => {
 
     if (data.value) {
 
-        toDo.value = data.value
+        getToDo()
     }
 }
 const deleteSession = async (value) => {
@@ -152,9 +162,10 @@ const deleteSession = async (value) => {
 
     if (data.value) {
 
-        sessions.value = data.value
+        getSessions()
     }
 }
+// Update
 const updateToDo = async (value) => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/update/" + value, {
@@ -168,7 +179,7 @@ const updateToDo = async (value) => {
     
     if (data.value) {
 
-        toDo.value = data.value
+        getToDo()
     }
 }
 </script>

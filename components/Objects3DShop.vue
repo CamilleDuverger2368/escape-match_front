@@ -1,6 +1,6 @@
 <template>
     <div class="objects3D-list" :id="id">
-        <div :class="data === '' || !data ? 'icone active' : 'icone'" @click="model = ''">
+        <div :class="data === '' || !data ? 'icone active' : 'icone'" @click="model = 'Nothing'">
             <div>Nothing</div>
         </div>
         <div v-bind:key="element" v-for="element in obj" @click="model = element.trophee" :class="data === element.trophee ? 'icone active' : 'icone'">

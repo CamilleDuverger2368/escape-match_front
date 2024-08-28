@@ -79,7 +79,6 @@ const getFriends = async () => {
         friends.value = data.value.friendships
     }
 }
-
 const acceptFriendship = async (id) => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/accept/" + id, {
@@ -104,7 +103,11 @@ const declineFriendship = async (id) => {
             "Authorization": "Bearer " + token.value
         }
     })
-    getFriends()
+
+    if (data.value) {
+        
+        getFriends()
+    } 
 }
 </script>
 

@@ -22,25 +22,7 @@ const runtimeConfig = useRuntimeConfig()
 let load = ref(false)
 const router = useRouter();
 
-onMounted(() => {
-
-    getRooms()
-})
-
-const redirectToProfil = () => {
-
-    load.value = false
-    setTimeout(() => router.push("/logged/profil"), 500)
-}
-
-let rooms = ref([{
-    room: {
-        id: null, 
-        name: ''
-    },
-    unread: null
-}])
-const getRooms = async () => {
+onMounted(async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "messages/unread", {
         method: "GET",
@@ -55,6 +37,20 @@ const getRooms = async () => {
         rooms.value = data.value
         load.value = true
     }
+})
+
+let rooms = ref([{
+    room: {
+        id: null, 
+        name: ''
+    },
+    unread: null
+}])
+
+const redirectToProfil = () => {
+
+    load.value = false
+    setTimeout(() => router.push("/logged/profil"), 500)
 }
 </script>
 

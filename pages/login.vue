@@ -16,6 +16,7 @@
 <script setup>
 import { storeToRefs } from "pinia"
 import { useAuthStore } from "~/store/auth"
+import { emailChecker, passwordLoginChecker } from "~/public/usefull/checker"
 
 const { authenticateUser } = useAuthStore()
 const { authenticated } = storeToRefs(useAuthStore())
@@ -37,27 +38,13 @@ const checkEmail = (data) => {
 
     user.value.username = data
 
-    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-
-    if (data.match(validRegex)) {
-
-        error.value.email = ""
-    } else {
-
-        error.value.email = "Give us a valid email please."
-    }
+    error.value.email = emailChecker(data)
 }
 const checkPwd = (data) => {
     
     user.value.password = data
 
-    if (data.length > 1) {
-
-        error.value.password = ""
-    } else {
-
-        error.value.password = "Give us a password please."
-    }
+    error.value.password = passwordLoginChecker(data)
 }
 
 // login's section

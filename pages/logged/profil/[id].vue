@@ -4,7 +4,12 @@
         <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
         <img v-if="user.profilPic" class="profil-pic" alt="profil-picture" :src="'/profil-pictures/' + user.profilPic + '.webp'" />
         <img v-else class="profil-pic" alt="profil-picture" src="/profil-pictures/neutral.webp" />
-        <Avatar :color="color" page="profil"/>
+        <Avatar v-if="avatar.id !== ''"
+                :color="color"
+                page="profil"
+                :hat="avatar.hat"
+                :suit="avatar.suit"
+                :goodie="avatar.goodie"/>
         <div v-if="user.birthday" class="classic"><span>Birthday :</span> {{ formatDate(user.birthday) }}</div>
         <div class="classic"><span>Member since :</span> {{ formatDate(user.createdAt) }}</div>
         <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
@@ -42,13 +47,15 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs"
+import { formatDate } from "~/public/usefull/usefull"
 
 const route = useRoute()
 const router = useRouter()
 const token = useCookie("token")
 const currentEmail = useCookie("email")
 const runtimeConfig = useRuntimeConfig()
+let load = ref(false)
+
 let color = ref("#FF7A00")
 let user = ref({
     id: null,
@@ -67,23 +74,17 @@ let user = ref({
 })
 let levelDecimal = ref(1)
 let level = ref(0)
-let friendship = ref(null)
-let load = ref(false)
-let removeFriendship = ref(false)
-
-const formatDate = (dateString) => {
-  
-  const date = dayjs(dateString);
-  return date.format("DD-MM-YYYY");
-}
-
-onMounted(() => {
-    
-    getAlterUserProfil()
+let avatar = ref({
+    id: '',
+    hat: '',
+    suit: '',
+    goodie: '',
+    title: ''
 })
-const getAlterUserProfil = async () => {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/alter/" + route.params.id, {
+onMounted( async () => {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/user/" + route.params.id, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -106,8 +107,11 @@ const getAlterUserProfil = async () => {
             levelDecimal.value = levelDecimal.value.substring(1)
         }
         level.value = Math.trunc(user.value.level)
+        avatar.value = data.value.avatar
     }
-}
+})
+
+// Conversation's section
 const getRoom = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "rooms/create", {
@@ -126,6 +130,11 @@ const getRoom = async () => {
         router.push("/logged/conversation/" + data.value.id)
     }
 }
+
+// Friendship's section
+let friendship = ref(null)
+let removeFriendship = ref(false)
+
 const sendFriendRequest = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/asking/" + route.params.id, {
@@ -166,7 +175,11 @@ const declineFriendship = async () => {
             "Authorization": "Bearer " + token.value
         }
     })
-    friendship.value = null
+    
+    if (data.value) {
+
+        friendship.value = null
+    }
 }
 </script>
 

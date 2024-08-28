@@ -56,26 +56,52 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs"
+import { formatDate } from "~/public/usefull/usefull"
+import { emailChecker,
+         nameChecker,
+         pseudoChecker,
+         passwordChecker,
+         passwordConfChecker,
+         profilChecker } from "~/public/usefull/checker"
 
-onMounted(() => {
+onMounted(async () => {
 
-    getProfil()
-    getCities()
-    getPicturesAchievements()
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/informations/user", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        fillUpProfil(data.value.user)
+
+        for(let i = 0; i < data.value.cities.length; i++) {
+
+            cities.value.push(data.value.cities[i].name)
+        }
+        
+        for(let i = 0; i < data.value.pictures.length; i++) {
+            
+            pictures.value.push(data.value.pictures[i].trophee)
+        }
+        
+        load.value = true
+    }
 })
 
 let color = ref("#FF7A00")
+let cities = ref([])
+let pictures = ref(["droopy", "totoro", "fou-a-pieds-bleus", "neutral"])
+const pronouns = ref(["She", "He", "They"])
+const profil = ref(["Solver", "Leader", "Searcher"])
+
 let load = ref(false)
 const token = useCookie("token")
 const runtimeConfig = useRuntimeConfig()
 const router = useRouter();
-
-const formatDate = (dateString) => {
-  
-  const date = dayjs(dateString);
-  return date.format("DD-MM-YYYY");
-}
 
 const redirectToProfil = () => {
 
@@ -116,10 +142,6 @@ let error = ref({
 })
 let updateProfil = ref(false)
 let updatePwd = ref(false)
-let cities = ref([])
-let pictures = ref(["droopy", "totoro", "fou-a-pieds-bleus", "neutral"])
-const pronouns = ref(["She", "He", "They"])
-const profil = ref(["Solver", "Leader", "Searcher"])
 const update = async () => {
 
     if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.age) {
@@ -178,106 +200,52 @@ const getProfil = async () => {
 
     if (data.value) {
 
-        user.value = data.value
-        user.value.city = data.value.city.name
-        levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
-        if (levelDecimal.value.length == 1) {
-
-            levelDecimal.value += '0'
-        } else if (levelDecimal.value[0] == '0') {
-
-            levelDecimal.value = levelDecimal.value.substring(1)
-        }
-        level.value = Math.trunc(user.value.level)
-        load.value = true
+        fillUpProfil(data.value)
     }
 }
-const getCities = async () => {
+const fillUpProfil = (data) => {
+    user.value = data
+    user.value.city = data.city.name
+    levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
+    if (levelDecimal.value.length == 1) {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
+        levelDecimal.value += '0'
+    } else if (levelDecimal.value[0] == '0') {
 
-    if (data.value) {
-
-        for(let i = 0; i < data.value.length; i++) {
-
-            cities.value.push(data.value[i].name)
-        }
+        levelDecimal.value = levelDecimal.value.substring(1)
     }
-}
-const getPicturesAchievements = async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "achievements/pictures", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-
-    if (data.value) {
-
-        for(let i = 0; i < data.value.length; i++) {
-            
-            pictures.value.push(data.value[i].trophee)
-        }
-    }
+    level.value = Math.trunc(user.value.level)
 }
 
 // Check's section
 const checkName = (data) => {
 
-    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
-
-    if (data.match(validRegex)) {
+    error.value.name = nameChecker(data)
+    if (error.value.name === "") {
 
         user.value.name = data
-        error.value.name = ""
-    } else {
-
-        error.value.name = "Give us a valid name please."
     }
 }
 const checkFirstname = (data) => {
 
-    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
-
-    if (data.match(validRegex)) {
+    error.value.firstname = nameChecker(data)
+    if (error.value.firstname === "") {
 
         user.value.firstname = data
-        error.value.firstname = ""
-    } else {
-
-        error.value.firstname = "Give us a valid firstname please."
     }
 }
 const checkEmail = (data) => {
 
     user.value.email = data
-
-    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-
-    if (data.match(validRegex)) {
-
-        error.value.email = ""
-    } else {
-
-        error.value.email = "Give us a valid email please."
-    }
+    
+    error.value.email = emailChecker(data)
 }
 const checkPseudo = (data) => {
 
-    const validRegex = /^([A-Za-z0-9\-\_]+)$/
-
-    if (data.match(validRegex)) {
+    error.value.pseudo = pseudoChecker(data)
+    if (error.value.pseudo === "") {
 
         user.value.pseudo = data
-        error.value.pseudo = ""
-    } else {
-
-        error.value.pseudo = "Your pseudo can only have letters, numbers or '-' '_'."
     }
 }
 const checkProfilPic = (data) => {
@@ -296,27 +264,13 @@ const checkPassword = (data) => {
 
     password.value.password = data
 
-    const validRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-
-    if (data.match(validRegex)) {
-
-        error.value.password = ""
-    } else {
-
-        error.value.password = "UPPERCASE, lowercase, digit, [#?!@$%^&*-], minimum of 8 characters"
-    }
+    error.value.password = passwordChecker(data)
 }
 const checkConfPwd = (data) => {
 
     error.value.dataConfPwd = data
-
-    if (password.value.password !== data) {
-
-        error.value.confPwd = "Your passwords don't match"
-    } else {
-
-        error.value.confPwd = ''
-    }
+    
+    error.value.confPwd = passwordConfChecker(data, password.value.password)
 }
 const checkPronouns = (data) => {
 
@@ -325,16 +279,8 @@ const checkPronouns = (data) => {
 const checkProfil = (data) => {
 
     user.value.profil = data
-    if (data === "Solver") {
-
-        color.value = "#45C4A2"
-    } else if (data === "Leader") {
-
-        color.value = "#E03616"
-    } else {
-        
-        color.value = "#FF7A00"
-    }
+    
+    color.value = profilChecker(data)
 }
 </script>
 
@@ -361,7 +307,6 @@ const checkProfil = (data) => {
 
 #informations-profil {
     width: 100%;
-    position: fixed;
     overflow-x: hidden;
     @include flex($direction:column);
     transition: transform 0.5s ease-in-out;
@@ -469,9 +414,6 @@ const checkProfil = (data) => {
 
     .update-profil {
         width: 100%;
-        position: inherit;
-        top: 4vh;
-        left: 0;
         padding: 50px 0;
         @include flex($direction:column);
 

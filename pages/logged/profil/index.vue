@@ -29,11 +29,18 @@
 </template>
 
 <script setup>
+import { profilChecker } from "~/public/usefull/checker"
+
+const router = useRouter()
+let color = ref("#FF7A00")
+const token = useCookie("token")
+const runtimeConfig = useRuntimeConfig()
 
 onMounted(() => {
     getAvatar()
 })
 
+// Avatar's section
 let avatar = ref({
     id: '',
     hat: '',
@@ -41,6 +48,7 @@ let avatar = ref({
     goodie: '',
     title: ''
 })
+
 const getAvatar = async () => {
     const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/find", {
         method: "GET",
@@ -53,8 +61,14 @@ const getAvatar = async () => {
     if (data.value) {
 
         avatar.value = data.value
+        color.value = profilChecker(data.value.user.profil)
     }
 }
+
+// Menu's section
+let openInfo = ref(false)
+let openList = ref(false)
+
 const redirectToInformations = () => {
 
     openInfo.value = true
@@ -75,16 +89,6 @@ const redirectToSuccess = () => {
     openInfo.value = true
     setTimeout(() => router.push("/logged/profil/success"), 500);
 }
-
-const router = useRouter()
-let color = ref("#FF7A00")
-const token = useCookie("token")
-const runtimeConfig = useRuntimeConfig()
-
-// Menu's section
-let openInfo = ref(false)
-let openList = ref(false)
-
 </script>
 
 <style lang="scss" scoped>

@@ -93,7 +93,7 @@
                 <ListfieldUsers title="Choose session's member to add" :options="users" :data="newSession.members" @select="checkSessionMember"/>
                 <button type="submit">Save</button>
             </form>
-            <div class="sessions">
+            <div v-if="sessions.length > 0" class="sessions">
                 <div :key="session" v-for="session in sessions" class="session">
                     <div class="time">
                         <img src="~/public/icones/hourglass.svg" alt="time">
@@ -119,7 +119,7 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs"
+import { formatDate } from "~/public/usefull/usefull"
 
 // Escape's section
 let escape = ref({
@@ -160,13 +160,72 @@ onMounted(() => {
 
         getEscape()
     }
-    getUsers()
-    getSessions()
 })
 
+const getImage = (name, entreprise) => {
+
+    const img = new Image()
+    img.src = "/escapes/" + name  + '-' + entreprise + ".webp"
+
+    if (img.complete) {
+
+        image.value = img.src
+    } else {
+
+        img.onload = () => {
+
+            image.value = img.src
+        }
+
+        img.onerror = () => {
+
+            img.src = "/escapes/" + name + ".webp"
+            if (img.complete) {
+
+                image.value = img.src
+            } else {
+
+                img.onload = () => {
+
+                    image.value = img.src
+                }
+
+                img.onerror = () => {
+
+                    image.value = false
+                }
+            }
+        }
+    }
+}
+const fillUpInformations = (data) => {
+    escape.value = data.escape
+    description.value = data.description
+    link.value = data.link
+    average.value = data.average
+    votes.value = data.votes
+    if (data.userGrade === null) {
+
+        userGrade.value.grade = 0
+    } else {
+
+        userGrade.value.grade = data.userGrade
+    }
+    isToDo.value = data.isToDo
+    isFavorite.value = data.isFavorite
+    
+    // Check if escape's image exist
+    getImage(
+        escape.value.name.toLowerCase().replaceAll(' ', '-'),
+        escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-')
+    )
+
+    users.value = data.usersList
+    sessions.value = data.sessions
+}
 const getEscapeWithEntreprise = async () => {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/" + route.params.id + "/entreprise/" + route.query.entreprise, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/escape/" + route.params.id + "/entreprise/" + route.query.entreprise, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -176,61 +235,12 @@ const getEscapeWithEntreprise = async () => {
 
     if (data.value) {
 
-        escape.value = data.value.escape
-        description.value = data.value.description
-        link.value = data.value.link
-        average.value = data.value.average
-        votes.value = data.value.votes
-        if (data.value.userGrade === null) {
-
-            userGrade.value.grade = 0
-        } else {
-
-            userGrade.value.grade = data.value.userGrade
-        }
-        isToDo.value = data.value.isToDo
-        isFavorite.value = data.value.isFavorite
-        
-        // Check if escape's image exist
-        const img = new Image()
-        img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-')  + '-' + escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + ".webp"
-
-        if (img.complete) {
-
-            image.value = img.src
-        } else {
-
-            img.onload = () => {
-
-                image.value = img.src
-            }
-
-            img.onerror = () => {
-
-                img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
-                if (img.complete) {
-
-                    image.value = img.src
-                } else {
-
-                    img.onload = () => {
-
-                        image.value = img.src
-                    }
-
-                    img.onerror = () => {
-
-                        image.value = false
-                    }
-                }
-            }
-        }
+        fillUpInformations(data.value)
     }
 }
-
 const getEscape = async () => {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/" + route.params.id, {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/escape/" + route.params.id, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -240,62 +250,8 @@ const getEscape = async () => {
 
     if (data.value) {
 
-        escape.value = data.value.escape
-        description.value = data.value.description
-        link.value = data.value.link
-        average.value = data.value.average
-        votes.value = data.value.votes
-        if (data.value.userGrade === null) {
-
-            userGrade.value.grade = 0
-        } else {
-
-            userGrade.value.grade = data.value.userGrade
-        }
-        isToDo.value = data.value.isToDo
-        isFavorite.value = data.value.isFavorite
-        
-        // Check if escape's image exist
-        const img = new Image()
-        img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-')  + '-' + escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + ".webp"
-
-        if (img.complete) {
-
-            image.value = img.src
-        } else {
-
-            img.onload = () => {
-
-                image.value = img.src
-            }
-
-            img.onerror = () => {
-
-                img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
-                if (img.complete) {
-
-                    image.value = img.src
-                } else {
-
-                    img.onload = () => {
-
-                        image.value = img.src
-                    }
-
-                    img.onerror = () => {
-
-                        image.value = false
-                    }
-                }
-            }
-        }
+        fillUpInformations(data.value)
     }
-}
-
-const formatDate = (dateString) => {
-  
-  const date = dayjs(dateString);
-  return date.format("DD-MM-YYYY");
 }
 
 // Grade section
@@ -306,7 +262,30 @@ let grade = ref(0)
 let userGrade = ref({
     grade: 0
 })
+
 // Get grade graduating
+const getAverage = async () => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/average/" + escape.value.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        average.value = data.average
+        votes.value = data.votes
+        if (data.userGrade === null) {
+
+            userGrade.value.grade = 0
+        } else {
+
+            userGrade.value.grade = data.userGrade
+        }
+    }
+}
 const gradeEscape = (data) => {
 
     grade.value = data
@@ -323,8 +302,7 @@ const deleteGrade = async () => {
 
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getAverage()
     }
 }
 const gradeEscapeGame = async () => {
@@ -345,8 +323,7 @@ const gradeEscapeGame = async () => {
     if (data.value) {
 
         changeGrade.value = false
-        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getAverage()
     }
 }
 const updateGrade = async () => {
@@ -367,8 +344,7 @@ const updateGrade = async () => {
     if (data.value) {
 
         changeGrade.value = false
-        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getAverage()
     }
 }
 
@@ -409,9 +385,9 @@ const findUserNameByIdOrEmail = (key, value) => {
         }
     }
 }
-const getUsers = async () => {
+const getSessions = async () => {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/list", {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/session/" + route.params.id, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -420,7 +396,25 @@ const getUsers = async () => {
     })
 
     if (data.value) {
-        users.value = data.value
+
+        sessions.value = data.value
+        markAsDone.value = false
+    }
+}
+const getToDos = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/" + route.params.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        escape.value.listToDos = data.value.toDoList
+        isToDo.value = data.value.isToDo
     }
 }
 const addNewSession = async () => {
@@ -433,19 +427,10 @@ const addNewSession = async () => {
         },
         body: newSession.value
     })
-}
-const getSessions = async () => {
-    
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/session", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
 
     if (data.value) {
-        sessions.value = data.value
+
+        getSessions()
     }
 }
 const addToToDoList = async () => {
@@ -460,8 +445,7 @@ const addToToDoList = async () => {
     
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getToDos()
     }
 }
 const addToFavoriList = async () => {
@@ -492,8 +476,7 @@ const removeFromToDoList = async () => {
     
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getToDos()
     }
 }
 const removeFromFavoriList = async () => {
@@ -524,8 +507,7 @@ const updateToDoList = async () => {
     
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getToDos()
     }
 }
 </script>
@@ -728,14 +710,15 @@ const updateToDoList = async () => {
         .sessions {
             width: 70%;
             margin: 20px auto;
-            padding: 15px;
             @include flex($direction:column);
-            border: solid 1px rgba($orange, 0.7);
-            border-radius: 5px;
 
             .session {
-                width: 100;
+                width: 100%;
+                margin: 20px auto;
+                padding: 15px;
                 @include flex($direction:column);
+                border: solid 1px rgba($orange, 0.7);
+                border-radius: 5px;
 
                 .time {
                     width: 100%;

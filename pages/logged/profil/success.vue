@@ -34,10 +34,25 @@ const token = useCookie("token")
 const runtimeConfig = useRuntimeConfig()
 const router = useRouter();
 
-onMounted(() => {
+onMounted(async () => {
 
-    getAchievements()
-    getAvatar()
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/achievements", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        load.value = true
+        unlocked.value = data.value.unlocked
+        locked.value = data.value.locked
+        object3D.value = data.value.object3D
+        titles.value = data.value.titles
+        avatar.value = data.value.avatar
+    }
 })
 const redirectToProfil = () => {
 
@@ -45,10 +60,7 @@ const redirectToProfil = () => {
     setTimeout(() => router.push("/logged/profil"), 500)
 }
 
-const hats = ["BowlerHat", "SherlockHat", "Cap", "TopHat"]
-const suits = ["Smoking", "Sweat", "Tshirt", "Jogging", "Skirt", "SuitPants"]
-const objects = ["Glass", "Torchman", "Weapon"]
-const titlesRef = ["Maitre du Donjon", "Le newbie !", "Super Copaing"]
+// Menu's section
 let achievementsToShow = ref("unlocked")
 let objectsToShow = ref("hats")
 let unlocked = ref([{
@@ -71,6 +83,8 @@ let locked = ref([{
     nextStep: '',
     scalable: false
 }])
+
+// Avatar's section
 let object3D = ref([])
 let titles = ref([])
 let avatar = ref({
@@ -80,24 +94,12 @@ let avatar = ref({
     goodie: '',
     title: ''
 })
-const getAchievements = async () => {
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "achievements", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
 
-    if (data.value) {
+const hats = ["BowlerHat", "SherlockHat", "Cap", "TopHat"]
+const suits = ["Smoking", "Sweat", "Tshirt", "Jogging", "Skirt", "SuitPants"]
+const objects = ["Glass", "Torchman", "Weapon"]
+const titlesRef = ["Maitre du Donjon", "Le newbie !", "Super Copaing"]
 
-        load.value = true
-        unlocked.value = data.value.unlocked
-        locked.value = data.value.locked
-        object3D.value = data.value.object3D
-        titles.value = data.value.titles
-    }
-}
 const getAvatar = async () => {
     const { data } = await useFetch(runtimeConfig.public.apiBase + "avatar/find", {
         method: "GET",
@@ -123,7 +125,7 @@ const chooseHat = async (element) => {
 
     if (data.value) {
 
-        avatar.value = data.value
+        getAvatar()
     }
 }
 const chooseSuit = async (element) => {
@@ -137,7 +139,7 @@ const chooseSuit = async (element) => {
 
     if (data.value) {
 
-        avatar.value = data.value
+        getAvatar()
     }
 }
 const chooseObject = async (element) => {
@@ -151,7 +153,7 @@ const chooseObject = async (element) => {
 
     if (data.value) {
 
-        avatar.value = data.value
+        getAvatar()
     }
 }
 const chooseTitle = async (element) => {
@@ -165,7 +167,7 @@ const chooseTitle = async (element) => {
 
     if (data.value) {
 
-        avatar.value = data.value
+        getAvatar()
     }
 }
 </script>

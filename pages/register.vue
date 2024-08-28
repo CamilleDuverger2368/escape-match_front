@@ -20,6 +20,12 @@
 </template>
 
 <script setup>
+import { emailChecker,
+         nameChecker,
+         pseudoChecker,
+         passwordChecker,
+         passwordConfChecker,
+         profilChecker } from "~/public/usefull/checker"
 
 let user = ref({
     name: '',
@@ -53,55 +59,32 @@ let error = ref({
 // Check's section
 const checkName = (data) => {
 
-    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
-
-    if (data.match(validRegex)) {
+    error.value.name = nameChecker(data)
+    if (error.value.name === "") {
 
         user.value.name = data
-        error.value.name = ""
-    } else {
-
-        error.value.name = "Give us a valid name please."
     }
 }
 const checkFirstname = (data) => {
 
-    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
-
-    if (data.match(validRegex)) {
+    error.value.firstname = nameChecker(data)
+    if (error.value.firstname === "") {
 
         user.value.firstname = data
-        error.value.firstname = ""
-    } else {
-
-        error.value.firstname = "Give us a valid firstname please."
     }
 }
 const checkEmail = (data) => {
 
     user.value.email = data
     
-    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-
-    if (data.match(validRegex)) {
-
-        error.value.email = ""
-    } else {
-
-        error.value.email = "Give us a valid email please."
-    }
+    error.value.email = emailChecker(data)
 }
 const checkPseudo = (data) => {
 
-    const validRegex = /^([A-Za-z0-9\-\_]+)$/
-
-    if (data.match(validRegex)) {
+    error.value.pseudo = pseudoChecker(data)
+    if (error.value.pseudo === "") {
 
         user.value.pseudo = data
-        error.value.pseudo = ""
-    } else {
-
-        error.value.pseudo = "Your pseudo can only have letters, numbers or '-' '_'."
     }
 }
 const checkProfilPic = (data) => {
@@ -120,45 +103,23 @@ const checkPassword = (data) => {
     
     user.value.password = data
 
-    const validRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-
-    if (data.match(validRegex)) {
-
-        error.value.password = ""
-    } else {
-
-        error.value.password = "UPPERCASE, lowercase, digit, [#?!@$%^&*-], minimum of 8 characters"
-    }
-}
-const checkConfPwd = (data) => {
-
-    error.value.dataConfPwd = data
-    
-    if (user.value.password !== data) {
-
-        error.value.confPwd = "Your passwords don't match"
-    } else {
-
-        error.value.confPwd = ''
-    }
+    error.value.password = passwordChecker(data)
 }
 const checkPronouns = (data) => {
 
     user.value.pronouns = data
 }
+const checkConfPwd = (data) => {
+
+    error.value.dataConfPwd = data
+    
+    error.value.confPwd = passwordConfChecker(data, user.value.password)
+}
 const checkProfil = (data) => {
 
     user.value.profil = data
-    if (data === "Solver") {
-
-        color.value = "#45C4A2"
-    } else if (data === "Leader") {
-
-        color.value = "#E03616"
-    } else {
-        
-        color.value = "#FF7A00"
-    }
+    
+    color.value = profilChecker(data)
 }
 
 // Register's section
