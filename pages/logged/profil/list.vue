@@ -1,8 +1,9 @@
 <template>
     <div id="friends-list">
         <section id="toggle">
-            <button @click="switcher = 'friends'" :class="switcher == 'friends' ? 'switch left selected' : 'switch left'">friends</button>
-            <button @click="switcher = 'asking'" :class="switcher == 'asking' ? 'switch right selected' : 'switch right'">asking</button>
+            <button @click="switcher = 'friends'" :class="switcher === 'friends' ? 'active-list' : 'list'">friends</button>
+            <button @click="switcher = 'asking'" :class="switcher === 'asking' ? 'active-list' : 'list'">asking</button>
+            <button @click="switcher = 'blocked'" :class="switcher === 'blocked' ? 'active-list' : 'list'">blocked</button>
         </section>
         <section v-if="switcher === 'friends'" id="friends">
             <hr />
@@ -24,7 +25,7 @@
             </div>
             <div v-else class="empty">You have no friend yet</div>
         </section>
-        <section v-else id="asking">
+        <section v-else-if="switcher === 'asking'" id="asking">
             <hr />
             <div v-if="askings.length > 0" class="content">
                 <div class="line" :key="request" v-for="request in askings" :id="'request-' + request.id">
@@ -46,6 +47,24 @@
             </div>
             <div v-else class="empty">There is no pending request</div>
         </section>
+        <section v-else-if="switcher === 'blocked'" id="blocked">
+            <hr />
+            <div v-if="blocked.length > 0" class="content">
+                <div class="line" :key="user" v-for="user in blocked" :id="'blocked-' + user.id">
+                    <div class="title">
+                        <div class="name">
+                            {{ user.firstname + ' ' + user.name }}
+                            <span v-if="user.pseudo"> aka {{ user.pseudo }}</span>
+                        </div>
+                        <div @click="unblockUser(user.id)" class="accept-request">
+                            Unblock {{ user.firstname }} ?
+                        </div>
+                    </div>
+                    <hr/>
+                </div>
+            </div>
+            <div v-else class="empty">There is no blocked user by you.</div>
+        </section>
     </div>
 </template>
 
@@ -55,12 +74,26 @@ const token = useCookie("token")
 const currentEmail = useCookie("email")
 const runtimeConfig = useRuntimeConfig()
 
-onMounted(() => {
+onMounted(async () => {
 
-    getFriends()
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/friendships", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        askings.value = data.value.askings
+        friends.value = data.value.friendships
+        blocked.value = data.value.blocked
+    }
 })
 
 let switcher = ref("friends")
+
+// Friends' section
 let askings = ref({})
 let friends = ref({})
 
@@ -109,6 +142,40 @@ const declineFriendship = async (id) => {
         getFriends()
     } 
 }
+
+// Blocked's section
+let blocked = ref({})
+
+const getBlockedUsers = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/blocked", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        blocked.value = data.value
+    }
+}
+const unblockUser = async (element) => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/unblock/" + element, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        getBlockedUsers()
+    }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -138,43 +205,23 @@ const declineFriendship = async (id) => {
     }
 
     #toggle {
-        width: 50%;
-        @include flex();
+        
+        width: 90%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-row-gap: 10px;
+        grid-column-gap: 10px;
 
-        .switch {
-
-            width: 50%;
-            height: 40px;
-            color: $orange;
-            @include flex();
-            border-right: 1px solid rgba($orange, .7);
-            transition: all 0.5s;
-
-            &:hover, &:active {
-
-                background-color: rgba($orange, .7);
-                color: $white;
-                box-shadow: 0px 0px 0px $orange;
-            }
-        }
-
-        .left {
-
-            box-shadow: -2px 0px 10px $orange;
-            border-radius: 50px 0 0 50px;
-        }
-
-        .right {
-
-            border-radius: 0 50px 50px 0;
-            box-shadow: 2px 0px 10px $orange;
-        }
-
-        .selected {
-
+        .active-list {
+            box-shadow: 0 0 0 $orange;
             background-color: rgba($orange, .7);
-            color: $white;
-            box-shadow: 0px 0px 0px $orange;
+            color: $black;
+            @include button($paddingY:10px, $paddingX:20px);
+        }
+
+        .list {
+            box-shadow: 1px 1px 1px $orange;
+            @include button($paddingY:10px, $paddingX:20px);
         }
     }
 
@@ -219,7 +266,7 @@ const declineFriendship = async (id) => {
         }
     }
 
-    #asking {
+    #asking, #blocked {
         width: 100%;
         margin-top: 30px;
         @include flex($direction:column);

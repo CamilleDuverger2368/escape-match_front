@@ -1,5 +1,6 @@
 <template>
     <div id="alter-profil" :class="load ? 'visible' : 'invisible'">
+        <div v-if="isBlocked" class="blocked-title">BLOCKED</div>
         <div class="name">{{ user.firstname }} {{ user.name }}</div>
         <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
         <img v-if="user.profilPic" class="profil-pic" alt="profil-picture" :src="'/profil-pictures/' + user.profilPic + '.webp'" />
@@ -34,6 +35,10 @@
                 <button class="reject-request" @click="removeFriendship = false">X</button>
             </div>
         </div>
+
+        <button v-if="!isBlocked" @click="blockUser" class="block">Block {{ user.firstname }} ?</button>
+        <button v-else @click="unblockUser" class="unblock">Unblock {{ user.firstname }} ?</button>
+
         <ul v-if="user.level">
             <li :class="'percent--' + levelDecimal"><span>level {{ level }}</span></li>
         </ul>
@@ -86,7 +91,7 @@ let avatar = ref({
 
 onMounted( async () => {
     
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/user/" + route.params.id, {
+    const { data, status } = await useFetch(runtimeConfig.public.apiBase + "website/routes/user/" + route.params.id, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -95,6 +100,11 @@ onMounted( async () => {
     })
 
     if (data.value) {
+
+        if (status.value !== "success") {
+
+            router.push("/logged/profil")
+        }
 
         load.value = true
         friendship.value = data.value.friendship
@@ -117,6 +127,7 @@ onMounted( async () => {
             levelDecimal.value = 0
         }
         avatar.value = data.value.avatar
+        isBlocked.value = data.value.isBlocked
     }
 })
 
@@ -190,6 +201,55 @@ const declineFriendship = async () => {
         friendship.value = null
     }
 }
+
+// Block's session
+let isBlocked = ref(false)
+
+const isUserBlocked = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/is/blocked/" + route.params.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        isBlocked.value = data.value
+    }
+}
+const blockUser = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/block/" + route.params.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        isUserBlocked()
+    }
+}
+const unblockUser = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/unblock/" + route.params.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        isUserBlocked()
+    }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -256,6 +316,23 @@ const declineFriendship = async () => {
         font-size: 1rem;
         font-style: italic;
         margin: 0 auto 10px auto;
+    }
+
+    .blocked-title {
+        font-size: 3rem;
+        margin: 10px auto 0 auto;
+        color: $red;
+        text-align: center;
+    }
+
+    .block {
+
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$red);
+    }
+
+    .unblock {
+
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$green);
     }
 
     .title {

@@ -78,7 +78,14 @@
                 <button @click="removeFromToDoList">Remove from my to-do list</button>
                 <button @click="updateToDoList">Update my willing</button>
             </div>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" page="escape"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="toDoList" id="list-to-do-escape" page="escape"/>
+        </section>
+        <hr/>
+        <section id="list-favori">
+            <div class="number" v-if="favorisNumber > 0">Already in {{ favorisNumber }} favoris lists !</div>
+            <div class="number" v-else>Will you be the first to add it to your favoris ?</div>
+            <button v-if="!isFavorite" @click="addToFavoriList" class=" top">Add to my favori</button>
+            <button v-else @click="removeFromFavoriList" class=" top">Remove from my favori</button>
         </section>
         <hr />
         <section id="done">
@@ -109,12 +116,6 @@
                 </div>
             </div>
         </section>
-        <!--<hr/>
-        <section id="list-favori">
-            <button v-if="!isFavorite" @click="addToFavoriList" class=" top">Add to my favori</button>
-            <button v-else @click="removeFromFavoriList" class=" top">Remove from my favori</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavoris" id="list-favori-escape" page="escape"/>
-        </section>-->
     </div>
 </template>
 
@@ -135,9 +136,7 @@ let escape = ref({
     entreprises: [{
         name: ''
     }],
-    tags: [],
-    listToDos: [],
-    listFavoris: []
+    tags: []
 })
 let description = ref({
     description: ''
@@ -222,6 +221,8 @@ const fillUpInformations = (data) => {
 
     users.value = data.usersList
     sessions.value = data.sessions
+    favorisNumber.value = data.favorisNumber
+    toDoList.value = data.toDoList
 }
 const getEscapeWithEntreprise = async () => {
 
@@ -359,6 +360,8 @@ let newSession = ref({
     escape: route.params.id,
     members: []
 })
+let favorisNumber = ref(0)
+let toDoList = ref({})
 
 const checkSessionDate = (data) => {
 
@@ -758,6 +761,13 @@ const updateToDoList = async () => {
         button {
 
             @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+        }
+
+        .number {
+            width: 100%;
+            @include flex();
+            font-size: 1.5rem;
+            margin-bottom: 40px;
         }
     }
 }
