@@ -89,6 +89,18 @@ export default class World {
 
             this.avatar.avatar.rotation.y += 0.01
         }
+        if (this.hat) {
+
+            this.hat.hat.rotation.y += 0.01
+        }
+        if (this.suit) {
+
+            this.suit.suit.rotation.y += 0.01
+        }
+        if (this.goodie) {
+
+            this.goodie.goodie.rotation.y += 0.01
+        }
     }
 
     changeColor(color) {

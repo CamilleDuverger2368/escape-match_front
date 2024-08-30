@@ -14,9 +14,13 @@ export default class SherlockHat {
 
     setInstance() {
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshBasicMaterial({ color: "#6E8B3D" })
-        this.mesh = new THREE.Mesh(geometry, material)
-        this.scene.add(this.mesh)
+        // const geometry = new THREE.BoxGeometry(1, 1, 1)
+        // const material = new THREE.MeshBasicMaterial({ color: "#6E8B3D" })
+        // this.mesh = new THREE.Mesh(geometry, material)
+        // this.scene.add(this.mesh)
+
+        this.hat = this.resources.items.hat.scene
+        this.hat.position.set(0, 0, -2)
+        this.scene.add(this.hat)
     }
 }

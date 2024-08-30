@@ -14,9 +14,13 @@ export default class BowlerHat {
 
     setInstance() {
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshBasicMaterial({ color: "#00FFFF" })
-        this.mesh = new THREE.Mesh(geometry, material)
-        this.scene.add(this.mesh)
+        // const geometry = new THREE.BoxGeometry(1, 1, 1)
+        // const material = new THREE.MeshBasicMaterial({ color: "#00FFFF" })
+        // this.mesh = new THREE.Mesh(geometry, material)
+        // this.scene.add(this.mesh)
+
+        this.hat = this.resources.items.hat.scene
+        this.hat.position.set(0, 0, -2)
+        this.scene.add(this.hat)
     }
 }
