@@ -17,7 +17,7 @@
         <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
         <div v-else class="no-profil">No Profil</div>
         <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
-        <div class="contact" @click="getRoom()">Start a talk !</div>
+        <div v-if="!isBlocked" class="contact" @click="getRoom()">Start a talk !</div>
         <button v-if="friendship === null" @click="sendFriendRequest" class="button">Send friend request !</button>
         <button v-else-if="friendship.friend === false && friendship.sender.email === currentEmail" class="request-sent">Request sent</button>
         <div v-else-if="friendship.friend === false && friendship.receiver.email === currentEmail" class="decision">
