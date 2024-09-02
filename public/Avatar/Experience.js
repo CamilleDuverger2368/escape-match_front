@@ -6,13 +6,20 @@ import Renderer from "./Renderer"
 import World from "./World"
 import Resources from "./Resources"
 import sources from "./sources"
+import Debug from "./Debug"
 
 // Singleton = on garde la premiere instanciation de la class en quesiton quand elle est appelee ailleurs (pour faire comme une variable globale)
 let instance = null
 
 export default class Experience {
 
-    constructor(canvas, color, page) {
+    constructor(canvas,
+                color,
+                page,
+                hat,
+                suit,
+                goodie
+    ) {
         // Singleton
         if (instance) {
             return instance
@@ -26,6 +33,7 @@ export default class Experience {
         this.canvas = canvas
 
         // Setup
+        this.debug = new Debug()
         this.sizes = new Sizes(page)
         this.time = new Time()
         this.scene = new THREE.Scene()
@@ -33,7 +41,7 @@ export default class Experience {
         this.resources = new Resources(sources)
         this.camera = new Camera()
         this.renderer = new Renderer()
-        this.world = new World(color)
+        this.world = new World(color, hat, suit, goodie)
 
         // Listening events
         this.sizes.on("resize", () => {
@@ -69,5 +77,15 @@ export default class Experience {
 
         this.world.changeColor(color)
         this.renderer.update()
+    }
+
+    changeDressing(hat, suit, goodie) {
+
+        this.world.changeDressing(hat, suit, goodie)
+        this.renderer.update()
+    }
+
+    unMounted() {
+        instance = null
     }
 }

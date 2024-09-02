@@ -6,8 +6,9 @@
             <Input name="Firstname (Mandatory)" type="text" id="register_firstname" :data="user.firstname" :error="error.firstname" :require="true" @check="checkFirstname" />
             <Input name="Email (Mandatory)" type="email" id="register_email" :data="user.email" :error="error.email" :require="true" @check="checkEmail" />
             <Input name="Pseudo" type="text" id="register_pseudo" :data="user.pseudo" :error="error.pseudo" :require="false" @check="checkPseudo" />
-            <Input name="Age" type="number" id="register_age" :data="user.age" :error="error.age" :require="false" @check="checkAge" />
-            <Listfield title="Choose your city" :options="cities" :data="user.city" @select="checkCity"/>
+            <ProfilPicChoice :images="['droopy', 'totoro', 'fou-a-pieds-bleus', 'neutral']" :data="user.profilPic" @check="checkProfilPic"/>
+            <Datepicker id="birthday" :data="user.birthday" name="Birthday" @check="checkBirthday" />
+            <ListfieldCities :data="user.city" @select="checkCity"/>
             <Input name="Password (Mandatory)" type="password" id="register_pwd" :data="user.password" :error="error.password" :require="true" @check="checkPassword" />
             <Input name="Confirm your password" type="password" id="register_pwd_conf" :data="error.dataConfPwd" :error="error.confPwd" :require="true" @check="checkConfPwd" />
             <Multipleradio title="Choose your pronouns" :options="pronouns" :data="user.pronouns" @radio="checkPronouns" />
@@ -19,13 +20,20 @@
 </template>
 
 <script setup>
+import { emailChecker,
+         nameChecker,
+         pseudoChecker,
+         passwordChecker,
+         passwordConfChecker,
+         profilChecker } from "~/public/usefull/checker"
 
 let user = ref({
     name: '',
     firstname: '',
     email: '',
     pseudo: '',
-    age: '',
+    profilPic: '',
+    birthday: '',
     city: '',
     password: '',
     pronouns: '',
@@ -33,8 +41,6 @@ let user = ref({
 })
 
 let color = ref("#FF7A00")
-
-let cities = ref([])
 
 const pronouns = ref(["She", "He", "They"])
 const profil = ref(["Solver", "Leader", "Searcher"])
@@ -45,98 +51,49 @@ let error = ref({
     firstname: '',
     email: '',
     pseudo: '',
-    age: '',
     password: '',
     confPwd: '',
     dataConfPwd: ''
 })
 
-onMounted(async () => {
-
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/cities", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" }
-    })
-
-    if (data.value) {
-
-        for(let i = 0; i < data.value.length; i++) {
-
-            cities.value.push(data.value[i].name)
-        }
-    }
-})
-
 // Check's section
 const checkName = (data) => {
 
-    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
-
-    if (data.match(validRegex)) {
+    error.value.name = nameChecker(data)
+    if (error.value.name === "") {
 
         user.value.name = data
-        error.value.name = ""
-    } else {
-
-        error.value.name = "Give us a valid name please."
     }
 }
 const checkFirstname = (data) => {
 
-    const validRegex = /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u
-
-    if (data.match(validRegex)) {
+    error.value.firstname = nameChecker(data)
+    if (error.value.firstname === "") {
 
         user.value.firstname = data
-        error.value.firstname = ""
-    } else {
-
-        error.value.firstname = "Give us a valid firstname please."
     }
 }
 const checkEmail = (data) => {
 
     user.value.email = data
     
-    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-
-    if (data.match(validRegex)) {
-
-        error.value.email = ""
-    } else {
-
-        error.value.email = "Give us a valid email please."
-    }
+    error.value.email = emailChecker(data)
 }
 const checkPseudo = (data) => {
 
-    const validRegex = /^([A-Za-z0-9\-\_]+)$/
-
-    if (data.match(validRegex)) {
+    error.value.pseudo = pseudoChecker(data)
+    if (error.value.pseudo === "") {
 
         user.value.pseudo = data
-        error.value.pseudo = ""
-    } else {
-
-        error.value.pseudo = "Your pseudo can only have letters, numbers or '-' '_'."
     }
 }
-const checkAge = (data) => {
+const checkProfilPic = (data) => {
 
-    if (parseInt(data)) {
+    user.value.profilPic = data
+}
+const checkBirthday = (data) => {
 
-        if (data > 0 && data < 150) {
-
-            user.value.age = data
-            error.value.age = ""
-        } else {
-
-            error.value.age = "Your age must be between 1 and 150 years old."
-        }
-    } else {
-
-        error.value.age = "Your age must be between 1 and 150 years old."
-    }
+    user.value.birthday = data
 }
 const checkCity = (data) => {
 
@@ -146,51 +103,30 @@ const checkPassword = (data) => {
     
     user.value.password = data
 
-    const validRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/
-
-    if (data.match(validRegex)) {
-
-        error.value.password = ""
-    } else {
-
-        error.value.password = "UPPERCASE, lowercase, digit, [#?!@$%^&*-], minimum of 8 characters"
-    }
-}
-const checkConfPwd = (data) => {
-
-    if (user.value.password !== data) {
-
-        error.value.confPwd = "Your passwords don't match"
-    } else {
-
-        error.value.dataConfPwd = data
-        error.value.confPwd = ''
-    }
+    error.value.password = passwordChecker(data)
 }
 const checkPronouns = (data) => {
 
     user.value.pronouns = data
 }
+const checkConfPwd = (data) => {
+
+    error.value.dataConfPwd = data
+    
+    error.value.confPwd = passwordConfChecker(data, user.value.password)
+}
 const checkProfil = (data) => {
 
     user.value.profil = data
-    if (data === "Solver") {
-
-        color.value = "#45C4A2"
-    } else if (data === "Leader") {
-
-        color.value = "#E03616"
-    } else {
-        
-        color.value = "#FF7A00"
-    }
+    
+    color.value = profilChecker(data)
 }
 
 // Register's section
 const router = useRouter()
 const register = async () => {
 
-    if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.age || error.value.password || error.value.confPwd) {
+    if (error.value.email || error.value.firstname || error.value.name || error.value.pseudo || error.value.password || error.value.confPwd) {
 
         error.value.general = "Check your errors please."
     } else {
@@ -235,37 +171,7 @@ const register = async () => {
     #informations {
 
         width: 80%;
-        min-height: 40px;
-        margin-bottom: 20px;
-        color: $red;
-        opacity: 0;
-        @include flex();
-        transition: 0.2s ease all;
-        -moz-transition: 0.2s ease all;
-        -webkit-transition: 0.2s ease all;
-
-        &.success {
-            
-            color: $green;
-        }
-
-        &.error:not(:empty) {
-
-            box-shadow: 0 0 5px $red;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
-
-        &.success:not(:empty) {
-
-            box-shadow: 0 0 5px $green;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
+        @include panel-error-success();
     }
 
     form {

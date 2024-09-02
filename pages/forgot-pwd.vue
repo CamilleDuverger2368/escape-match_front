@@ -13,23 +13,22 @@
 </template>
 
 <script setup>
+import { emailChecker } from '~/public/usefull/checker'
 
 let email = ref('')
 let error = ref({
     email: '',
     general: ''
 })
-const runtimeConfig = useRuntimeConfig();
+const runtimeConfig = useRuntimeConfig()
 // Email's section
 const checkEmail = async (datum) => {
     
     email.value = datum
 
-    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    error.value.email = emailChecker(datum)
+    if (error.value.email === '') {
 
-    if (datum.match(validRegex)) {
-
-        error.value.email = ""
         const { data } = await useFetch(runtimeConfig.public.apiBase + "unlog/email-exist/" + email.value, {
             method: "GET",
             headers: { "Content-Type": "application/json" }
@@ -49,9 +48,6 @@ const checkEmail = async (datum) => {
                 document.getElementById("informations").classList.remove("success")
             }
         }
-    } else {
-
-        error.value.email = "Give us a valid email please."
     }
 }
 
@@ -95,37 +91,7 @@ const resetPwd = async () => {
     #informations {
         
         width: 80%;
-        min-height: 40px;
-        margin-bottom: 20px;
-        color: $red;
-        opacity: 0;
-        @include flex();
-        transition: 0.2s ease all;
-        -moz-transition: 0.2s ease all;
-        -webkit-transition: 0.2s ease all;
-
-        &.success {
-            
-            color: $green;
-        }
-
-        &.error:not(:empty) {
-
-            box-shadow: 0 0 5px $red;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
-
-        &.success:not(:empty) {
-
-            box-shadow: 0 0 5px $green;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
+        @include panel-error-success();
     }
 
     form {

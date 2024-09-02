@@ -1,58 +1,97 @@
 <template>
-    <div id="alter-profil">
+    <div id="alter-profil" :class="load ? 'visible' : 'invisible'">
+        <div v-if="isBlocked" class="blocked-title">BLOCKED</div>
         <div class="name">{{ user.firstname }} {{ user.name }}</div>
         <div v-if="user.pseudo" class="pseudo"> aka {{ user.pseudo }}</div>
-        <Avatar :color="color" page="profil"/>
-        <div v-if="user.age" class="classic">{{ user.age }} years old</div>
+        <img v-if="user.profilPic" class="profil-pic" alt="profil-picture" :src="'/profil-pictures/' + user.profilPic + '.webp'" />
+        <img v-else class="profil-pic" alt="profil-picture" src="/profil-pictures/neutral.webp" />
+        <div v-if="avatar.title" class="title">{{ avatar.title }}</div>
+        <Avatar v-if="avatar.id !== ''"
+                :color="color"
+                page="profil"
+                :hat="avatar.hat"
+                :suit="avatar.suit"
+                :goodie="avatar.goodie"/>
+        <div v-if="user.birthday" class="classic"><span>Birthday :</span> {{ formatDate(user.birthday) }}</div>
+        <div class="classic"><span>Member since :</span> {{ formatDate(user.createdAt) }}</div>
         <div v-if="user.profil" :class="user.profil">{{ user.profil }}</div>
         <div v-else class="no-profil">No Profil</div>
         <div class="city"><img src="~/public/icones/house.svg" alt="profil's city"><div class="classic">{{ user.city }}</div></div>
-        <div class="contact" @click="getRoom()">Start a talk !</div>
+        <div v-if="!isBlocked" class="contact" @click="getRoom()">Start a talk !</div>
+        <button v-if="friendship === null" @click="sendFriendRequest" class="button">Send friend request !</button>
+        <button v-else-if="friendship.friend === false && friendship.sender.email === currentEmail" class="request-sent">Request sent</button>
+        <div v-else-if="friendship.friend === false && friendship.receiver.email === currentEmail" class="decision">
+            <div class="title">Answer request</div>
+            <div class="choice">
+                <button class="request-sent" @click="acceptFriendship">&#10003;</button>
+                <button class="reject-request" @click="declineFriendship">X</button>
+            </div>
+        </div>
+        <div v-else-if="friendship.friend === true && removeFriendship === false" class="request-sent" @click="removeFriendship = true">Friends since {{ formatDate(friendship.since) }}</div>
+        <div v-else-if="friendship.friend === true && removeFriendship === true" class="decision">
+            <div class="title">Remove friendship ?</div>
+            <div class="choice">
+                <button class="request-sent" @click="declineFriendship">&#10003;</button>
+                <button class="reject-request" @click="removeFriendship = false">X</button>
+            </div>
+        </div>
+
+        <button v-if="!isBlocked" @click="blockUser" class="block">Block {{ user.firstname }} ?</button>
+        <button v-else @click="unblockUser" class="unblock">Unblock {{ user.firstname }} ?</button>
+
         <ul v-if="user.level">
             <li :class="'percent--' + levelDecimal"><span>level {{ level }}</span></li>
         </ul>
         <ul v-else>
-            <li class="percent--1"><span>Start your adventure to level up !</span></li>
+            <li class="percent--1"><span>level 0</span></li>
         </ul>
         <div class="classic">To-Do List</div>
         <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listToDos" id="list-to-do-user-alter" page="alter" />
         <div class="classic">Favori List</div>
         <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listFavoris" id="list-favori-user-alter" page="alter" />
-        <div class="classic">Done List</div>
-        <Tablelist :headers="['Escape', 'Since', 'Actions']" :list="user.listDones" id="list-done-user-alter" page="alter" />
     </div>
 </template>
 
 <script setup>
+import { formatDate } from "~/public/usefull/usefull"
+import { profilChecker } from "~/public/usefull/checker"
 
 const route = useRoute()
 const router = useRouter()
 const token = useCookie("token")
+const currentEmail = useCookie("email")
 const runtimeConfig = useRuntimeConfig()
+let load = ref(false)
+
 let color = ref("#FF7A00")
 let user = ref({
     id: null,
     name: '',
     firstname: '',
     pseudo: '',
-    age: null,
+    profilPic: '',
+    birthday: '',
+    createdAt: '',
     level: null,
     pronouns: null,
     profil: null,
     city: '',
     listFavoris: [],
-    listToDos: [],
-    listDones: []
+    listToDos: []
 })
 let levelDecimal = ref(1)
 let level = ref(0)
-onMounted(() => {
-    
-    getAlterUserProfil()
+let avatar = ref({
+    id: '',
+    hat: '',
+    suit: '',
+    goodie: '',
+    title: ''
 })
-const getAlterUserProfil = async () => {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/alter/" + route.params.id, {
+onMounted( async () => {
+    
+    const { data, status } = await useFetch(runtimeConfig.public.apiBase + "website/routes/user/" + route.params.id, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -62,19 +101,37 @@ const getAlterUserProfil = async () => {
 
     if (data.value) {
 
-        user.value = data.value
-        user.value.city = data.value.city.name
-        levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
-        if (levelDecimal.value.length == 1) {
+        if (status.value !== "success") {
 
-            levelDecimal.value += '0'
-        } else if (levelDecimal.value[0] == '0') {
-
-            levelDecimal.value = levelDecimal.value.substring(1)
+            router.push("/logged/profil")
         }
-        level.value = Math.trunc(user.value.level)
+
+        load.value = true
+        friendship.value = data.value.friendship
+        user.value = data.value.user
+        user.value.city = data.value.user.city.name
+        color.value = profilChecker(user.value.profil)
+        if (user.value.level) {
+
+            levelDecimal.value = user.value.level.toString().substring(user.value.level.toString().indexOf('.') + 1)
+            if (levelDecimal.value.length == 1) {
+
+                levelDecimal.value += '0'
+            } else if (levelDecimal.value[0] == '0') {
+
+                levelDecimal.value = levelDecimal.value.substring(1)
+            }
+            level.value = Math.trunc(user.value.level)
+        } else {
+            level.value = 0
+            levelDecimal.value = 0
+        }
+        avatar.value = data.value.avatar
+        isBlocked.value = data.value.isBlocked
     }
-}
+})
+
+// Conversation's section
 const getRoom = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "rooms/create", {
@@ -93,93 +150,162 @@ const getRoom = async () => {
         router.push("/logged/conversation/" + data.value.id)
     }
 }
+
+// Friendship's section
+let friendship = ref(null)
+let removeFriendship = ref(false)
+
+const sendFriendRequest = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/asking/" + route.params.id, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        friendship.value = data.value
+    }
+}
+const acceptFriendship = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/accept/" + friendship.value.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        friendship.value.friend = true
+        friendship.value.since = Date.now()
+    } 
+}
+const declineFriendship = async () => {
+    
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "friend/decline/" + friendship.value.id, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+    
+    if (data.value) {
+
+        friendship.value = null
+    }
+}
+
+// Block's session
+let isBlocked = ref(false)
+
+const isUserBlocked = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/is/blocked/" + route.params.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        isBlocked.value = data.value
+    }
+}
+const blockUser = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/block/" + route.params.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        isUserBlocked()
+    }
+}
+const unblockUser = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "user/unblock/" + route.params.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+        
+        isUserBlocked()
+    }
+}
 </script>
 
 <style lang="scss" scoped>
 @import "~/assets/variables";
 
-@mixin percent($argument) {
-    $per: unquote($argument);
+.visible {
+    opacity: 100%;
+    transition: 0.3s ease-in-out;
+}
 
-    &--#{$per} {
-
-        list-style: none;
-        padding: 20px 0;
-        position: relative;
-        font-size: 1.5rem;
-        color: $white;
-        width: 100%;
-        filter: brightness(1.2);
-        transition: all 0.5s ease 0s;
-
-        &:before {
-            content: "";
-            position: absolute;
-            background: $black;
-            height: 0.8rem;
-            width: 100%;
-            left: 0;
-            bottom: 0;
-            border-radius: 5px;
-            border: 1px solid #111;
-            border-color: #111 #323232 #323232 #111;
-            background: linear-gradient(
-                90deg,
-                #2292dd40 calc(calc($per * 1%) + 4px),
-                #1c1c1c calc(calc($per * 1%) + 4px)
-            );
-        }
-
-        &:after {
-            content: "";
-            height: 11px;
-            margin: 0 0 2px 0;
-            background: $orange;
-            border-radius: 5px;
-            position: absolute;
-            box-shadow: 0 0 5px 1px $orange;
-            left: 3px;
-            width: 0%;
-            bottom: 0;
-            width: calc(calc($per * 1%) - 2px);
-        }
-
-        &:hover, &:active {
-            filter: brightness(1.5);
-        }
-
-        &:hover span:after, &:active span:after {
-            right: calc(calc(calc(100 - $per) * 1%) - 40px);
-            opacity: 1;
-            background: $orange;
-            filter: brightness(.7);
-        }
-
-        span {
-            font-weight: 500;
-
-            &:after {
-                position: absolute;
-                right: -40px;
-                top: 40px;
-                counter-reset: percent $per;
-                content: counter(percent);
-                color: $black;
-                padding: 4px 6px;
-                border-radius: 5px;
-                font-weight: bold;
-                pointer-events: none;
-                transition: all 0.5s ease 0s;
-            }
-        }
-    }
+.invisible {
+    opacity: 0%;
+    transition: 0.3s ease-in-out;
 }
 
 #alter-profil {
 
     width: 100%;
     margin-bottom: 30px;
+    overflow-x: hidden;
     @include flex($direction:column);
+
+    .button {
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px);
+    }
+
+    .request-sent {
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$green);
+    }
+
+    .reject-request {
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$red);
+    }
+
+    .decision {
+        width: 100%;
+        @include flex($direction:column);
+
+        .title {
+            width: 100%;
+            font-size: large;
+            margin: 10px auto;
+            text-align: center;
+            color: $orange;
+        }
+
+        .choice {
+            @include flex();
+        }
+    }
+
+    .profil-pic {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
 
     .name {
         font-size: 3rem;
@@ -192,9 +318,38 @@ const getRoom = async () => {
         margin: 0 auto 10px auto;
     }
 
+    .blocked-title {
+        font-size: 3rem;
+        margin: 10px auto 0 auto;
+        color: $red;
+        text-align: center;
+    }
+
+    .block {
+
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$red);
+    }
+
+    .unblock {
+
+        @include button($paddingY:10px, $paddingX: 15px, $size: 1rem, $marge:10px, $color:$green);
+    }
+
+    .title {
+        margin-top: 20px;
+        font-style: italic;
+        font-size: 1.2rem;
+        color: $orange;
+        text-align: center;
+    }
+
     .classic {
         font-size: 1.5rem;
         margin: 10px auto;
+        
+        span {
+            color: $orange;
+        }
     }
 
     .city {

@@ -78,24 +78,49 @@
                 <button @click="removeFromToDoList">Remove from my to-do list</button>
                 <button @click="updateToDoList">Update my willing</button>
             </div>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listToDos" id="list-to-do-escape" page="escape"/>
+            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="toDoList" id="list-to-do-escape" page="escape"/>
         </section>
         <hr/>
         <section id="list-favori">
+            <div class="number" v-if="favorisNumber > 0">Already in {{ favorisNumber }} favoris lists !</div>
+            <div class="number" v-else>Will you be the first to add it to your favoris ?</div>
             <button v-if="!isFavorite" @click="addToFavoriList" class=" top">Add to my favori</button>
             <button v-else @click="removeFromFavoriList" class=" top">Remove from my favori</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listFavoris" id="list-favori-escape" page="escape"/>
         </section>
-        <hr/>
-        <section id="list-done">
-            <button v-if="!isDone" @click="addToDoneList" class=" top">Add to my done list</button>
-            <button v-else @click="removeFromDoneList" class=" top">Remove from my done list</button>
-            <Tablelist :headers="['User\'s profil', 'Since', 'Contact']" :list="escape.listDones" id="list-done-escape" page="escape"/>
+        <hr />
+        <section id="done">
+            <button @click="markAsDone = true" class=" top">Add a new session</button>
+            <form v-if="markAsDone" id="add-session" @submit.prevent="addNewSession()">
+                <Datepicker id="session-date" :data="newSession.date" name="Session's date" @check="checkSessionDate" />
+                <div class="members">
+                    <div class="title">Members</div>
+                    <div class="member">{{ findUserNameByIdOrEmail("email", currentEmail) }}</div>
+                    <div :key="member" v-for="member in newSession.members" class="member">{{ findUserNameByIdOrEmail("id", member) }}</div>
+                </div>
+                <ListfieldUsers title="Choose session's member to add" :options="users" :data="newSession.members" @select="checkSessionMember"/>
+                <button type="submit">Save</button>
+            </form>
+            <div v-if="sessions.length > 0" class="sessions">
+                <div :key="session" v-for="session in sessions" class="session">
+                    <div class="time">
+                        <img src="~/public/icones/hourglass.svg" alt="time">
+                        {{ formatDate(session.playedAt) }}
+                    </div>
+                    <div class="members">
+                        <div class="title">Members</div>
+                        <nuxt-link :key="member" v-for="member in session.members" :to="member.email === currentEmail ? '/logged/profil' : '/logged/profil/' + member.id" class="member">
+                            {{ member.firstname + ' ' + member.name }}
+                            <span v-if="member.pseudo"> aka {{ member.pseudo }}</span>
+                        </nuxt-link>
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 </template>
 
 <script setup>
+import { formatDate } from "~/public/usefull/usefull"
 
 // Escape's section
 let escape = ref({
@@ -111,10 +136,7 @@ let escape = ref({
     entreprises: [{
         name: ''
     }],
-    tags: [],
-    listToDos: [],
-    listFavoris: [],
-    listDones: []
+    tags: []
 })
 let description = ref({
     description: ''
@@ -124,6 +146,7 @@ let link = ref({
 })
 const route = useRoute()
 const token = useCookie("token")
+const currentEmail = useCookie("email")
 const runtimeConfig = useRuntimeConfig()
 let image = ref(false)
 
@@ -136,77 +159,74 @@ onMounted(() => {
 
         getEscape()
     }
-
 })
 
-const getEscapeWithEntreprise = async () => {
+const getImage = (name, entreprise) => {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/" + route.params.id + "/entreprise/" + route.query.entreprise, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
+    const img = new Image()
+    img.src = "/escapes/" + name  + '-' + entreprise + ".webp"
 
-    if (data.value) {
+    if (img.complete) {
 
-        escape.value = data.value.escape
-        description.value = data.value.description
-        link.value = data.value.link
-        average.value = data.value.average
-        votes.value = data.value.votes
-        if (data.value.userGrade === null) {
+        image.value = img.src
+    } else {
 
-            userGrade.value.grade = 0
-        } else {
-
-            userGrade.value.grade = data.value.userGrade
-        }
-        isToDo.value = data.value.isToDo
-        isFavorite.value = data.value.isFavorite
-        isDone.value = data.value.isDone
-        
-        // Check if escape's image exist
-        const img = new Image()
-        img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-')  + '-' + escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + ".webp"
-
-        if (img.complete) {
+        img.onload = () => {
 
             image.value = img.src
-        } else {
+        }
 
-            img.onload = () => {
+        img.onerror = () => {
+
+            img.src = "/escapes/" + name + ".webp"
+            if (img.complete) {
 
                 image.value = img.src
-            }
+            } else {
 
-            img.onerror = () => {
-
-                img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
-                if (img.complete) {
+                img.onload = () => {
 
                     image.value = img.src
-                } else {
+                }
 
-                    img.onload = () => {
+                img.onerror = () => {
 
-                        image.value = img.src
-                    }
-
-                    img.onerror = () => {
-
-                        image.value = false
-                    }
+                    image.value = false
                 }
             }
         }
     }
 }
+const fillUpInformations = (data) => {
+    escape.value = data.escape
+    description.value = data.description
+    link.value = data.link
+    average.value = data.average
+    votes.value = data.votes
+    if (data.userGrade === null) {
 
-const getEscape = async () => {
+        userGrade.value.grade = 0
+    } else {
 
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/" + route.params.id, {
+        userGrade.value.grade = data.userGrade
+    }
+    isToDo.value = data.isToDo
+    isFavorite.value = data.isFavorite
+    
+    // Check if escape's image exist
+    getImage(
+        escape.value.name.toLowerCase().replaceAll(' ', '-'),
+        escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-')
+    )
+
+    users.value = data.usersList
+    sessions.value = data.sessions
+    favorisNumber.value = data.favorisNumber
+    toDoList.value = data.toDoList
+}
+const getEscapeWithEntreprise = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/escape/" + route.params.id + "/entreprise/" + route.query.entreprise, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -216,56 +236,22 @@ const getEscape = async () => {
 
     if (data.value) {
 
-        escape.value = data.value.escape
-        description.value = data.value.description
-        link.value = data.value.link
-        average.value = data.value.average
-        votes.value = data.value.votes
-        if (data.value.userGrade === null) {
+        fillUpInformations(data.value)
+    }
+}
+const getEscape = async () => {
 
-            userGrade.value.grade = 0
-        } else {
-
-            userGrade.value.grade = data.value.userGrade
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "website/routes/escape/" + route.params.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
         }
-        isToDo.value = data.value.isToDo
-        isFavorite.value = data.value.isFavorite
-        isDone.value = data.value.isDone
-        
-        // Check if escape's image exist
-        const img = new Image()
-        img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-')  + '-' + escape.value.entreprises[0].name.toLowerCase().replaceAll(' ', '-') + ".webp"
+    })
 
-        if (img.complete) {
+    if (data.value) {
 
-            image.value = img.src
-        } else {
-
-            img.onload = () => {
-
-                image.value = img.src
-            }
-
-            img.onerror = () => {
-
-                img.src = "/escapes/" + escape.value.name.toLowerCase().replaceAll(' ', '-') + ".webp"
-                if (img.complete) {
-
-                    image.value = img.src
-                } else {
-
-                    img.onload = () => {
-
-                        image.value = img.src
-                    }
-
-                    img.onerror = () => {
-
-                        image.value = false
-                    }
-                }
-            }
-        }
+        fillUpInformations(data.value)
     }
 }
 
@@ -277,7 +263,30 @@ let grade = ref(0)
 let userGrade = ref({
     grade: 0
 })
+
 // Get grade graduating
+const getAverage = async () => {
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "escape/average/" + escape.value.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        average.value = data.average
+        votes.value = data.votes
+        if (data.userGrade === null) {
+
+            userGrade.value.grade = 0
+        } else {
+
+            userGrade.value.grade = data.userGrade
+        }
+    }
+}
 const gradeEscape = (data) => {
 
     grade.value = data
@@ -294,8 +303,7 @@ const deleteGrade = async () => {
 
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getAverage()
     }
 }
 const gradeEscapeGame = async () => {
@@ -316,8 +324,7 @@ const gradeEscapeGame = async () => {
     if (data.value) {
 
         changeGrade.value = false
-        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getAverage()
     }
 }
 const updateGrade = async () => {
@@ -338,15 +345,97 @@ const updateGrade = async () => {
     if (data.value) {
 
         changeGrade.value = false
-        // To-Do : changer de methode pour ne recuperer que les notes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getAverage()
     }
 }
 
 // List section
 let isToDo = ref(false)
-let isDone = ref(false)
 let isFavorite = ref(false)
+let markAsDone = ref(false)
+let sessions = ref({})
+let users = ref({})
+let newSession = ref({
+    date: '',
+    escape: route.params.id,
+    members: []
+})
+let favorisNumber = ref(0)
+let toDoList = ref({})
+
+const checkSessionDate = (data) => {
+
+    newSession.value.date = data
+}
+const checkSessionMember = (data) => {
+    
+    if (!newSession.value.members.includes(data)) {
+
+        newSession.value.members.push(data)
+    }
+}
+const findUserNameByIdOrEmail = (key, value) => {
+    
+    let max = users.value.length
+    for (let i = 0; i < max; i++) {
+        if (users.value[i][key] === value) {
+
+            let name = users.value[i].firstname + ' ' + users.value[i].name
+            if (users.value[i].pseudo) {
+                name += " aka " + users.value[i].pseudo
+            }
+            return name
+        }
+    }
+}
+const getSessions = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/session/" + route.params.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        sessions.value = data.value
+        markAsDone.value = false
+    }
+}
+const getToDos = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/" + route.params.id, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        }
+    })
+
+    if (data.value) {
+
+        escape.value.listToDos = data.value.toDoList
+        isToDo.value = data.value.isToDo
+    }
+}
+const addNewSession = async () => {
+
+    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/session/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token.value
+        },
+        body: newSession.value
+    })
+
+    if (data.value) {
+
+        getSessions()
+    }
+}
 const addToToDoList = async () => {
 
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/to-do/add/" + escape.value.id, {
@@ -359,29 +448,12 @@ const addToToDoList = async () => {
     
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getToDos()
     }
 }
 const addToFavoriList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/add/" + escape.value.id, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-    
-    if (data.value) {
-
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
-    }
-}
-const addToDoneList = async () => {
-    
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/add/" + escape.value.id, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -407,29 +479,12 @@ const removeFromToDoList = async () => {
     
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getToDos()
     }
 }
 const removeFromFavoriList = async () => {
     
     const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/favoris/remove/" + isFavorite.value.id, {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + token.value
-        }
-    })
-    
-    if (data.value) {
-
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
-    }
-}
-const removeFromDoneList = async () => {
-    
-    const { data } = await useFetch(runtimeConfig.public.apiBase + "lists/done/remove/" + isDone.value.id, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
@@ -455,8 +510,7 @@ const updateToDoList = async () => {
     
     if (data.value) {
 
-        // To-Do : changer de methode pour ne recuperer que les listes d un escape et ne pas recharger TOUTES les infos
-        getEscape()
+        getToDos()
     }
 }
 </script>
@@ -627,6 +681,77 @@ const updateToDoList = async () => {
         }
     }
 
+    #done {
+        
+        width: 100%;
+        margin: 20px auto;
+        @include flex($direction:column);
+
+        button {
+
+            @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+        }
+
+        form {
+            width: 70%;
+            margin: 10px auto;
+            @include flex($direction:column);
+
+            .title {
+                color: $orange;
+                font-size: 1.25rem;
+                font-weight: 400;
+            }
+
+            .members {
+                width: 100%;
+                margin: 10px auto;
+                @include flex($direction:column);
+            }
+        }
+
+        .sessions {
+            width: 70%;
+            margin: 20px auto;
+            @include flex($direction:column);
+
+            .session {
+                width: 100%;
+                margin: 20px auto;
+                padding: 15px;
+                @include flex($direction:column);
+                border: solid 1px rgba($orange, 0.7);
+                border-radius: 5px;
+
+                .time {
+                    width: 100%;
+                    @include flex();
+
+                    img {
+                        width: 40px;
+                        margin: auto 3px;
+                    }
+                }
+                
+                .title {
+                    color: $orange;
+                    font-size: 1.25rem;
+                    font-weight: 400;
+                }
+
+                .members {
+                    width: 100%;
+                    margin: 10px auto;
+                    @include flex($direction:column);
+
+                    .member {
+                        @include link();
+                    }
+                }
+            }
+        }
+    }
+
     #list-favori {
 
         width: 100%;
@@ -637,17 +762,12 @@ const updateToDoList = async () => {
 
             @include button($paddingX:10px, $paddingY:10px, $size:1rem);
         }
-    }
 
-    #list-done {
-
-        width: 100%;
-        margin: 20px auto;
-        @include flex($direction:column);
-        
-        button {
-
-            @include button($paddingX:10px, $paddingY:10px, $size:1rem);
+        .number {
+            width: 100%;
+            @include flex();
+            font-size: 1.5rem;
+            margin-bottom: 40px;
         }
     }
 }
@@ -716,11 +836,6 @@ const updateToDoList = async () => {
         }
         
         #list-favori {
-
-            margin: 40px auto;
-        }
-        
-        #list-done {
 
             margin: 40px auto;
         }

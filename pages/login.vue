@@ -14,14 +14,13 @@
 </template>
 
 <script setup>
-import { storeToRefs } from "pinia";
-import { useAuthStore } from "~/store/auth";
+import { storeToRefs } from "pinia"
+import { useAuthStore } from "~/store/auth"
+import { emailChecker, passwordLoginChecker } from "~/public/usefull/checker"
 
-const { authenticateUser } = useAuthStore();
-const { authenticated } = storeToRefs(useAuthStore());
+const { authenticateUser } = useAuthStore()
+const { authenticated } = storeToRefs(useAuthStore())
 const router = useRouter()
-const route = useRoute()
-const runtimeConfig = useRuntimeConfig()
 
 let user = ref({
     username: '',
@@ -34,63 +33,18 @@ let error = ref({
     general: ''
 })
 
-// Validation mail's section
-onMounted(() => {
-
-    if (route.query.link) {
-
-        validateEmail(route.query.link)
-    }
-})
-const validateEmail = async (link) => {
-    
-    const data = await useFetch(runtimeConfig.public.apiBase + "unlog/validation/" + link, {
-        method: "PUT",
-        headers: {"Content-Type": "application/json"}
-    })
-
-    if (data) {
-
-        if (data.status.value === "success") {
-
-            error.value.general = "Email validated !"
-            document.getElementById("informations").classList.add("success")
-            document.getElementById("informations").classList.remove("error")
-        } else {
-
-            error.value.general = data.error.value
-            document.getElementById("informations").classList.add("error")
-            document.getElementById("informations").classList.remove("success")
-        }
-    }
-}
-
 // Check's section
 const checkEmail = (data) => {
 
     user.value.username = data
 
-    const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-
-    if (data.match(validRegex)) {
-
-        error.value.email = ""
-    } else {
-
-        error.value.email = "Give us a valid email please."
-    }
+    error.value.email = emailChecker(data)
 }
 const checkPwd = (data) => {
     
     user.value.password = data
 
-    if (data.length > 1) {
-
-        error.value.password = ""
-    } else {
-
-        error.value.password = "Give us a password please."
-    }
+    error.value.password = passwordLoginChecker(data)
 }
 
 // login's section
@@ -106,10 +60,12 @@ const login = async () => {
         error.value.general =""
         if (authenticated.value) {
 
+            document.getElementById("informations").classList.remove("error")
             router.push("/logged/profil")
         } else {
 
             error.value.general = "Give us a valid email and a password please OR validate your email."
+            document.getElementById("informations").classList.add("error")
         }
     }
 }
@@ -126,37 +82,7 @@ const login = async () => {
     #informations {
         
         width: 80%;
-        min-height: 40px;
-        margin-bottom: 20px;
-        color: $red;
-        opacity: 0;
-        @include flex();
-        transition: 0.2s ease all;
-        -moz-transition: 0.2s ease all;
-        -webkit-transition: 0.2s ease all;
-
-        &.success {
-            
-            color: $green;
-        }
-
-        &.error:not(:empty) {
-
-            box-shadow: 0 0 5px $red;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
-
-        &.success:not(:empty) {
-
-            box-shadow: 0 0 5px $green;
-            background-color: $black;
-            padding: 0 15px;
-            border-radius: 5px;
-            opacity: 1;
-        }
+        @include panel-error-success();
     }
 
     form {

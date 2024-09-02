@@ -17,6 +17,7 @@ export default class Renderer {
     setInstance() {
 
         this.instance = new THREE.WebGLRenderer({
+            // canvas: this.canvas
             canvas: this.canvas,
             antialias: true
         })
@@ -25,16 +26,16 @@ export default class Renderer {
         this.instance.toneMapping = THREE.CineonToneMapping
         this.instance.toneMappingExposure = 1.75
         this.instance.shadowMap.enabled = true
-        this.instance.shadowMap.type = THREE.PCFSoftShadowMap
+        // this.instance.shadowMap.type = THREE.PCFSoftShadowMap
         // this.instance.setClearColor('#262837') //doit avoir la meme couleur que le fog
         this.instance.setSize(this.sizes.width, this.sizes.height)
-        this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
+        this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     }
 
     resize() {
 
         this.instance.setSize(this.sizes.width, this.sizes.height)
-        this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
+        this.instance.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     }
 
     update() {
